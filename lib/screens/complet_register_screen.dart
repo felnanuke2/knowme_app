@@ -3,6 +3,8 @@ import 'package:get/state_manager.dart';
 import 'package:knowme/constants/constant_UF_and_citys.dart';
 import 'package:knowme/controller/complet_profile_controller.dart';
 import 'package:knowme/models/uf_model.dart';
+import 'package:knowme/models/user_model.dart';
+import 'package:get/route_manager.dart' as router;
 
 class CompletRegisterScreen extends StatelessWidget {
   const CompletRegisterScreen({Key? key}) : super(key: key);
@@ -163,11 +165,35 @@ class CompletRegisterScreen extends StatelessWidget {
                   SizedBox(
                     height: 15,
                   ),
-                  TextFormField(
-                      validator: controller.validateProfissao,
-                      controller: controller.profileNameTEC,
-                      decoration: InputDecoration(
-                          labelText: 'Profissão (Opcional)', prefixIcon: Icon(Icons.work))),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Gênero:',
+                      style: router.Get.textTheme.headline6!.copyWith(fontSize: 18),
+                    ),
+                  ),
+                  RadioListTile(
+                    value: Sex.FEMALE,
+                    title: Text('Feminino'),
+                    groupValue: controller.sexType,
+                    onChanged: controller.changeSexType,
+                  ),
+                  RadioListTile(
+                    value: Sex.MALE,
+                    title: Text('Masculino'),
+                    groupValue: controller.sexType,
+                    onChanged: controller.changeSexType,
+                  ),
+                  RadioListTile(
+                    value: Sex.NONE,
+                    title: Text('Outros'),
+                    groupValue: controller.sexType,
+                    onChanged: controller.changeSexType,
+                  ),
+                  Obx(() => Text(
+                        controller.sextypeError.value,
+                        style: TextStyle(color: Colors.red),
+                      )),
                   SizedBox(
                     height: 40,
                   ),

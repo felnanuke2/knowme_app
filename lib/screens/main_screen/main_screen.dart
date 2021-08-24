@@ -30,7 +30,7 @@ class MainScreen extends StatelessWidget {
                   iconTheme: IconThemeData(color: Get.theme.primaryColor),
                   backgroundColor: Colors.white,
                   title: Container(
-                    height: 45,
+                    height: 38,
                     child: Image.asset(
                       'assets/knowme_logo-removebg.png',
                       fit: BoxFit.contain,
@@ -47,6 +47,16 @@ class MainScreen extends StatelessWidget {
                         icon: Icon(
                           Icons.notifications,
                         )),
+                    Obx(
+                      () => Visibility(
+                        visible: mainScreenController.currentPage.value == 1,
+                        child: IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.add,
+                            )),
+                      ),
+                    )
                   ],
                 ),
                 bottomNavigationBar: MainScreenBottomNavigationBar(

@@ -4,7 +4,9 @@ import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/route_manager.dart';
+import 'package:get/state_manager.dart';
 import 'package:knowme/models/uf_model.dart';
+import 'package:knowme/models/user_model.dart';
 import 'package:knowme/widgets/image_picker_bottom_sheet.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
@@ -15,8 +17,9 @@ class CompletProfileController extends GetxController {
   var birthDayTEC = TextEditingController();
   var cityTEC = TextEditingController();
   var ufTEC = TextEditingController();
-  var profissaoTEC = TextEditingController();
   var formKey = GlobalKey<FormState>();
+  Sex? sexType;
+  RxString sextypeError = ''.obs;
   UfModel? selectedUfModel;
   Uint8List? imageProfile;
 
@@ -31,7 +34,7 @@ class CompletProfileController extends GetxController {
     birthDayTEC.dispose();
     cityTEC.dispose();
     ufTEC.dispose();
-    profissaoTEC.dispose();
+
     super.dispose();
   }
 
@@ -72,6 +75,11 @@ class CompletProfileController extends GetxController {
 
   onCompletProfile() {
     if (!(formKey.currentState?.validate() ?? false)) return;
+    if (sexType == null) {
+      sextypeError.value = 'Escolha um gênero';
+
+      return;
+    }
   }
 
   String? validateUserName(String? value) {
@@ -107,4 +115,11 @@ class CompletProfileController extends GetxController {
   }
 
   String? validateProfissao(String? value) {}
+
+  void changeSexType(Sex? value) {
+    if (value == null) return;
+    sexType = value;
+    sextypeError.value = '';
+    update();
+  }
 }
