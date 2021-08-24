@@ -19,6 +19,7 @@ class ImageController {
     await file.writeAsBytes(imageByte);
     await file.create();
     var cropedImage = await ImageCropper.cropImage(
+        aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
         sourcePath: file.path,
         cropStyle: CropStyle.circle,
         androidUiSettings: AndroidUiSettings(toolbarTitle: 'Cortar imagem'),

@@ -1,10 +1,12 @@
 import 'dart:typed_data';
 
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/route_manager.dart';
 import 'package:knowme/models/uf_model.dart';
 import 'package:knowme/widgets/image_picker_bottom_sheet.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class CompletProfileController extends GetxController {
   var nameTEC = TextEditingController();
@@ -14,8 +16,12 @@ class CompletProfileController extends GetxController {
   var cityTEC = TextEditingController();
   var ufTEC = TextEditingController();
   var profissaoTEC = TextEditingController();
+  var formKey = GlobalKey<FormState>();
   UfModel? selectedUfModel;
   Uint8List? imageProfile;
+
+  var phoneMask =
+      new MaskTextInputFormatter(mask: '(##) #####-####', filter: {"#": RegExp(r'[0-9]')});
 
   @override
   void dispose() {
@@ -51,4 +57,54 @@ class CompletProfileController extends GetxController {
     imageProfile = image;
     update();
   }
+
+  onPickerDate() async {
+    var pickedDate = await showDatePicker(
+        initialDatePickerMode: DatePickerMode.year,
+        initialEntryMode: DatePickerEntryMode.input,
+        context: Get.context!,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(1920),
+        lastDate: DateTime.now());
+    if (pickedDate == null) return;
+    birthDayTEC.text = formatDate(pickedDate, [dd, '/', mm, '/', yyyy]);
+  }
+
+  onCompletProfile() {
+    if (!(formKey.currentState?.validate() ?? false)) return;
+  }
+
+  String? validateUserName(String? value) {
+    if (value!.isEmpty) return 'Obrigatório';
+    if (value.length < 8) return 'Nome muito curto';
+    return null;
+  }
+
+  String? validateProfileName(String? value) {
+    if (value!.isEmpty) return 'Obrigatório';
+    if (value.length < 4) return 'Nome do perfil muito curto';
+    if (value.contains(' ')) return 'Nome de Perfil não deve conter espaços';
+    return null;
+  }
+
+  String? validatePhone(String? value) {
+    if (value!.isNotEmpty) {
+      if (value.length < phoneMask.getMask()!.length) return 'Telefone Inválido';
+    }
+
+    return null;
+  }
+
+  String? validateDate(String? value) {}
+
+  String? validateUf(String? value) {}
+
+  String? validateCity(String? value) {
+    if (selectedUfModel != null) {
+      if (value!.isEmpty) return 'Escolha uma Cidade';
+    }
+    return null;
+  }
+
+  String? validateProfissao(String? value) {}
 }

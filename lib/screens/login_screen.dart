@@ -29,13 +29,12 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             children: [
               Container(
                 width: 340,
-                height: 200,
+                height: 170,
                 child: Image.asset(
                   'assets/knowme logo.png',
-                  fit: BoxFit.cover,
+                  fit: BoxFit.fitWidth,
                 ),
               ),
-              SizedBox(height: 15),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 35),
                 child: Text(
@@ -43,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                   style: route.Get.textTheme.headline5,
                 ),
               ),
-              SizedBox(height: 30),
+              SizedBox(height: 10),
               Expanded(
                 child: PageView(
                   physics: NeverScrollableScrollPhysics(),
@@ -170,29 +169,42 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
           key: controller.formKey,
           child: Column(
             children: [
-              TextFormField(
-                controller: controller.emailTEC,
-                decoration: InputDecoration(
-                  hintText: 'Digite seu email',
-                  prefixIcon: Icon(Icons.email),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: TextFormField(
+                  validator: controller.validateEmail,
+                  controller: controller.emailTEC,
+                  decoration: InputDecoration(
+                    labelText: 'Digite seu email',
+                    prefixIcon: Icon(Icons.email),
+                  ),
+                  style: TextStyle(decoration: TextDecoration.none),
                 ),
-                style: TextStyle(decoration: TextDecoration.none),
               ),
               SizedBox(
                 height: 20,
               ),
-              TextFormField(
-                controller: controller.passworTEC,
-                obscureText: controller.passwordObscured,
-                decoration: InputDecoration(
-                    hintText: 'Senha',
-                    prefixIcon: Icon(Icons.lock),
-                    suffixIcon: IconButton(
-                        onPressed: controller.onpasswordObscuredToggle,
-                        icon: Icon(controller.passwordObscured
-                            ? Icons.visibility
-                            : Icons.visibility_off))),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: TextFormField(
+                  validator: controller.validatePassword,
+                  controller: controller.passworTEC,
+                  obscureText: controller.passwordObscured,
+                  decoration: InputDecoration(
+                      labelText: 'Senha',
+                      prefixIcon: Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                          onPressed: controller.onpasswordObscuredToggle,
+                          icon: Icon(controller.passwordObscured
+                              ? Icons.visibility
+                              : Icons.visibility_off))),
+                ),
               ),
+              if (controller.errorMessage.isNotEmpty)
+                Text(
+                  controller.errorMessage,
+                  style: TextStyle(color: Colors.red),
+                ),
               SizedBox(
                 height: 20,
               ),

@@ -6,7 +6,8 @@ import 'package:get/route_manager.dart' as router;
 import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:knowme/controller/register_controller.dart';
-import 'package:knowme/widgets/animated_loading_button.dart';
+
+import 'package:knowme/widgets/password_validate_tile.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -21,6 +22,18 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
     return GetBuilder<RegisterController>(
       init: RegisterController(tickerProvider: this),
       builder: (controller) => Scaffold(
+        appBar: AppBar(
+          iconTheme: IconThemeData(color: Get.theme.primaryColor),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: _buildNewUserText(),
+          actions: [
+            TextButton.icon(
+                onPressed: controller.onRegisterButtonPressed,
+                icon: Icon(Icons.check),
+                label: Text('Registrar'))
+          ],
+        ),
         backgroundColor: Color(0xffFFFFFF),
         body: SafeArea(
           child: SingleChildScrollView(
@@ -31,19 +44,14 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    Container(height: 120, child: Image.asset('assets/signIn_ilustration.png')),
                     SizedBox(
-                      height: 20,
-                    ),
-                    Center(
-                      child: _buildNewUserText(),
-                    ),
-                    ColorFiltered(
-                        colorFilter: ColorFilter.mode(Get.theme.primaryColor, BlendMode.dstOver),
-                        child: Image.asset('assets/signIn_ilustration.png')),
-                    SizedBox(
-                      height: 45,
+                      height: 25,
                     ),
                     TextFormField(
+                      controller: controller.emailTEC,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: controller.onValidateEmail,
                       decoration:
                           InputDecoration(labelText: 'Email', prefixIcon: Icon(Icons.email)),
                     ),
@@ -51,25 +59,46 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                       height: 25,
                     ),
                     TextFormField(
+                      validator: controller.onValidatePassword,
                       controller: controller.passwordTEC,
+                      onChanged: controller.onPasswordChange,
                       obscureText: controller.passwordObscured,
                       decoration: InputDecoration(
-                          hintText: 'Senha',
+                          labelText: 'Senha',
                           prefixIcon: Icon(Icons.lock),
                           suffixIcon: IconButton(
                               onPressed: controller.onpasswordObscuredToggle,
                               icon: Icon(controller.passwordObscured
                                   ? Icons.visibility
                                   : Icons.visibility_off))),
+                    ),
+                    Container(
+                      child: Column(
+                        children: [
+                          PasswordValidateTile(
+                              validation: controller.passwordHaveOneUpperCaseCharacter,
+                              title: 'Contém ao menos uma letra maiúscula'),
+                          PasswordValidateTile(
+                              validation: controller.passwordHaveOneLowerCaseCharacter,
+                              title: 'Contém ao menos uma letra minúscula'),
+                          PasswordValidateTile(
+                              validation: controller.passwordHaveOneNumberCharacter,
+                              title: 'Contém ao menos um número'),
+                          PasswordValidateTile(
+                              validation: controller.passwordTEC.text.length >= 6,
+                              title: 'Contém ao menos 6 caracteres'),
+                        ],
+                      ),
                     ),
                     SizedBox(
                       height: 25,
                     ),
                     TextFormField(
+                      validator: controller.onValideteConfirmPassword,
                       controller: controller.passwordConfirmTEC,
                       obscureText: controller.passwordObscured,
                       decoration: InputDecoration(
-                          hintText: 'Confirmar Senha',
+                          labelText: 'Confirmar Senha',
                           prefixIcon: Icon(Icons.lock),
                           suffixIcon: IconButton(
                               onPressed: controller.onpasswordObscuredToggle,
@@ -80,23 +109,8 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
                     SizedBox(
                       height: 25,
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Container(
-                            height: 45,
-                            child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(18))),
-                                onPressed: router.Get.back,
-                                child: Text('Voltar'))),
-                        AnimatedLoadingButton(
-                            child: Text('Registra'),
-                            heigth: 45,
-                            animation: controller.animation,
-                            onTap: controller.onRegisterButtonPressed),
-                      ],
+                    SizedBox(
+                      height: 80,
                     )
                   ],
                 ),
@@ -111,7 +125,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
   RichText _buildNewUserText() {
     return RichText(
       text: TextSpan(
-        style: router.Get.textTheme.headline4,
+        style: router.Get.textTheme.headline6,
         children: List.generate(
           newUserStringList.length,
           (index) => TextSpan(

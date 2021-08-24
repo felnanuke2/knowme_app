@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/state_manager.dart';
+import 'package:string_validator/string_validator.dart';
 
 class LoginController extends GetxController {
   PageController pageController = PageController();
@@ -39,9 +40,13 @@ class LoginController extends GetxController {
     update();
   }
 
-  onTapLoginButton() => _animationController.reverse();
+  onTapLoginButton() {
+    if (!(formKey.currentState?.validate() ?? false)) return;
+
+    _animationController.reverse();
+  }
+
   onTapRecoveryPasswordButton() {}
-  onTapRegisterButton() {}
 
   goToLoginWithEmailTab() => pageController.animateToPage(1,
       duration: Duration(milliseconds: 500), curve: Curves.linearToEaseOut);
@@ -51,4 +56,15 @@ class LoginController extends GetxController {
 
   goToRecoveryPasswordTab() => pageController.animateToPage(2,
       duration: Duration(milliseconds: 500), curve: Curves.linearToEaseOut);
+
+  String? validatePassword(String? value) {
+    if (value!.isEmpty) return 'Insira uma senha';
+    return null;
+  }
+
+  String? validateEmail(String? value) {
+    if (value!.isEmpty) return 'Insira um email válido';
+    if (!isEmail(value)) return 'Email inválido';
+    return null;
+  }
 }
