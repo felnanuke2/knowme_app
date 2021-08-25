@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:knowme/constants/constant_colors.dart';
-import 'package:knowme/screens/complet_register_screen.dart';
-import 'package:knowme/screens/login_screen.dart';
 import 'package:knowme/screens/main_screen/main_screen.dart';
+import 'package:knowme/screens/settings/quiz/create_update_question_scree.dart';
 import 'package:material_color_generator/material_color_generator.dart';
 
 void main() {
@@ -30,7 +29,7 @@ class MyApp extends StatelessWidget {
         ),
         primarySwatch: generateMaterialColor(color: PRIMARY_COLOR),
       ),
-      home: MainScreen(),
+      home: CreateUpdateQuestionScreen(),
     );
   }
 }

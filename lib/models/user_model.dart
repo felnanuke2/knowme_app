@@ -25,6 +25,7 @@ class UserModel {
   final UserContactsModel contacts;
   final bool emailConfirm;
   final List<String> postsList;
+  String? entryQuizID;
   UserModel({
     required this.id,
     this.profileImage,
@@ -42,6 +43,7 @@ class UserModel {
     required this.email,
     required this.state,
     this.updatedAt,
+    this.entryQuizID,
     required this.sex,
     required this.sendIteractions,
     required this.receivedInteractions,

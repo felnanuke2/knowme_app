@@ -7,7 +7,6 @@ import 'package:knowme/screens/main_screen/tabs/feed_tab.dart';
 import 'package:knowme/screens/main_screen/tabs/home_tab.dart';
 import 'package:knowme/screens/main_screen/tabs/profile_tab.dart';
 import 'package:knowme/widgets/main_screen_bottom_navigation_bar.dart';
-import 'package:knowme/widgets/main_screen_drawer.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -25,7 +24,6 @@ class MainScreen extends StatelessWidget {
           : GetBuilder<MainScreenController>(
               init: MainScreenController(),
               builder: (mainScreenController) => Scaffold(
-                drawer: MainScreenDrawer(),
                 appBar: AppBar(
                   iconTheme: IconThemeData(color: Get.theme.primaryColor),
                   backgroundColor: Colors.white,
@@ -37,6 +35,26 @@ class MainScreen extends StatelessWidget {
                     ),
                   ),
                   actions: [
+                    Obx(
+                      () => Visibility(
+                        visible: mainScreenController.currentPage.value == 1,
+                        child: IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.add,
+                            )),
+                      ),
+                    ),
+                    Obx(
+                      () => Visibility(
+                        visible: mainScreenController.currentPage.value == 2,
+                        child: IconButton(
+                            onPressed: mainScreenController.onSettingsPressed,
+                            icon: Icon(
+                              Icons.settings,
+                            )),
+                      ),
+                    ),
                     IconButton(
                         onPressed: () {},
                         icon: Icon(
@@ -47,16 +65,6 @@ class MainScreen extends StatelessWidget {
                         icon: Icon(
                           Icons.notifications,
                         )),
-                    Obx(
-                      () => Visibility(
-                        visible: mainScreenController.currentPage.value == 1,
-                        child: IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              Icons.add,
-                            )),
-                      ),
-                    )
                   ],
                 ),
                 bottomNavigationBar: MainScreenBottomNavigationBar(
