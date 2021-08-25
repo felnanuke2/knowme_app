@@ -1,17 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart' as router;
 import 'package:get/state_manager.dart';
+
+import 'package:knowme/constants/constant_alphbet.dart';
 import 'package:knowme/controller/settings/quiz/create_update_question_controller.dart';
 import 'package:knowme/models/question_model.dart';
-import 'package:get/route_manager.dart' as router;
 
 class CreateUpdateQuestionScreen extends StatelessWidget {
+  QuestionModel? questionModel;
+  CreateUpdateQuestionScreen({
+    Key? key,
+    this.questionModel,
+  }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return GetBuilder<CreateUpdateQuestionController>(
-      init: CreateUpdateQuestionController(),
+      init: CreateUpdateQuestionController(questionModel: questionModel),
       builder: (controller) => Scaffold(
         appBar: AppBar(
           title: Text('Pergunta'),
+          actions: [
+            ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(elevation: 0),
+                onPressed: controller.onCompletQuestion,
+                icon: Icon(Icons.check, color: Colors.green),
+                label: Text('Concluir'))
+          ],
         ),
         body: SingleChildScrollView(
           child: Container(
@@ -39,13 +53,18 @@ class CreateUpdateQuestionScreen extends StatelessWidget {
                           SizedBox(
                             height: 15,
                           ),
-                          TextField(
-                            decoration: InputDecoration(
-                                labelText: 'Enunciado', prefixIcon: Icon(Icons.quiz_sharp)),
-                            keyboardType: TextInputType.multiline,
-                            minLines: 3,
-                            textCapitalization: TextCapitalization.sentences,
-                            maxLines: 4,
+                          Form(
+                            key: controller.enunciationFormKey,
+                            child: TextFormField(
+                              validator: controller.enunciationValidator,
+                              controller: controller.enunciationController,
+                              decoration: InputDecoration(
+                                  labelText: 'Enunciado', prefixIcon: Icon(Icons.quiz_sharp)),
+                              keyboardType: TextInputType.multiline,
+                              minLines: 3,
+                              textCapitalization: TextCapitalization.sentences,
+                              maxLines: 4,
+                            ),
                           ),
                           if (controller.questionType.value == QuestionType.MultipleChoice ||
                               controller.questionType.value == QuestionType.SingleAnswer)
@@ -70,11 +89,6 @@ class CreateUpdateQuestionScreen extends StatelessWidget {
       RadioListTile<QuestionType>(
           title: Text('Multiplas Respostas'),
           value: QuestionType.MultipleChoice,
-          groupValue: controller.questionType.value,
-          onChanged: controller.onRadioChanged),
-      RadioListTile<QuestionType>(
-          title: Text('Verdadeiro ou Falso'),
-          value: QuestionType.Dichotomous,
           groupValue: controller.questionType.value,
           onChanged: controller.onRadioChanged),
       RadioListTile<QuestionType>(
@@ -107,17 +121,24 @@ class CreateUpdateQuestionScreen extends StatelessWidget {
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   itemCount: controller.answers.length,
-                  itemBuilder: (context, index) => ListTile(
-                    leading: CircleAvatar(
-                      child: Text(alphabet[index].toUpperCase()),
+                  itemBuilder: (context, index) => Container(
+                    margin: EdgeInsets.symmetric(vertical: 8),
+                    child: ListTile(
+                      selectedTileColor: Colors.green,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                      selected: controller.correctAnswers.contains(controller.answers[index]),
+                      onTap: () => controller.onTapAnswer(controller.answers[index]),
+                      leading: CircleAvatar(
+                        child: Text(ALPHABET_LIST[index].toUpperCase()),
+                      ),
+                      title: Text(controller.answers[index]),
+                      trailing: IconButton(
+                          onPressed: () => controller.onDeletAnswer(controller.answers, index),
+                          icon: Icon(
+                            Icons.delete,
+                            color: Colors.red,
+                          )),
                     ),
-                    title: Text(controller.answers[index]),
-                    trailing: IconButton(
-                        onPressed: () => controller.onDeletAnser(controller.answers, index),
-                        icon: Icon(
-                          Icons.delete,
-                          color: Colors.red,
-                        )),
                   ),
                 ))
         ],
@@ -158,32 +179,4 @@ class CreateUpdateQuestionScreen extends StatelessWidget {
       ),
     );
   }
-
-  final alphabet = [
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "f",
-    "g",
-    "h",
-    "i",
-    "j",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "p",
-    "q",
-    "r",
-    "s",
-    "u",
-    "v",
-    "w",
-    "x",
-    "y",
-    "z"
-  ];
 }

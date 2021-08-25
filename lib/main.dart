@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         ),
         primarySwatch: generateMaterialColor(color: PRIMARY_COLOR),
       ),
-      home: CreateUpdateQuestionScreen(),
+      home: MainScreen(),
     );
   }
 }

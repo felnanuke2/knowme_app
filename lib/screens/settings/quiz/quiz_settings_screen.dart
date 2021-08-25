@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/route_manager.dart';
+
 import 'package:knowme/controller/settings/quiz/quiz_contoller.dart';
+import 'package:knowme/models/entry_quiz_model.dart';
+import 'package:knowme/widgets/question_item_tile.dart';
 
 class QuizSettingsScren extends StatelessWidget {
-  const QuizSettingsScren({Key? key}) : super(key: key);
+  EntryQuizModel? entryQuiz;
+  QuizSettingsScren({
+    Key? key,
+    this.entryQuiz,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<QuizController>(
-      init: QuizController(),
+      init: QuizController(quizModel: entryQuiz),
       builder: (controller) => Scaffold(
         appBar: AppBar(
           title: Text('Configurar Quiz'),
@@ -34,7 +41,17 @@ class QuizSettingsScren extends StatelessWidget {
             ),
             Expanded(
                 child: Obx(() => ListView.builder(
-                      itemBuilder: (context, index) => Container(),
+                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 40),
+                      itemBuilder: (context, index) {
+                        var questionItem = controller.questions[index];
+
+                        return QuestionItemTile(
+                          questionItem: questionItem,
+                          controller: controller,
+                          questionList: controller.questions,
+                          index: index,
+                        );
+                      },
                       itemCount: controller.questions.length,
                     )))
           ],
