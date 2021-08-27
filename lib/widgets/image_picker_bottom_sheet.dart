@@ -46,13 +46,15 @@ class ImagePickerBottomSheet extends StatelessWidget {
     );
   }
 
-  static Future<Uint8List?> showImagePickerBottomSheet(BuildContext context) async {
+  static Future<Uint8List?> showImagePickerBottomSheet(BuildContext context,
+      {double? ratioX, double? ratioY, bool circular = false}) async {
     var source = await showModalBottomSheet(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       context: context,
       builder: (context) => ImagePickerBottomSheet(),
     );
     if (source == null) return null;
-    return await ImageController.pickImage(source);
+    return await ImageController.pickImage(source,
+        circular: circular, ratioX: ratioX, ratioY: ratioY);
   }
 }

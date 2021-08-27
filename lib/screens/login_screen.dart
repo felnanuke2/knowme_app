@@ -6,6 +6,8 @@ import 'package:flutter_signin_button/button_view.dart';
 import 'package:get/state_manager.dart';
 import 'package:knowme/controller/login_controller.dart';
 import 'package:get/route_manager.dart' as route;
+import 'package:get/instance_manager.dart' as instance;
+import 'package:knowme/interface/user_auth_interface.dart';
 import 'package:knowme/screens/register_screen.dart';
 import 'package:knowme/widgets/animated_loading_button.dart';
 import 'package:knowme/widgets/privacy_policy_button.dart';
@@ -21,7 +23,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     return GetBuilder<LoginController>(
-      init: LoginController(tickerProvider: this),
+      init: LoginController(
+          tickerProvider: this, userAuthRepo: instance.Get.find<UserAuthInterface>()),
       builder: (controller) => Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(
@@ -113,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             width: 380,
             child: SignInButton(
               Buttons.GoogleDark,
-              onPressed: () {},
+              onPressed: controller.sigInWithGoogle,
               text: 'Continuar com Google',
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
             ),

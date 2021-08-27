@@ -1,8 +1,16 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:get/instance_manager.dart';
 import 'package:knowme/constants/constant_colors.dart';
+import 'package:knowme/interface/db_repository_interface.dart';
+import 'package:knowme/interface/user_auth_interface.dart';
+import 'package:knowme/repositorys/firebase_repository.dart';
+import 'package:knowme/repositorys/firebase_user_auth_repository.dart';
+import 'package:knowme/screens/login_screen.dart';
 import 'package:knowme/screens/main_screen/main_screen.dart';
+import 'package:knowme/screens/secundary_splash_screen.dart';
 import 'package:knowme/screens/settings/quiz/create_update_question_scree.dart';
 import 'package:material_color_generator/material_color_generator.dart';
 
@@ -29,7 +37,17 @@ class MyApp extends StatelessWidget {
         ),
         primarySwatch: generateMaterialColor(color: PRIMARY_COLOR),
       ),
-      home: MainScreen(),
+      home: FutureBuilder(
+          future: Firebase.initializeApp(),
+          builder: (context, snapshotFirebase) {
+            _inectDependency();
+            return SecundarySplashScreen(snapshotFirebase, LoginScreen());
+          }),
     );
+  }
+
+  _inectDependency() {
+    Get.put<DbRepositoryInterface>(FirebaseRepository());
+    Get.put<UserAuthInterface>(UserAuthRepository(Get.find<DbRepositoryInterface>()));
   }
 }

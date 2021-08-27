@@ -3,8 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:get/state_manager.dart';
 import 'package:string_validator/string_validator.dart';
 
+import 'package:knowme/auth/google_sign_in.dart';
+import 'package:knowme/interface/user_auth_interface.dart';
+
 class LoginController extends GetxController {
   PageController pageController = PageController();
+  final UserAuthInterface userAuthRepo;
+
   var emailTEC = TextEditingController();
   var passworTEC = TextEditingController();
   var formKey = GlobalKey<FormState>();
@@ -31,6 +36,7 @@ class LoginController extends GetxController {
 
   final TickerProvider tickerProvider;
   LoginController({
+    required this.userAuthRepo,
     required this.tickerProvider,
   }) {
     _initState();
@@ -66,5 +72,9 @@ class LoginController extends GetxController {
     if (value!.isEmpty) return 'Insira um email válido';
     if (!isEmail(value)) return 'Email inválido';
     return null;
+  }
+
+  sigInWithGoogle() async {
+    userAuthRepo.sigInWithGoogle();
   }
 }

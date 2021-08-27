@@ -82,7 +82,7 @@ class CreateUpdateQuestionScreen extends StatelessWidget {
   List<RadioListTile<QuestionType>> _buildList(CreateUpdateQuestionController controller) {
     return [
       RadioListTile<QuestionType>(
-          title: Text('Responsta Única'),
+          title: Text('Resposta Única'),
           value: QuestionType.SingleAnswer,
           groupValue: controller.questionType.value,
           onChanged: controller.onRadioChanged),

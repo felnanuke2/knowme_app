@@ -55,7 +55,8 @@ class CompletProfileController extends GetxController {
   }
 
   onImagePfofilePressed() async {
-    var image = await ImagePickerBottomSheet.showImagePickerBottomSheet(Get.context!);
+    var image =
+        await ImagePickerBottomSheet.showImagePickerBottomSheet(Get.context!, circular: true);
     if (image == null) return;
     imageProfile = image;
     update();
