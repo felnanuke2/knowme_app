@@ -1,7 +1,7 @@
 import 'package:knowme/models/entry_quiz_model.dart';
 import 'package:knowme/models/question_model.dart';
 
-final ENTRY_QUIZ_MOCK = EntryQuizModel(id: 'sd', presentImagesList: [], questions: [
+final ENTRY_QUIZ_MOCK = EntryQuizModel(presentImagesList: [], questions: [
   QuestionModel(
       enunciation: 'Estado Civil',
       questionType: QuestionType.SingleAnswer,

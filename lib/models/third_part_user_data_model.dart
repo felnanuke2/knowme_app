@@ -2,11 +2,11 @@ import 'package:knowme/models/user_model.dart';
 
 class ThirdPartUserDataModel {
   Sex? gender;
-  DateTime? dateTime;
+  DateTime? birthDay;
   String? phoneNumber;
   ThirdPartUserDataModel({
     this.gender,
-    this.dateTime,
+    this.birthDay,
     this.phoneNumber,
   });
   factory ThirdPartUserDataModel.fromGoogle(Map map) {
@@ -24,7 +24,7 @@ class ThirdPartUserDataModel {
       var month = map['birthdays'].first['date']['month'];
       var day = map['birthdays'].first['date']['day'];
 
-      userdataModel.dateTime = DateTime(year, month, day);
+      userdataModel.birthDay = DateTime(year, month, day);
     } catch (e) {}
 
     return userdataModel;

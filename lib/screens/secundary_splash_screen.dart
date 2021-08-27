@@ -2,11 +2,16 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
+import 'package:knowme/interface/user_auth_interface.dart';
+import 'package:knowme/screens/main_screen/main_screen.dart';
+import 'package:get/instance_manager.dart' as instance;
+
+import 'login_screen.dart';
 
 class SecundarySplashScreen extends StatefulWidget {
-  SecundarySplashScreen(this.snapshotFirebase, this.widget);
+  SecundarySplashScreen(this.snapshotFirebase);
   final AsyncSnapshot<Object?> snapshotFirebase;
-  final Widget widget;
+
   @override
   _SecundarySplashScreenState createState() => _SecundarySplashScreenState();
 }
@@ -31,7 +36,9 @@ class _SecundarySplashScreenState extends State<SecundarySplashScreen> {
         isCompleted = !isCompleted;
         setState(() {});
 
-        Get.off(() => widget.widget);
+        Get.off(() => instance.Get.find<UserAuthInterface>().currentUser != null
+            ? MainScreen()
+            : LoginScreen());
       }
     });
   }

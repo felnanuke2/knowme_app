@@ -1,18 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart' as router;
 import 'package:get/state_manager.dart';
+import 'package:get/instance_manager.dart' as instance;
+
 import 'package:knowme/constants/constant_UF_and_citys.dart';
 import 'package:knowme/controller/complet_profile_controller.dart';
+import 'package:knowme/interface/db_repository_interface.dart';
+import 'package:knowme/interface/user_auth_interface.dart';
+import 'package:knowme/models/third_part_user_data_model.dart';
 import 'package:knowme/models/uf_model.dart';
 import 'package:knowme/models/user_model.dart';
-import 'package:get/route_manager.dart' as router;
 
 class CompletRegisterScreen extends StatelessWidget {
-  const CompletRegisterScreen({Key? key}) : super(key: key);
+  UserModel? userModel;
+
+  ThirdPartUserDataModel? dataModel;
+  CompletRegisterScreen({
+    Key? key,
+    this.userModel,
+    this.dataModel,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<CompletProfileController>(
-      init: CompletProfileController(),
+      init: CompletProfileController(
+        userAuthrepository: instance.Get.find<UserAuthInterface>(),
+        repository: instance.Get.find<DbRepositoryInterface>(),
+        dataModel: dataModel,
+      ),
       builder: (controller) => Scaffold(
         appBar: AppBar(
           title: Text('Finalizar Perfil'),

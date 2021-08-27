@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/route_manager.dart';
+import 'package:get/instance_manager.dart' as instance;
 
 import 'package:knowme/controller/settings/quiz/quiz_contoller.dart';
+import 'package:knowme/interface/db_repository_interface.dart';
+import 'package:knowme/interface/user_auth_interface.dart';
 import 'package:knowme/models/entry_quiz_model.dart';
-import 'package:knowme/widgets/image_picker_bottom_sheet.dart';
+
 import 'package:knowme/widgets/question_item_tile.dart';
 
 class QuizSettingsScren extends StatelessWidget {
-  EntryQuizModel? entryQuiz;
-  QuizSettingsScren({
-    Key? key,
-    this.entryQuiz,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return GetBuilder<QuizController>(
-      init: QuizController(quizModel: entryQuiz),
+      init: QuizController(
+          repository: instance.Get.find<DbRepositoryInterface>(),
+          userAuthRepo: instance.Get.find<UserAuthInterface>()),
       builder: (controller) => Scaffold(
           appBar: AppBar(
             title: Text('Configurar Quiz'),

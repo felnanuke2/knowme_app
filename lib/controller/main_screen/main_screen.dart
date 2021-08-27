@@ -1,11 +1,35 @@
 import 'package:flutter/cupertino.dart';
-import 'package:get/state_manager.dart';
+import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart' as router;
+import 'package:get/state_manager.dart';
+
+import 'package:knowme/interface/db_repository_interface.dart';
+import 'package:knowme/interface/user_auth_interface.dart';
+import 'package:knowme/screens/settings/quiz/quiz_settings_screen.dart';
 import 'package:knowme/screens/settings/settings_screen.dart';
 
 class MainScreenController extends GetxController {
   var pageController = PageController();
   RxInt currentPage = 0.obs;
+  final DbRepositoryInterface repository;
+  final UserAuthInterface userAuthRepository;
+  MainScreenController({
+    required this.repository,
+    required this.userAuthRepository,
+  }) {
+    _initUserData();
+  }
+  _initUserData() async {
+    if (userAuthRepository.currentUserdataCompleter.isCompleted) {
+      isLoadingCurrentUser.value = false;
+    } else {
+      await userAuthRepository.currentUserdataCompleter.future;
+      isLoadingCurrentUser.value = false;
+    }
+    if (userAuthRepository.currentUser?.entryQuizID == null) _requestQuizCompletationDialog();
+  }
+
+  final isLoadingCurrentUser = true.obs;
 
   void onPageChange(int value) {
     pageController.animateToPage(value,
@@ -15,5 +39,23 @@ class MainScreenController extends GetxController {
 
   void onSettingsPressed() {
     router.Get.to(() => SettingsScreen());
+  }
+
+  void _requestQuizCompletationDialog() async {
+    await Future.delayed(Duration(seconds: 2));
+    Get.dialog(SingleChildScrollView(
+      child: AlertDialog(
+        title: Text('Parece que você ainda não criou seu quiz de entrada.'),
+        content: Text('Para que os outros usuários possam te encontrar é necessário completa-lo.'),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Get.back();
+                Get.to(() => QuizSettingsScren());
+              },
+              child: Text('Completar Quiz'))
+        ],
+      ),
+    ));
   }
 }

@@ -30,21 +30,19 @@ class _MainScreenBottomNavigationBarState extends State<MainScreenBottomNavigati
       ),
       BottomNavigationBarItem(
           label: 'Perfil',
-          icon: GetBuilder<UserController>(
-            builder: (controller) => CircleAvatar(
-                child: controller.currentUser?.profileImage != null
-                    ? Container(
-                        width: 49,
-                        height: 49,
-                        child: ClipOval(
-                          child: Image.network(
-                            controller.currentUser!.profileImage!,
-                            fit: BoxFit.cover,
-                          ),
+          icon: CircleAvatar(
+              child: widget.controller.userAuthRepository.currentUser?.profileImage != null
+                  ? Container(
+                      width: 49,
+                      height: 49,
+                      child: ClipOval(
+                        child: Image.network(
+                          widget.controller.userAuthRepository.currentUser!.profileImage!,
+                          fit: BoxFit.cover,
                         ),
-                      )
-                    : Icon(Icons.person)),
-          )),
+                      ),
+                    )
+                  : Icon(Icons.person))),
     ]);
   }
 

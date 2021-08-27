@@ -16,12 +16,12 @@ abstract class DbRepositoryInterface {
 
   Future<EntryQuizModel?> getQuiz(String quizId);
 
-  Future<String?> upLoadImageForQuiz({
+  Future<String?> upLoadImage({
     required Uint8List imageByte,
     required String userID,
   });
 
-  Future<Uint8List> getImageBytesFromURL({required String url});
+  Future<Uint8List?> getImageBytesFromURL({required String url});
 
   Future<String?> deletImage(String imageUrl);
 }

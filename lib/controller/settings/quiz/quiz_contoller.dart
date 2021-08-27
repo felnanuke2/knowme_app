@@ -4,6 +4,9 @@ import 'package:get/route_manager.dart' as router;
 import 'package:get/instance_manager.dart' as instance;
 import 'package:get/state_manager.dart';
 import 'package:knowme/controller/image_controller.dart';
+import 'package:knowme/interface/db_repository_interface.dart';
+import 'package:knowme/interface/user_auth_interface.dart';
+import 'package:knowme/mock/entry_quiz_mock.dart';
 import 'package:knowme/models/entry_quiz_model.dart';
 import 'package:knowme/models/image_upload_model.dart';
 import 'package:knowme/models/question_model.dart';
@@ -11,19 +14,29 @@ import 'package:knowme/repositorys/firebase_repository.dart';
 import 'package:knowme/screens/settings/quiz/create_update_question_scree.dart';
 
 class QuizController extends GetxController {
+  final UserAuthInterface userAuthRepo;
+  final DbRepositoryInterface repository;
   EntryQuizModel? quizModel;
   RxList<QuestionModel> questions = <QuestionModel>[].obs;
   RxList<ImageUploadModel> imagesList = <ImageUploadModel>[].obs;
-  late FirebaseRepository firebaseRepository;
+
   final pageController = PageController();
   var pageIndex = 0.obs;
   List<String> deletedImages = [];
-
+  final loadingLastQuiz = false.obs;
   QuizController({
-    this.quizModel,
+    required this.userAuthRepo,
+    required this.repository,
   }) {
-    firebaseRepository = instance.Get.find<FirebaseRepository>();
-    if (quizModel == null) return;
+    if (userAuthRepo.currentUser?.entryQuizID == null) {
+      _setDefaultQuestionsList();
+    } else {}
+    pageController.addListener(() {
+      pageIndex.value = pageController.page!.round();
+    });
+  }
+  _setDefaultQuestionsList() {
+    quizModel = ENTRY_QUIZ_MOCK;
     questions.addAll(quizModel!.questions);
     //Add Images to ImageList
     if (quizModel!.presentImagesList.isNotEmpty) {
@@ -32,16 +45,13 @@ class QuizController extends GetxController {
       });
       _getImageBytesFromString();
     }
-    pageController.addListener(() {
-      pageIndex.value = pageController.page!.round();
-    });
   }
 
   /// will getBytelImageFrom StringUrl
   _getImageBytesFromString() async {
     for (var index = 0; index <= quizModel!.presentImagesList.length; index++) {
       var byteImage =
-          await firebaseRepository.getImageBytesFromURL(url: quizModel!.presentImagesList[index]);
+          await repository.getImageBytesFromURL(url: quizModel!.presentImagesList[index]);
       imagesList[index].byteImage = byteImage;
     }
   }

@@ -40,14 +40,17 @@ class MyApp extends StatelessWidget {
       home: FutureBuilder(
           future: Firebase.initializeApp(),
           builder: (context, snapshotFirebase) {
-            _inectDependency();
-            return SecundarySplashScreen(snapshotFirebase, LoginScreen());
+            if (snapshotFirebase.connectionState == ConnectionState.done) _inectDependency();
+            return SecundarySplashScreen(
+              snapshotFirebase,
+            );
           }),
     );
   }
 
   _inectDependency() {
-    Get.put<DbRepositoryInterface>(FirebaseRepository());
-    Get.put<UserAuthInterface>(UserAuthRepository(Get.find<DbRepositoryInterface>()));
+    Get.put<DbRepositoryInterface>(FirebaseRepository(), permanent: true);
+    Get.put<UserAuthInterface>(UserAuthRepository(Get.find<DbRepositoryInterface>()),
+        permanent: true);
   }
 }

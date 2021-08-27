@@ -1,10 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/state_manager.dart';
+import 'package:knowme/controller/complet_profile_controller.dart';
+import 'package:knowme/models/user_model.dart';
+import 'package:knowme/screens/complet_register_screen.dart';
+import 'package:knowme/screens/main_screen/main_screen.dart';
+import 'package:knowme/screens/settings/quiz/quiz_settings_screen.dart';
 import 'package:string_validator/string_validator.dart';
 
 import 'package:knowme/auth/google_sign_in.dart';
 import 'package:knowme/interface/user_auth_interface.dart';
+import 'package:get/route_manager.dart' as router;
 
 class LoginController extends GetxController {
   PageController pageController = PageController();
@@ -75,6 +81,28 @@ class LoginController extends GetxController {
   }
 
   sigInWithGoogle() async {
-    userAuthRepo.sigInWithGoogle();
+    final result = await userAuthRepo.sigInWithGoogle();
+    if (result is UserModel) {
+//need CompletProfile
+      if (result.profileComplet) {
+        if (result.entryQuizID == null)
+          router.Get.off(() => QuizSettingsScren());
+        else
+          router.Get.off(() => MainScreen());
+      } else {
+        router.Get.snackbar(
+          'Carregando Dados do Usuário',
+          '',
+          showProgressIndicator: true,
+          backgroundColor: Colors.white,
+          barBlur: 0,
+        );
+        var data = await userAuthRepo.getUserDataFromGoogle();
+        router.Get.off(() => CompletRegisterScreen(
+              dataModel: data,
+              userModel: result,
+            ));
+      }
+    }
   }
 }

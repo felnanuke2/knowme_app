@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:knowme/auth/google_sign_in.dart';
 import 'package:knowme/interface/db_repository_interface.dart';
 import 'package:knowme/interface/user_auth_interface.dart';
@@ -10,17 +12,24 @@ import 'package:http/http.dart' as http;
 class UserAuthRepository implements UserAuthInterface {
   final _googleSignIn = GoogleSigInRepo();
   final DbRepositoryInterface _dbRepositoryInterface;
+  final _auth = FirebaseAuth.instance;
+
+  @override
+  Completer currentUserdataCompleter = Completer();
 
   @override
   UserModel? currentUser;
   UserAuthRepository(
     this._dbRepositoryInterface,
-  );
+  ) {
+    if (_auth.currentUser != null) {
+      _setuserData();
+    }
+  }
 
   @override
-  Future<String?> completProfile(UserModel userModel) {
-    // TODO: implement completProfile
-    throw UnimplementedError();
+  Future<dynamic> completProfile(UserModel userModel) async {
+    await _dbRepositoryInterface.createUser(userModel);
   }
 
   @override
@@ -28,39 +37,41 @@ class UserAuthRepository implements UserAuthInterface {
   DbRepositoryInterface get repositoryInterface => throw UnimplementedError();
 
   @override
-  Future<String?> sendResetPasswordEmail({required String email}) {
+  Future<dynamic> sendResetPasswordEmail({required String email}) {
     // TODO: implement sendResetPasswordEmail
     throw UnimplementedError();
   }
 
   @override
-  Future<String?> sigInWithApple() {
+  Future<dynamic> sigInWithApple() {
     // TODO: implement sigInWithApple
     throw UnimplementedError();
   }
 
   @override
-  Future<String?> sigInWithEmail({required String email, required String password}) {
+  Future<dynamic> sigInWithEmail({required String email, required String password}) {
     // TODO: implement sigInWithEmail
     throw UnimplementedError();
   }
 
   @override
-  Future<String?> sigInWithFacebook() {
+  Future<dynamic> sigInWithFacebook() {
     // TODO: implement sigInWithFacebook
     throw UnimplementedError();
   }
 
   @override
-  Future<String?> sigInWithGoogle() async {
+  Future<dynamic> sigInWithGoogle() async {
     var response = await _googleSignIn();
     if (response == null) {
-      getUserDataFromGoogle();
+      return await _setuserData();
+    } else {
+      return response;
     }
   }
 
   @override
-  Future<String?> signUp({required String email, required String password}) {
+  Future<dynamic> signUp({required String email, required String password}) {
     // TODO: implement signUp
     throw UnimplementedError();
   }
@@ -73,5 +84,23 @@ class UserAuthRepository implements UserAuthInterface {
     final response = await http.get(Uri.parse('$host$endPoint'), headers: authHeaders);
 
     return ThirdPartUserDataModel.fromGoogle(jsonDecode(response.body));
+  }
+
+  Future<dynamic> _setuserData() async {
+    currentUser = UserModel();
+    currentUser?.id = _auth.currentUser?.uid;
+    currentUser?.profileImage = _auth.currentUser?.photoURL;
+    currentUser?.completName = _auth.currentUser?.displayName;
+    currentUser?.email = _auth.currentUser?.email;
+    currentUser?.emailConfirm = _auth.currentUser?.emailVerified;
+
+    var user = await _dbRepositoryInterface.getUserCurrentUser(_auth.currentUser!.uid);
+    if (user != null) {
+      currentUser = user;
+      currentUserdataCompleter.complete();
+      return user;
+    } else {
+      return currentUser?..profileComplet = false;
+    }
   }
 }
