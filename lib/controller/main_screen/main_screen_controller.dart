@@ -5,6 +5,7 @@ import 'package:get/state_manager.dart';
 
 import 'package:knowme/interface/db_repository_interface.dart';
 import 'package:knowme/interface/user_auth_interface.dart';
+import 'package:knowme/screens/complet_register_screen.dart';
 import 'package:knowme/screens/settings/quiz/quiz_settings_screen.dart';
 import 'package:knowme/screens/settings/settings_screen.dart';
 
@@ -21,15 +22,28 @@ class MainScreenController extends GetxController {
   }
   _initUserData() async {
     if (userAuthRepository.currentUserdataCompleter.isCompleted) {
-      isLoadingCurrentUser.value = false;
+      isLoadingCurrentUser = false;
+      update();
+      await Future.delayed(Duration(milliseconds: 333));
+      if (_verifyIfNeedCompletProfile() == true) return;
     } else {
       await userAuthRepository.currentUserdataCompleter.future;
-      isLoadingCurrentUser.value = false;
+      if (_verifyIfNeedCompletProfile() == true) return;
+      await Future.delayed(Duration(milliseconds: 333));
+      isLoadingCurrentUser = false;
+      update();
     }
     if (userAuthRepository.currentUser?.entryQuizID == null) _requestQuizCompletationDialog();
   }
 
-  final isLoadingCurrentUser = true.obs;
+  _verifyIfNeedCompletProfile() {
+    if (userAuthRepository.currentUser?.profileComplet == false) {
+      Get.off(() => CompletRegisterScreen());
+      return true;
+    }
+  }
+
+  bool isLoadingCurrentUser = true;
 
   void onPageChange(int value) {
     pageController.animateToPage(value,

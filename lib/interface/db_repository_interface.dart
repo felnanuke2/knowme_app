@@ -10,7 +10,7 @@ abstract class DbRepositoryInterface {
   );
   Future<String?> updateUser(UserModel user);
 
-  Future<String?> creteQuiz(EntryQuizModel entryQuizModel);
+  Future<String?> createQuiz(EntryQuizModel entryQuizModel, UserModel userModel, {String? quizId});
 
   Future<String?> updateQuiz(EntryQuizModel entryQuizModel);
 

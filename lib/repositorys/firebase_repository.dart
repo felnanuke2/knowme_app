@@ -30,21 +30,44 @@ class FirebaseRepository implements DbRepositoryInterface {
   }
 
   @override
-  Future<String?> creteQuiz(EntryQuizModel entryQuizModel) {
-    // TODO: implement creteQuiz
-    throw UnimplementedError();
+  Future<String?> createQuiz(EntryQuizModel entryQuizModel, UserModel userModel,
+      {String? quizId}) async {
+    final map = entryQuizModel.toMap();
+    if (quizId != null) map.remove('answeredBy');
+    try {
+      String quizID = '';
+      if (quizId == null) {
+        var ref = FirebaseFirestore.instance.collection(FirebaseCollections.ENTRY_QUIZ).doc(quizId);
+        await ref.set(map);
+        quizID = ref.id;
+      } else {
+        var ref = FirebaseFirestore.instance.collection(FirebaseCollections.ENTRY_QUIZ).doc(quizId);
+
+        ref.update(map);
+        quizID = ref.id;
+      }
+      userModel.entryQuizID = quizID;
+      updateUser(userModel);
+    } catch (e) {}
   }
 
   @override
-  Future<String?> deletImage(String imageUrl) {
-    // TODO: implement deletImage
-    throw UnimplementedError();
+  Future<String?> deletImage(String imageUrl) async {
+    try {
+      FirebaseStorage.instance.refFromURL(imageUrl).delete();
+    } catch (e) {
+      return e.toString();
+    }
+    return null;
   }
 
   @override
-  Future<EntryQuizModel?> getQuiz(String quizId) {
-    // TODO: implement getQuiz
-    throw UnimplementedError();
+  Future<EntryQuizModel?> getQuiz(String quizId) async {
+    var response = await FirebaseFirestore.instance
+        .collection(FirebaseCollections.ENTRY_QUIZ)
+        .doc(quizId)
+        .get();
+    return EntryQuizModel.fromMap(response.data()!, response.id);
   }
 
   @override
@@ -77,8 +100,15 @@ class FirebaseRepository implements DbRepositoryInterface {
   }
 
   @override
-  Future<String?> updateUser(UserModel user) {
-    // TODO: implement updateUser
-    throw UnimplementedError();
+  Future<String?> updateUser(UserModel user) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection(FirebaseCollections.USERS)
+          .doc(user.id)
+          .update(user.toMap());
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
   }
 }

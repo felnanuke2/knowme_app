@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/state_manager.dart';
 import 'package:get/route_manager.dart' as router;
-import 'package:knowme/controller/main_screen/main_screen.dart';
+import 'package:knowme/controller/main_screen/main_screen_controller.dart';
 import 'package:knowme/controller/main_screen/profile_controller.dart';
 import 'package:knowme/controller/user_controller.dart';
 
@@ -15,7 +15,7 @@ class ProfileTab extends StatelessWidget {
               init: ProfileController(),
               builder: (profileController) => Container(
                   child: mainController.userAuthRepository.currentUser == null
-                      ? Text('Erro Ao Obter o Usuário')
+                      ? Text('Erro ao Obter o Usuário')
                       : NestedScrollView(
                           headerSliverBuilder: (context, innerBoxIsScrolled) => [
                                 SliverToBoxAdapter(
@@ -28,11 +28,17 @@ class ProfileTab extends StatelessWidget {
                                         width: 140,
                                         height: 140,
                                         child: ClipOval(
-                                          child: Image.network(
-                                            mainController
-                                                .userAuthRepository.currentUser!.profileImage!,
-                                            fit: BoxFit.cover,
-                                          ),
+                                          child: mainController.userAuthRepository.currentUser!
+                                                      .profileImage ==
+                                                  null
+                                              ? CircleAvatar(
+                                                  child: Icon(Icons.person),
+                                                )
+                                              : Image.network(
+                                                  mainController.userAuthRepository.currentUser!
+                                                      .profileImage!,
+                                                  fit: BoxFit.cover,
+                                                ),
                                         ),
                                       ),
                                       Text(
@@ -72,8 +78,9 @@ class ProfileTab extends StatelessWidget {
                                                   style: router.Get.textTheme.headline2!
                                                       .copyWith(fontSize: 14),
                                                 ),
-                                                Text(mainController.userAuthRepository.currentUser!
-                                                    .followMe!.length
+                                                Text((mainController.userAuthRepository.currentUser!
+                                                            .followMe?.length ??
+                                                        0)
                                                     .toString()),
                                               ],
                                             ),
@@ -87,8 +94,9 @@ class ProfileTab extends StatelessWidget {
                                                   style: router.Get.textTheme.headline2!
                                                       .copyWith(fontSize: 14),
                                                 ),
-                                                Text(mainController
-                                                    .userAuthRepository.currentUser!.follow!.length
+                                                Text((mainController.userAuthRepository.currentUser!
+                                                            .follow?.length ??
+                                                        0)
                                                     .toString()),
                                               ],
                                             ),
@@ -109,8 +117,9 @@ class ProfileTab extends StatelessWidget {
                                                   style: router.Get.textTheme.headline2!
                                                       .copyWith(fontSize: 14),
                                                 ),
-                                                Text(mainController.userAuthRepository.currentUser!
-                                                    .sendIteractions!.length
+                                                Text((mainController.userAuthRepository.currentUser!
+                                                            .sendIteractions?.length ??
+                                                        0)
                                                     .toString()),
                                               ],
                                             ),
@@ -124,8 +133,9 @@ class ProfileTab extends StatelessWidget {
                                                   style: router.Get.textTheme.headline2!
                                                       .copyWith(fontSize: 14),
                                                 ),
-                                                Text(mainController.userAuthRepository.currentUser!
-                                                    .receivedInteractions!.length
+                                                Text((mainController.userAuthRepository.currentUser!
+                                                            .receivedInteractions?.length ??
+                                                        0)
                                                     .toString()),
                                               ],
                                             ),

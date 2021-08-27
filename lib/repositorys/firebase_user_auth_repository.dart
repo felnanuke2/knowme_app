@@ -97,9 +97,10 @@ class UserAuthRepository implements UserAuthInterface {
     var user = await _dbRepositoryInterface.getUserCurrentUser(_auth.currentUser!.uid);
     if (user != null) {
       currentUser = user;
-      currentUserdataCompleter.complete();
+      if (!currentUserdataCompleter.isCompleted) currentUserdataCompleter.complete();
       return user;
     } else {
+      if (!currentUserdataCompleter.isCompleted) currentUserdataCompleter.complete();
       return currentUser?..profileComplet = false;
     }
   }
