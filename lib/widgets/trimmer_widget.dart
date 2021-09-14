@@ -29,6 +29,9 @@ class _TrimmerEditorScreenState extends State<TrimmerEditorScreen> {
 
   @override
   void initState() {
+    widget.trimmer.loadVideo(videoFile: widget.trimmer.currentVideoFile!).then((value) {
+      setState(() {});
+    });
     super.initState();
   }
 
@@ -40,8 +43,10 @@ class _TrimmerEditorScreenState extends State<TrimmerEditorScreen> {
           actions: [
             TextButton.icon(
                 onPressed: () async {
-                  final path = await widget.trimmer
-                      .saveTrimmedVideo(startValue: startvalue, endValue: endValue);
+                  final path = await widget.trimmer.saveTrimmedVideo(
+                      startValue: startvalue,
+                      endValue: endValue,
+                      videoFileName: DateTime.now().microsecondsSinceEpoch.toString());
                   Get.back(result: path);
                 },
                 icon: Icon(

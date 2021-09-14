@@ -11,7 +11,7 @@ abstract class DbRepositoryInterface {
   Future<String?> createUser(
     UserModel userModel,
   );
-  Future<String?> updateUser(UserModel user);
+  Future<String?> updateUser(String id, {String profileImage});
 
   Future<String?> createQuiz(EntryQuizModel entryQuizModel, UserModel userModel, {String? quizId});
 

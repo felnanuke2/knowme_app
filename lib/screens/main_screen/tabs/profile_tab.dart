@@ -3,15 +3,22 @@ import 'package:get/state_manager.dart';
 import 'package:get/route_manager.dart' as router;
 import 'package:knowme/controller/main_screen/session_controller.dart';
 import 'package:knowme/controller/main_screen/profile_controller.dart';
+import 'package:knowme/widgets/post_mini_widget.dart';
 
-class ProfileTab extends StatelessWidget {
+class ProfileTab extends StatefulWidget {
   const ProfileTab({Key? key}) : super(key: key);
 
   @override
+  State<ProfileTab> createState() => _ProfileTabState();
+}
+
+class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMixin {
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return GetBuilder<SesssionController>(
         builder: (sessionController) => GetBuilder<ProfileController>(
-              init: ProfileController(),
+              init: ProfileController(sesssionController: sessionController),
               builder: (profileController) => Container(
                   child: sessionController.userAuthRepository.currentUser == null
                       ? Text('Erro ao Obter o Usuário')
@@ -26,19 +33,31 @@ class ProfileTab extends StatelessWidget {
                                       Container(
                                         width: 140,
                                         height: 140,
-                                        child: ClipOval(
-                                          child: sessionController.userAuthRepository.currentUser!
-                                                      .profileImage ==
-                                                  null
-                                              ? CircleAvatar(
-                                                  child: Icon(Icons.person),
-                                                )
-                                              : Image.network(
-                                                  sessionController.userAuthRepository.currentUser!
-                                                      .profileImage!,
-                                                  fit: BoxFit.cover,
-                                                ),
-                                        ),
+                                        child: Obx(() => ClipOval(
+                                              child: profileController.loadingProfileImage.value
+                                                  ? Center(
+                                                      child: CircularProgressIndicator(),
+                                                    )
+                                                  : sessionController.userAuthRepository
+                                                              .currentUser!.profileImage ==
+                                                          null
+                                                      ? InkWell(
+                                                          onTap:
+                                                              profileController.changeProfileImage,
+                                                          child: CircleAvatar(
+                                                            child: Icon(Icons.person),
+                                                          ),
+                                                        )
+                                                      : InkWell(
+                                                          onTap:
+                                                              profileController.changeProfileImage,
+                                                          child: Image.network(
+                                                            sessionController.userAuthRepository
+                                                                .currentUser!.profileImage!,
+                                                            fit: BoxFit.cover,
+                                                          ),
+                                                        ),
+                                            )),
                                       ),
                                       Text(
                                         sessionController
@@ -62,12 +81,6 @@ class ProfileTab extends StatelessWidget {
                                           child: Text(sessionController
                                                   .userAuthRepository.currentUser!.bio ??
                                               '')),
-                                      SizedBox(
-                                        height: 25,
-                                      ),
-                                      SizedBox(
-                                        height: 20,
-                                      ),
                                       Row(
                                         children: [
                                           Expanded(
@@ -108,21 +121,28 @@ class ProfileTab extends StatelessWidget {
                                   ),
                                 )
                               ],
-                          body: GridView.builder(
-                            padding: EdgeInsets.only(top: 15, left: 4, right: 4),
-                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                mainAxisSpacing: 4,
-                                crossAxisSpacing: 4,
-                                crossAxisCount: 3,
-                                childAspectRatio: 1),
-                            itemCount: profileController.poststList.length,
-                            itemBuilder: (context, index) {
-                              var postItem = profileController.poststList[index];
-                              return ClipRRect(
-                                  borderRadius: BorderRadius.circular(18),
-                                  child: Image.network(postItem.src, fit: BoxFit.cover));
-                            },
-                          ))),
+                          body: Obx(() => Container(
+                                margin: EdgeInsets.only(top: 15),
+                                child: RefreshIndicator(
+                                  onRefresh: profileController.getMyPosts,
+                                  child: GridView.builder(
+                                    padding: EdgeInsets.only(top: 15, left: 4, right: 4),
+                                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                        mainAxisSpacing: 4,
+                                        crossAxisSpacing: 4,
+                                        crossAxisCount: 3,
+                                        childAspectRatio: 1),
+                                    itemCount: profileController.poststList.length,
+                                    itemBuilder: (context, index) {
+                                      var postItem = profileController.poststList[index];
+                                      return PostMiniWidget(post: postItem);
+                                    },
+                                  ),
+                                ),
+                              )))),
             ));
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

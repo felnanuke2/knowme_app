@@ -1,12 +1,10 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:get/state_manager.dart';
-
 import 'package:knowme/controller/main_screen/session_controller.dart';
-
 import 'package:knowme/models/post_model.dart';
 import 'package:get/route_manager.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 class CreatePostController extends GetxController {
   final SesssionController sesssionController;
@@ -21,7 +19,18 @@ class CreatePostController extends GetxController {
     bool isVideo = false;
     final userId = sesssionController.userAuthRepository.currentUser!.id!;
     String srcUrl = '';
+    String? thumnail;
     if (src is String) {
+      try {
+        final thumbData =
+            await VideoThumbnail.thumbnailData(video: src, quality: 60, maxWidth: 360);
+
+        thumnail =
+            await sesssionController.repository.upLoadImage(imageByte: thumbData!, userID: userId);
+      } catch (e) {
+        print('faill to upload thumnaill');
+      }
+
       isVideo = true;
       final video = File(src);
       srcUrl = await sesssionController.repository.uploadVideo(video, userId);
@@ -29,13 +38,13 @@ class CreatePostController extends GetxController {
       final url = await sesssionController.repository.upLoadImage(imageByte: src, userID: userId);
       srcUrl = url!;
     }
-
     final post = PostModel(
         id: '',
         postedBy: userId,
         mediaType: isVideo ? 0 : 1,
         src: srcUrl,
         viewedBy: [],
+        thumbnail: thumnail,
         createAt: DateTime.now(),
         description: descriptionController.text);
 
@@ -44,7 +53,7 @@ class CreatePostController extends GetxController {
   }
 
   String? validateDescription(String? value) {
-    if (value!.isEmpty) return 'Insira uma descirção';
+    if (value!.isEmpty) return 'Insira uma descrição';
     return null;
   }
 }

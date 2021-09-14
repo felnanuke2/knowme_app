@@ -91,13 +91,15 @@ class SesssionController extends GetxController {
         ));
   }
 
-  void getPosts() async {
+  Future<void> getPosts() async {
+    print('helloworld');
     final result = await repository.getPosts(aceptedInteractions.map((e) => e.id).toList()
       ..add(this.userAuthRepository.currentUser?.id ?? '06546313153'));
     posts.clear();
     posts.addAll(result);
+    return;
   }
 
   List<InteractionsModel> get aceptedInteractions =>
-      interactionsSend.value.where((element) => element.status == 1).toList();
+      interactionsSend.where((element) => element.status == 1).toList();
 }

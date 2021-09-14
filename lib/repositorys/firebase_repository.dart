@@ -50,7 +50,7 @@ class FirebaseRepository implements DbRepositoryInterface {
         quizID = ref.id;
       }
       userModel.entryQuizID = quizID;
-      updateUser(userModel);
+      updateUser(userModel.id!, entryQuizID: userModel.entryQuizID);
     } catch (e) {}
   }
 
@@ -103,12 +103,15 @@ class FirebaseRepository implements DbRepositoryInterface {
   }
 
   @override
-  Future<String?> updateUser(UserModel user) async {
+  Future<String?> updateUser(String id, {String? profileImage, String? entryQuizID}) async {
+    final updateMap = <String, dynamic>{};
+    if (profileImage != null) updateMap['profileImage'] = profileImage;
+    if (entryQuizID != null) updateMap['entryQuizID'] = entryQuizID;
     try {
       await FirebaseFirestore.instance
           .collection(FirebaseCollections.USERS)
-          .doc(user.id)
-          .update(user.toMap());
+          .doc(id)
+          .update(updateMap);
       return null;
     } catch (e) {
       return e.toString();
@@ -155,9 +158,32 @@ class FirebaseRepository implements DbRepositoryInterface {
   @override
   Future<List<PostModel>> getPosts(List<String> usersList) async {
     final ref = FirebaseFirestore.instance.collection(FirebaseCollections.POSTS);
-    final result =
-        await ref.where('postedBy', whereIn: usersList).orderBy('createAt', descending: true).get();
+    final result = await ref
+        .where('postedBy', whereIn: usersList)
+        .orderBy(
+          'createAt',
+          descending: true,
+        )
+        .limit(100)
+        .get();
+
     final list = result.docs.map((e) => PostModel.fromMap(e.data(), e.id)).toList();
+    final listUserIds = list.map((e) => e.postedBy).toList();
+    var refUser = FirebaseFirestore.instance.collection(FirebaseCollections.USERS);
+    int c = 0;
+    listUserIds.forEach((element) {
+      c++;
+      final data = (DateTime.now().millisecondsSinceEpoch + c).toString();
+      final r = refUser;
+      r.where(FieldPath.documentId, whereIn: [element, data]);
+      refUser = r;
+    });
+
+    final userQShot = await refUser.get();
+    final listUsers = userQShot.docs.map((e) => UserModel.fromMap(e.data(), e.id)).toList();
+    list.forEach((post) {
+      post.userModel = listUsers.firstWhere((user) => user.id == post.postedBy);
+    });
     return list;
   }
 }

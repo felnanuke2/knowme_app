@@ -8,9 +8,10 @@ import 'package:knowme/interface/db_repository_interface.dart';
 import 'package:knowme/interface/user_auth_interface.dart';
 import 'package:knowme/repositorys/firebase_repository.dart';
 import 'package:knowme/repositorys/firebase_user_auth_repository.dart';
-import 'package:knowme/screens/camera_screen.dart';
+
 import 'package:knowme/screens/secundary_splash_screen.dart';
 import 'package:material_color_generator/material_color_generator.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 void main() {
   runApp(MyApp());
@@ -50,5 +51,6 @@ class MyApp extends StatelessWidget {
     Get.put<DbRepositoryInterface>(FirebaseRepository(), permanent: true);
     Get.put<UserAuthInterface>(UserAuthRepository(Get.find<DbRepositoryInterface>()),
         permanent: true);
+    timeago.setLocaleMessages('pt', timeago.PtBrMessages());
   }
 }
