@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/state_manager.dart';
 import 'package:get/route_manager.dart' as router;
-import 'package:knowme/controller/main_screen/main_screen_controller.dart';
+import 'package:knowme/controller/main_screen/session_controller.dart';
 import 'package:knowme/controller/main_screen/profile_controller.dart';
-import 'package:knowme/controller/user_controller.dart';
 
 class ProfileTab extends StatelessWidget {
   const ProfileTab({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<MainScreenController>(
-        builder: (mainController) => GetBuilder<ProfileController>(
+    return GetBuilder<SesssionController>(
+        builder: (sessionController) => GetBuilder<ProfileController>(
               init: ProfileController(),
               builder: (profileController) => Container(
-                  child: mainController.userAuthRepository.currentUser == null
+                  child: sessionController.userAuthRepository.currentUser == null
                       ? Text('Erro ao Obter o Usuário')
                       : NestedScrollView(
                           headerSliverBuilder: (context, innerBoxIsScrolled) => [
@@ -28,28 +27,28 @@ class ProfileTab extends StatelessWidget {
                                         width: 140,
                                         height: 140,
                                         child: ClipOval(
-                                          child: mainController.userAuthRepository.currentUser!
+                                          child: sessionController.userAuthRepository.currentUser!
                                                       .profileImage ==
                                                   null
                                               ? CircleAvatar(
                                                   child: Icon(Icons.person),
                                                 )
                                               : Image.network(
-                                                  mainController.userAuthRepository.currentUser!
+                                                  sessionController.userAuthRepository.currentUser!
                                                       .profileImage!,
                                                   fit: BoxFit.cover,
                                                 ),
                                         ),
                                       ),
                                       Text(
-                                        mainController
+                                        sessionController
                                                 .userAuthRepository.currentUser!.completName ??
                                             "",
                                         style:
                                             router.Get.textTheme.headline6!.copyWith(fontSize: 18),
                                       ),
                                       Text(
-                                        mainController
+                                        sessionController
                                                 .userAuthRepository.currentUser!.profileName ??
                                             '' + '#',
                                         style:
@@ -60,48 +59,11 @@ class ProfileTab extends StatelessWidget {
                                       ),
                                       Container(
                                           padding: EdgeInsets.symmetric(horizontal: 20),
-                                          child: Text(
-                                              mainController.userAuthRepository.currentUser!.bio ??
-                                                  '')),
+                                          child: Text(sessionController
+                                                  .userAuthRepository.currentUser!.bio ??
+                                              '')),
                                       SizedBox(
                                         height: 25,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Expanded(
-                                            child: Column(
-                                              children: [
-                                                Text(
-                                                  'Seguidores',
-                                                  textAlign: TextAlign.center,
-                                                  style: router.Get.textTheme.headline2!
-                                                      .copyWith(fontSize: 14),
-                                                ),
-                                                Text((mainController.userAuthRepository.currentUser!
-                                                            .followMe?.length ??
-                                                        0)
-                                                    .toString()),
-                                              ],
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Column(
-                                              children: [
-                                                Text(
-                                                  'Seguindo',
-                                                  textAlign: TextAlign.center,
-                                                  style: router.Get.textTheme.headline2!
-                                                      .copyWith(fontSize: 14),
-                                                ),
-                                                Text((mainController.userAuthRepository.currentUser!
-                                                            .follow?.length ??
-                                                        0)
-                                                    .toString()),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
                                       ),
                                       SizedBox(
                                         height: 20,
@@ -117,10 +79,9 @@ class ProfileTab extends StatelessWidget {
                                                   style: router.Get.textTheme.headline2!
                                                       .copyWith(fontSize: 14),
                                                 ),
-                                                Text((mainController.userAuthRepository.currentUser!
-                                                            .sendIteractions?.length ??
-                                                        0)
-                                                    .toString()),
+                                                Obx(() => Text(
+                                                    (sessionController.interactionsSend.length)
+                                                        .toString())),
                                               ],
                                             ),
                                           ),
@@ -133,10 +94,11 @@ class ProfileTab extends StatelessWidget {
                                                   style: router.Get.textTheme.headline2!
                                                       .copyWith(fontSize: 14),
                                                 ),
-                                                Text((mainController.userAuthRepository.currentUser!
-                                                            .receivedInteractions?.length ??
-                                                        0)
-                                                    .toString()),
+                                                Obx(
+                                                  () => Text((sessionController
+                                                          .interactionsReceived.length)
+                                                      .toString()),
+                                                )
                                               ],
                                             ),
                                           ),

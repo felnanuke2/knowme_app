@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_state_manager/get_state_manager.dart';
 
-import 'package:knowme/controller/main_screen/main_screen_controller.dart';
-import 'package:knowme/controller/user_controller.dart';
+import 'package:knowme/controller/main_screen/session_controller.dart';
 
 class MainScreenBottomNavigationBar extends StatefulWidget {
-  final MainScreenController controller;
+  final SesssionController controller;
   const MainScreenBottomNavigationBar({
     Key? key,
     required this.controller,

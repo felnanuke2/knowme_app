@@ -11,7 +11,6 @@ import 'package:knowme/models/third_part_user_data_model.dart';
 import 'package:knowme/models/uf_model.dart';
 import 'package:knowme/models/user_model.dart';
 import 'package:knowme/screens/main_screen/main_screen.dart';
-import 'package:knowme/screens/settings/quiz/quiz_settings_screen.dart';
 import 'package:knowme/widgets/image_picker_bottom_sheet.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
@@ -127,8 +126,6 @@ class CompletProfileController extends GetxController {
     userAuthrepository.currentUser?.completName = nameTEC.text;
     userAuthrepository.currentUser?.bio = '';
     userAuthrepository.currentUser?.contacts = UserContactsModel();
-    userAuthrepository.currentUser?.follow = [];
-    userAuthrepository.currentUser?.followMe = [];
     userAuthrepository.currentUser?.phoneNumber = phoneTEC.text;
     userAuthrepository.currentUser?.postsList = [];
     userAuthrepository.currentUser?.profileName = profileNameTEC.text;

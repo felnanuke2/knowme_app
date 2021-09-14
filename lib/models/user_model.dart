@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
-
 enum Sex { NONE, MALE, FEMALE }
 
 enum AccountState {
@@ -38,15 +36,12 @@ class UserModel {
   String? city;
   String? lat;
   String? lng;
-  List<String>? followMe;
-  List<String>? follow;
   DateTime? createdAt;
   String? email;
   AccountState? state;
   DateTime? updatedAt;
   Sex? sex;
-  List<String>? sendIteractions;
-  List<String>? receivedInteractions;
+
   UserContactsModel? contacts;
   bool? emailConfirm;
   List<String>? postsList;
@@ -63,16 +58,12 @@ class UserModel {
     this.city,
     this.lat,
     this.lng,
-    this.followMe,
-    this.follow,
     this.createdAt,
     this.email,
     this.state,
     this.updatedAt,
     this.sex,
     this.phoneNumber,
-    this.sendIteractions,
-    this.receivedInteractions,
     this.contacts,
     this.emailConfirm,
     this.postsList,
@@ -92,15 +83,11 @@ class UserModel {
       'city': city,
       'lat': lat,
       'lng': lng,
-      'followMe': followMe,
-      'follow': follow,
       'createdAt': createdAt?.millisecond,
       'email': email,
       'state': state?.toString(),
       'updatedAt': updatedAt?.toString(),
       'sex': sex?.toString(),
-      'sendIteractions': sendIteractions,
-      'receivedInteractions': receivedInteractions,
       'contacts': contacts?.toMap(),
       'emailConfirm': emailConfirm,
       'postsList': postsList,
@@ -108,7 +95,7 @@ class UserModel {
     };
   }
 
-  factory UserModel.fromMap(Map<String, dynamic> map) {
+  factory UserModel.fromMap(Map<String, dynamic> map, String id) {
     return UserModel(
       id: map['id'],
       profileImage: map['profileImage'],
@@ -121,8 +108,6 @@ class UserModel {
       lat: map['lat'],
       lng: map['lng'],
       phoneNumber: map['phoneNumber'],
-      followMe: List<String>.from(map['followMe'] ?? []),
-      follow: List<String>.from(map['follow'] ?? []),
       createdAt:
           map['createdAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(map['createdAt']),
       email: map['email'],
@@ -130,8 +115,6 @@ class UserModel {
       updatedAt:
           map['updatedAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(map['updatedAt']),
       sex: SexFromString().call(map['sex']),
-      sendIteractions: List<String>.from(map['sendIteractions'] ?? []),
-      receivedInteractions: List<String>.from(map['receivedInteractions'] ?? []),
       contacts: UserContactsModel.fromMap(map['contacts'] ?? {}),
       emailConfirm: map['emailConfirm'],
       postsList: List<String>.from(map['postsList'] ?? []),
@@ -140,8 +123,6 @@ class UserModel {
   }
 
   String toJson() => json.encode(toMap());
-
-  factory UserModel.fromJson(String source) => UserModel.fromMap(json.decode(source));
 }
 
 class UserContactsModel {

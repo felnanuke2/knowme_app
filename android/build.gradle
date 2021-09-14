@@ -12,6 +12,7 @@ buildscript {
     }
 }
 
+
 allprojects {
     repositories {
         google()
@@ -24,7 +25,7 @@ subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
     project.evaluationDependsOn(':app')
 }
-
+ext.flutterFFmpegPackage = 'full-lts'
 task clean(type: Delete) {
     delete rootProject.buildDir
 }

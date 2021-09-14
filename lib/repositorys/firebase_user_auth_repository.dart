@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:knowme/auth/google_sign_in.dart';
+import 'package:knowme/constants/firebase_collections.dart';
 import 'package:knowme/interface/db_repository_interface.dart';
 import 'package:knowme/interface/user_auth_interface.dart';
+import 'package:knowme/models/interactions_model.dart';
 import 'package:knowme/models/third_part_user_data_model.dart';
 import 'package:knowme/models/user_model.dart';
 import 'package:http/http.dart' as http;
@@ -94,7 +97,7 @@ class UserAuthRepository implements UserAuthInterface {
     currentUser?.email = _auth.currentUser?.email;
     currentUser?.emailConfirm = _auth.currentUser?.emailVerified;
 
-    var user = await _dbRepositoryInterface.getUserCurrentUser(_auth.currentUser!.uid);
+    var user = await _dbRepositoryInterface.getCurrentUser(_auth.currentUser!.uid);
     if (user != null) {
       currentUser = user;
       if (!currentUserdataCompleter.isCompleted) currentUserdataCompleter.complete();

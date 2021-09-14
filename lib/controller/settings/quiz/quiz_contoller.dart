@@ -4,7 +4,7 @@ import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/route_manager.dart' as router;
 import 'package:get/instance_manager.dart' as instance;
 import 'package:get/state_manager.dart';
-import 'package:knowme/controller/image_controller.dart';
+import 'package:knowme/services/image_service.dart';
 import 'package:knowme/interface/db_repository_interface.dart';
 import 'package:knowme/interface/user_auth_interface.dart';
 import 'package:knowme/mock/entry_quiz_mock.dart';
@@ -91,7 +91,7 @@ class QuizController extends GetxController {
   }
 
   void pickImage() async {
-    var image = await ImageController.pickMultipleImage(imagesList, ratioX: 3, ratioY: 4);
+    var image = await ImageServices.pickMultipleImage(imagesList, ratioX: 3, ratioY: 4);
 
     final _index = imagesList.length - 1;
     pageController.jumpToPage(_index);

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
-import 'package:knowme/controller/main_screen/main_screen_controller.dart';
+import 'package:knowme/controller/main_screen/session_controller.dart';
 import 'package:knowme/screens/main_screen/tabs/feed_tab.dart';
 import 'package:knowme/screens/main_screen/tabs/home_tab.dart';
 import 'package:knowme/screens/main_screen/tabs/profile_tab.dart';
@@ -13,8 +13,8 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<MainScreenController>(
-      init: MainScreenController(repository: Get.find(), userAuthRepository: Get.find()),
+    return GetBuilder<SesssionController>(
+      init: SesssionController(repository: Get.find(), userAuthRepository: Get.find()),
       builder: (mainScreenController) => mainScreenController.isLoadingCurrentUser == true
           ? Container(
               color: Colors.white,
@@ -38,7 +38,7 @@ class MainScreen extends StatelessWidget {
                     () => Visibility(
                       visible: mainScreenController.currentPage.value == 1,
                       child: IconButton(
-                          onPressed: () {},
+                          onPressed: mainScreenController.createPost,
                           icon: Icon(
                             Icons.add,
                           )),

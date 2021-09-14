@@ -5,20 +5,31 @@ import 'package:get/state_manager.dart';
 
 import 'package:knowme/interface/db_repository_interface.dart';
 import 'package:knowme/interface/user_auth_interface.dart';
+import 'package:knowme/models/interactions_model.dart';
+import 'package:knowme/models/post_model.dart';
 import 'package:knowme/screens/complet_register_screen.dart';
+import 'package:knowme/screens/create_post_screen.dart';
 import 'package:knowme/screens/settings/quiz/quiz_settings_screen.dart';
 import 'package:knowme/screens/settings/settings_screen.dart';
+import 'package:knowme/widgets/image_picker_bottom_sheet.dart';
 
-class MainScreenController extends GetxController {
+class SesssionController extends GetxController {
   var pageController = PageController();
   RxInt currentPage = 0.obs;
   final DbRepositoryInterface repository;
   final UserAuthInterface userAuthRepository;
-  MainScreenController({
+  final interactionsSend = <InteractionsModel>[].obs;
+  final interactionsReceived = <InteractionsModel>[].obs;
+  final posts = <PostModel>[].obs;
+
+  bool isLoadingCurrentUser = true;
+
+  SesssionController({
     required this.repository,
     required this.userAuthRepository,
   }) {
     _initUserData();
+    getPosts();
   }
   _initUserData() async {
     if (userAuthRepository.currentUserdataCompleter.isCompleted) {
@@ -42,8 +53,6 @@ class MainScreenController extends GetxController {
       return true;
     }
   }
-
-  bool isLoadingCurrentUser = true;
 
   void onPageChange(int value) {
     pageController.animateToPage(value,
@@ -72,4 +81,23 @@ class MainScreenController extends GetxController {
       ),
     ));
   }
+
+  void createPost() async {
+    final image =
+        await ImagePickerBottomSheet.showImagePickerBottomSheet(Get.context!, video: true);
+    if (image == null) return;
+    Get.to(() => CreatePostScreen(
+          src: image,
+        ));
+  }
+
+  void getPosts() async {
+    final result = await repository.getPosts(aceptedInteractions.map((e) => e.id).toList()
+      ..add(this.userAuthRepository.currentUser?.id ?? '06546313153'));
+    posts.clear();
+    posts.addAll(result);
+  }
+
+  List<InteractionsModel> get aceptedInteractions =>
+      interactionsSend.value.where((element) => element.status == 1).toList();
 }

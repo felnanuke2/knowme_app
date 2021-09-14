@@ -47,6 +47,12 @@ dependencies:
   cloud_firestore: ^2.5.1
   sign_in_with_apple: ^3.0.0
   http: ^0.13.3
+  cached_network_image: ^3.1.0
+  camerawesome: ^0.3.0+1
+  video_trimmer: ^0.5.4
+  video_player: ^2.2.0
+  scrollable_positioned_list: 0.2.0-nullsafety.0
+ 
   
 
 dev_dependencies:
