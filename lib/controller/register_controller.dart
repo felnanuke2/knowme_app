@@ -1,8 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
+import 'package:get/route_manager.dart';
+import 'package:knowme/interface/user_auth_interface.dart';
+import 'package:knowme/screens/complet_register_screen.dart';
+import 'package:knowme/screens/main_screen/main_screen.dart';
 import 'package:string_validator/string_validator.dart';
 
+import 'package:knowme/repositorys/firebase_user_auth_repository.dart';
+
 class RegisterController extends GetxController {
+  final UserAuthInterface userAuthRepository;
   var emailTEC = TextEditingController();
   var passwordTEC = TextEditingController();
   var passwordConfirmTEC = TextEditingController();
@@ -24,6 +31,7 @@ class RegisterController extends GetxController {
   }
 
   RegisterController({
+    required this.userAuthRepository,
     required this.tickerProvider,
   }) {
     _animationController =
@@ -80,7 +88,11 @@ class RegisterController extends GetxController {
     return regExp.hasMatch(passwordTEC.text);
   }
 
-  onRegisterButtonPressed() {
+  onRegisterButtonPressed() async {
     if (!(formKey.currentState?.validate() ?? false)) return;
+    await userAuthRepository.signUp(email: emailTEC.text, password: passwordConfirmTEC.text);
+    Get.offAll(() => CompletRegisterScreen(
+          userModel: userAuthRepository.currentUser,
+        ));
   }
 }

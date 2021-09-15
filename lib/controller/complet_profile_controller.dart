@@ -139,9 +139,9 @@ class CompletProfileController extends GetxController {
     }
 
     final createResult = await repository.createUser(userAuthrepository.currentUser!);
-    if (createResult == null)
-      Get.offAll(() => MainScreen());
-    else
+    if (createResult == null) {
+      // Get.offAll(() => MainScreen());
+    } else
       _callErrorSnackBar(title: 'Erro ao Completar o Perfil', message: createResult);
   }
 

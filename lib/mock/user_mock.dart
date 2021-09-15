@@ -18,5 +18,4 @@ final CURRENT_USER = UserModel(
     updatedAt: DateTime.now(),
     postsList: [],
     sex: Sex.FEMALE,
-    contacts: UserContactsModel(),
     emailConfirm: false);

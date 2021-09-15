@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:knowme/interface/db_repository_interface.dart';
-import 'package:knowme/models/interactions_model.dart';
+
 import 'package:knowme/models/third_part_user_data_model.dart';
 import 'package:knowme/models/user_model.dart';
 

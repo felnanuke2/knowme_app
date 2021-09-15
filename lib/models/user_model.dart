@@ -64,15 +64,14 @@ class UserModel {
     this.updatedAt,
     this.sex,
     this.phoneNumber,
-    this.contacts,
     this.emailConfirm,
     this.postsList,
     this.entryQuizID,
   });
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
+    final map = {
+      'uid': id,
       'profileImage': profileImage,
       'bio': bio,
       'birthDay': birthDay,
@@ -83,21 +82,19 @@ class UserModel {
       'city': city,
       'lat': lat,
       'lng': lng,
-      'createdAt': createdAt?.millisecond,
       'email': email,
-      'state': state?.toString(),
-      'updatedAt': updatedAt?.toString(),
+      'state': 0,
       'sex': sex?.toString(),
-      'contacts': contacts?.toMap(),
-      'emailConfirm': emailConfirm,
-      'postsList': postsList,
-      'entryQuizID': entryQuizID,
     };
+    if (entryQuizID != null) {
+      map['entryQuizID'] = entryQuizID;
+    }
+    return map;
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map, String id) {
     return UserModel(
-      id: map['id'],
+      id: map['uid'],
       profileImage: map['profileImage'],
       bio: map['bio'],
       birthDay: map['birthDay'],
@@ -115,7 +112,6 @@ class UserModel {
       updatedAt:
           map['updatedAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(map['updatedAt']),
       sex: SexFromString().call(map['sex']),
-      contacts: UserContactsModel.fromMap(map['contacts'] ?? {}),
       emailConfirm: map['emailConfirm'],
       postsList: List<String>.from(map['postsList'] ?? []),
       entryQuizID: map['entryQuizID'],

@@ -52,10 +52,12 @@ class LoginController extends GetxController {
     update();
   }
 
-  onTapLoginButton() {
+  onTapLoginButton() async {
     if (!(formKey.currentState?.validate() ?? false)) return;
 
     _animationController.reverse();
+    await userAuthRepo.sigInWithEmail(email: emailTEC.text, password: passworTEC.text);
+    _animationController.forward();
   }
 
   onTapRecoveryPasswordButton() {}

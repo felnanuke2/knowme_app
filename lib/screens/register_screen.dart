@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:knowme/controller/register_controller.dart';
 
 import 'package:knowme/widgets/password_validate_tile.dart';
+import 'package:get/instance_manager.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -20,7 +21,7 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
   @override
   Widget build(BuildContext context) {
     return GetBuilder<RegisterController>(
-      init: RegisterController(tickerProvider: this),
+      init: RegisterController(tickerProvider: this, userAuthRepository: Get.find()),
       builder: (controller) => Scaffold(
         appBar: AppBar(
           iconTheme: IconThemeData(color: Get.theme.primaryColor),
