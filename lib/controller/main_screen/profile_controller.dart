@@ -32,7 +32,7 @@ class ProfileController extends GetxController {
       final imageUrl =
           await sesssionController.repository.upLoadImage(imageByte: pickedImage, userID: user.id!);
 
-      await sesssionController.repository.updateUser(user.id!, profileImage: imageUrl!);
+      await sesssionController.repository.updateUser(user.id!, profileImage: imageUrl);
       final lastImageProfile = user.profileImage;
       sesssionController.userAuthRepository.currentUser!.profileImage = imageUrl;
       sesssionController.repository.deletImage(lastImageProfile!);

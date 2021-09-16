@@ -7,33 +7,48 @@ import 'package:knowme/models/post_model.dart';
 import 'package:knowme/models/user_model.dart';
 
 abstract class DbRepositoryInterface {
-  Future<UserModel?> getCurrentUser(String id);
-  Future<String?> createUser(
+  Future<UserModel> getCurrentUser(String id);
+  Future<UserModel> createUser(
     UserModel userModel,
   );
-  Future<String?> updateUser(String id, {String profileImage});
+  Future<UserModel> updateUser(String id,
+      {String? profileImage,
+      String? entryQuizId,
+      String? bio,
+      String? completName,
+      String? profileName,
+      String? birthDay,
+      String? uf,
+      String? city,
+      double? lat,
+      double? lng,
+      int? state,
+      String? sex,
+      String? phoneNumber,
+      String? firebaseToken});
 
-  Future<String?> createQuiz(EntryQuizModel entryQuizModel, UserModel userModel, {String? quizId});
+  Future<EntryQuizModel> createQuiz(EntryQuizModel entryQuizModel);
 
-  Future<String?> updateQuiz(EntryQuizModel entryQuizModel);
+  Future<EntryQuizModel> updateQuiz(EntryQuizModel entryQuizModel);
 
-  Future<EntryQuizModel?> getQuiz(String quizId);
+  Future<EntryQuizModel> getQuiz(String quizId);
 
-  Future<String?> upLoadImage({
+  Future<String> upLoadImage({
     required Uint8List imageByte,
     required String userID,
   });
 
   Future<String> uploadVideo(File file, String userID);
 
-  Future<Uint8List?> getImageBytesFromURL({required String url});
+  Future<Uint8List> getImageBytesFromURL({required String url});
 
-  Future<String?> deletImage(String imageUrl);
+  Future<void> deletImage(String imageUrl);
 
   Future<List<InteractionsModel>> getInteractionsSend(String currentYserId);
+
   Future<List<InteractionsModel>> getInteractionsReceived(String currentYserId);
 
-  Future<String> createpost(PostModel post);
+  Future<PostModel> createpost(PostModel post);
 
   Future<List<PostModel>> getPosts(List<String> usersList);
 }

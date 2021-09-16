@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
   _inectDependency() {
     Get.put<DbRepositoryInterface>(SupabaseRepository(), permanent: true);
     Get.put<UserAuthInterface>(
-        SupabaseUserAuthRepository(repository: Get.find<DbRepositoryInterface>()),
+        SupabaseUserAuthRepository(repositoryInterface: Get.find<DbRepositoryInterface>()),
         permanent: true);
     timeago.setLocaleMessages('pt', timeago.PtBrMessages());
   }

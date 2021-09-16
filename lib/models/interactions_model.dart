@@ -22,7 +22,6 @@ class InteractionsModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'status': status,
       'fromUser': fromUser,
       'toUser': toUser,

@@ -46,28 +46,28 @@ class UserModel {
   bool? emailConfirm;
   List<String>? postsList;
   String? entryQuizID;
-  bool profileComplet = true;
-  UserModel({
-    this.id,
-    this.profileImage,
-    this.bio,
-    this.birthDay,
-    this.completName,
-    this.profileName,
-    this.uf,
-    this.city,
-    this.lat,
-    this.lng,
-    this.createdAt,
-    this.email,
-    this.state,
-    this.updatedAt,
-    this.sex,
-    this.phoneNumber,
-    this.emailConfirm,
-    this.postsList,
-    this.entryQuizID,
-  });
+  bool profileComplet;
+  UserModel(
+      {this.id,
+      this.profileImage,
+      this.bio,
+      this.birthDay,
+      this.completName,
+      this.profileName,
+      this.uf,
+      this.city,
+      this.lat,
+      this.lng,
+      this.createdAt,
+      this.email,
+      this.state,
+      this.updatedAt,
+      this.sex,
+      this.phoneNumber,
+      this.emailConfirm,
+      this.postsList,
+      this.entryQuizID,
+      this.profileComplet = false});
 
   Map<String, dynamic> toMap() {
     final map = {
@@ -92,7 +92,7 @@ class UserModel {
     return map;
   }
 
-  factory UserModel.fromMap(Map<String, dynamic> map, String id) {
+  factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       id: map['uid'],
       profileImage: map['profileImage'],
@@ -108,13 +108,13 @@ class UserModel {
       createdAt:
           map['createdAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(map['createdAt']),
       email: map['email'],
-      state: AccountStateConvert.fromString(map['state']),
+      state: map['state'] == 0 ? AccountState.ACTIVE : AccountState.BLOCK,
       updatedAt:
           map['updatedAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(map['updatedAt']),
       sex: SexFromString().call(map['sex']),
       emailConfirm: map['emailConfirm'],
       postsList: List<String>.from(map['postsList'] ?? []),
-      entryQuizID: map['entryQuizID'],
+      entryQuizID: map['entryQuizID'] == null ? null : map['entryQuizID'].toString(),
     );
   }
 

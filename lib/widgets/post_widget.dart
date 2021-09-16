@@ -35,6 +35,11 @@ class _PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMi
 
   @override
   void initState() {
+    user = widget.postModel.userModel;
+    if (user == null) {
+      _setUserProfile(Get.find());
+    }
+
     if (widget.postModel.mediaType == 0) {
       videoController = VideoPlayerController.network(widget.postModel.src);
       videoController!.initialize().then((value) {
@@ -43,7 +48,6 @@ class _PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMi
       });
       videoController?.setLooping(true);
     }
-    _setUserProfile(Get.find());
 
     super.initState();
   }

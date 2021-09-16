@@ -78,11 +78,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
               ),
               style: TextStyle(decoration: TextDecoration.none),
             ),
-            if (controller.errorMessage.isNotEmpty)
-              Text(
-                controller.errorMessage,
-                style: TextStyle(color: Colors.red),
-              ),
             SizedBox(
               height: 20,
             ),
@@ -203,11 +198,12 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                               : Icons.visibility_off))),
                 ),
               ),
-              if (controller.errorMessage.isNotEmpty)
-                Text(
-                  controller.errorMessage,
-                  style: TextStyle(color: Colors.red),
-                ),
+              Obx(() => controller.errorMessage.isNotEmpty
+                  ? Text(
+                      controller.errorMessage.value,
+                      style: TextStyle(color: Colors.red),
+                    )
+                  : SizedBox.shrink()),
               SizedBox(
                 height: 20,
               ),

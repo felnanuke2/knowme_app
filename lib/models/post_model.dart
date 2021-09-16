@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:knowme/models/user_model.dart';
 
 class PostModel {
@@ -30,26 +28,24 @@ class PostModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'postedBy': postedBy,
-      'mediaType': mediaType,
+      'posted_by': postedBy,
+      'media_type': mediaType,
       'src': src,
-      'viewedBy': viewedBy,
       'description': description,
       'thumbnail': thumbnail
     };
   }
 
-  factory PostModel.fromMap(Map<String, dynamic> map, String id) {
+  factory PostModel.fromMap(Map<String, dynamic> map) {
     return PostModel(
-        id: map['id'],
-        postedBy: map['postedBy'],
-        mediaType: map['mediaType'],
+        id: map['id'].toString(),
+        postedBy: map['posted_by'],
+        mediaType: map['media_type'],
         src: map['src'],
-        viewedBy: List<String>.from(map['viewedBy']),
+        viewedBy: List<String>.from(map['viewed_by'] ?? []),
         description: map['description'],
-        createAt: (map['createAt'] as Timestamp).toDate(),
-        updateAt: map['updateAt'] == null ? null : (map['updateAt'] as Timestamp).toDate(),
+        createAt: DateTime.parse(map['created_at']),
+        updateAt: map['update_at'] == null ? null : DateTime.parse(map['updated_at']),
         thumbnail: map['thumbnail']);
   }
 

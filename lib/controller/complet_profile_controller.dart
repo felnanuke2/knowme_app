@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
+import 'package:knowme/errors/requestError.dart';
 import 'package:knowme/interface/db_repository_interface.dart';
 import 'package:knowme/interface/user_auth_interface.dart';
 import 'package:knowme/models/third_part_user_data_model.dart';
@@ -130,19 +131,18 @@ class CompletProfileController extends GetxController {
     userAuthrepository.currentUser?.postsList = [];
     userAuthrepository.currentUser?.profileName = profileNameTEC.text;
     userAuthrepository.currentUser?.profileComplet = true;
-    if (imageProfile != null) {
-      final imagURl = await repository.upLoadImage(
-          imageByte: imageProfile!, userID: userAuthrepository.currentUser!.id!);
-      if (imagURl != null && imagURl.contains('http')) {
+    try {
+      if (imageProfile != null) {
+        final imagURl = await repository.upLoadImage(
+            imageByte: imageProfile!, userID: userAuthrepository.currentUser!.id!);
         userAuthrepository.currentUser?.profileImage = imagURl;
       }
-    }
 
-    final createResult = await repository.createUser(userAuthrepository.currentUser!);
-    if (createResult == null) {
-      // Get.offAll(() => MainScreen());
-    } else
-      _callErrorSnackBar(title: 'Erro ao Completar o Perfil', message: createResult);
+      await repository.createUser(userAuthrepository.currentUser!);
+      Get.offAll(() => MainScreen());
+    } on RequestError catch (e) {
+      _callErrorSnackBar(title: 'Erro ao Completar o Perfil', message: e.message ?? '');
+    }
   }
 
   String? validateUserName(String? value) {

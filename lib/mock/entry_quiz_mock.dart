@@ -3,7 +3,6 @@ import 'package:knowme/models/question_model.dart';
 
 final ENTRY_QUIZ_MOCK = EntryQuizModel(
     presentImagesList: [],
-    answeredBy: [],
     createdByID: '',
     questions: [
       QuestionModel(

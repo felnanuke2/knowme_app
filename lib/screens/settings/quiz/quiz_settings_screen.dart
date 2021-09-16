@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/route_manager.dart';
@@ -78,8 +79,14 @@ class QuizSettingsScren extends StatelessWidget {
                                                 child: AspectRatio(
                                                   aspectRatio: 3 / 4,
                                                   child: Stack(
+                                                    fit: StackFit.expand,
                                                     children: [
-                                                      if (imageItem.byteImage != null)
+                                                      if (imageItem.imageUrl != null)
+                                                        CachedNetworkImage(
+                                                          imageUrl: imageItem.imageUrl!,
+                                                          fit: BoxFit.cover,
+                                                        )
+                                                      else
                                                         Container(
                                                           child: Image.memory(
                                                             imageItem.byteImage!,
@@ -133,8 +140,7 @@ class QuizSettingsScren extends StatelessWidget {
                                           child: ReorderableListView.builder(
                                               scrollDirection: Axis.horizontal,
                                               itemBuilder: (context, index) {
-                                                final imageItem =
-                                                    controller.imagesList[index].byteImage;
+                                                final imageItem = controller.imagesList[index];
                                                 return Container(
                                                   margin: EdgeInsets.symmetric(horizontal: 4),
                                                   key: Key(index.toString()),
@@ -146,12 +152,14 @@ class QuizSettingsScren extends StatelessWidget {
                                                         borderRadius: BorderRadius.circular(18),
                                                         child: Obx(() => Stack(
                                                               children: [
-                                                                if (imageItem != null)
-                                                                  Image.memory(imageItem)
+                                                                if (imageItem.imageUrl != null)
+                                                                  CachedNetworkImage(
+                                                                    imageUrl: imageItem.imageUrl!,
+                                                                    fit: BoxFit.cover,
+                                                                  )
                                                                 else
-                                                                  Container(
-                                                                    height: 90,
-                                                                  ),
+                                                                  Image.memory(
+                                                                      imageItem.byteImage!),
                                                                 if (controller.pageIndex.value !=
                                                                     index)
                                                                   Positioned(

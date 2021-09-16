@@ -36,7 +36,7 @@ class CreatePostController extends GetxController {
       srcUrl = await sesssionController.repository.uploadVideo(video, userId);
     } else {
       final url = await sesssionController.repository.upLoadImage(imageByte: src, userID: userId);
-      srcUrl = url!;
+      srcUrl = url;
     }
     final post = PostModel(
         id: '',

@@ -43,11 +43,10 @@ class QuizController extends GetxController {
     loadingQuiz = true;
     update();
     var responseQuiz = await repository.getQuiz(userAuthRepo.currentUser!.entryQuizID!);
-    if (responseQuiz != null) {
-      await _setDefaultQuestionsList(quiz: responseQuiz);
-      loadingQuiz = false;
-      update();
-    }
+
+    await _setDefaultQuestionsList(quiz: responseQuiz);
+    loadingQuiz = false;
+    update();
   }
 
   _setDefaultQuestionsList({EntryQuizModel? quiz}) async {
@@ -58,7 +57,7 @@ class QuizController extends GetxController {
       quizModel!.presentImagesList.forEach((element) {
         imagesList.add(ImageUploadModel(imageUrl: element));
       });
-      await _getImageBytesFromString();
+      // await _getImageBytesFromString();
     }
   }
 
@@ -156,10 +155,10 @@ class QuizController extends GetxController {
     for (var image in imagesList) {
       if (image.imageUrl == null) {
         _callErrorSnackBar(
-            title: 'Enviando Imagens', message: 'Estamos Enviando suas Inagens', failure: false);
+            title: 'Enviando Imagens', message: 'Estamos Enviando suas Imagens', failure: false);
         final url = await repository.upLoadImage(
             imageByte: image.byteImage!, userID: userAuthRepo.currentUser!.id!);
-        if (url != null) imagesListUrl.add(url);
+        imagesListUrl.add(url);
       } else {
         imagesListUrl.add(image.imageUrl!);
       }
@@ -169,12 +168,21 @@ class QuizController extends GetxController {
     });
 
     final quiz = EntryQuizModel(
-        id: quizModel!.id,
-        presentImagesList: imagesListUrl,
-        questions: questions,
-        createdByID: userAuthRepo.currentUser!.id!,
-        answeredBy: []);
-    await repository.createQuiz(quiz, userAuthRepo.currentUser!, quizId: quiz.id);
+      id: quizModel?.id,
+      presentImagesList: imagesListUrl,
+      questions: questions,
+      createdByID: userAuthRepo.currentUser!.id!,
+    );
+    if (quiz.id == null) {
+      final quizResponse = await repository.createQuiz(quiz);
+      quizModel = quizResponse;
+    } else {
+      final quizResponse = await repository.updateQuiz(quiz);
+      quizModel = quizResponse;
+    }
+    userAuthRepo.currentUser!.entryQuizID = quizModel?.id;
+    await repository.updateUser(userAuthRepo.currentUser!.id!, entryQuizId: quizModel!.id!);
+
     if (Get.isSnackbarOpen == true) {
       Get.back();
     }
