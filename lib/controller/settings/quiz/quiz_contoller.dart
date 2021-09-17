@@ -183,7 +183,7 @@ class QuizController extends GetxController {
     userAuthRepo.currentUser!.entryQuizID = quizModel?.id;
     await repository.updateUser(userAuthRepo.currentUser!.id!, entryQuizId: quizModel!.id!);
 
-    if (Get.isSnackbarOpen == true) {
+    while (Get.isSnackbarOpen == true) {
       Get.back();
     }
     Get.back();

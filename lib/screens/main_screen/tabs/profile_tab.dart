@@ -1,4 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/state_manager.dart';
 import 'package:get/route_manager.dart' as router;
 import 'package:knowme/controller/main_screen/session_controller.dart';
@@ -27,44 +30,52 @@ class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMi
                                 SliverToBoxAdapter(
                                   child: Column(
                                     children: [
-                                      SizedBox(
-                                        height: 45,
+                                      Center(
+                                        child: Container(
+                                          margin: EdgeInsets.only(
+                                            top: 45,
+                                          ),
+                                          width: 140,
+                                          height: 140,
+                                          child: Obx(() => ClipOval(
+                                                child: profileController.loadingProfileImage.value
+                                                    ? Center(
+                                                        child: CircularProgressIndicator(),
+                                                      )
+                                                    : sessionController.userAuthRepository
+                                                                .currentUser!.profileImage ==
+                                                            null
+                                                        ? InkWell(
+                                                            onTap: profileController
+                                                                .changeProfileImage,
+                                                            child: CircleAvatar(
+                                                              child: Icon(Icons.person),
+                                                            ),
+                                                          )
+                                                        : InkWell(
+                                                            onTap: profileController
+                                                                .changeProfileImage,
+                                                            child: CachedNetworkImage(
+                                                              imageUrl: sessionController
+                                                                  .userAuthRepository
+                                                                  .currentUser!
+                                                                  .profileImage!,
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
+                                              )),
+                                        ),
                                       ),
                                       Container(
-                                        width: 140,
-                                        height: 140,
-                                        child: Obx(() => ClipOval(
-                                              child: profileController.loadingProfileImage.value
-                                                  ? Center(
-                                                      child: CircularProgressIndicator(),
-                                                    )
-                                                  : sessionController.userAuthRepository
-                                                              .currentUser!.profileImage ==
-                                                          null
-                                                      ? InkWell(
-                                                          onTap:
-                                                              profileController.changeProfileImage,
-                                                          child: CircleAvatar(
-                                                            child: Icon(Icons.person),
-                                                          ),
-                                                        )
-                                                      : InkWell(
-                                                          onTap:
-                                                              profileController.changeProfileImage,
-                                                          child: Image.network(
-                                                            sessionController.userAuthRepository
-                                                                .currentUser!.profileImage!,
-                                                            fit: BoxFit.cover,
-                                                          ),
-                                                        ),
-                                            )),
-                                      ),
-                                      Text(
-                                        sessionController
-                                                .userAuthRepository.currentUser!.completName ??
-                                            "",
-                                        style:
-                                            router.Get.textTheme.headline6!.copyWith(fontSize: 18),
+                                        child: Text(
+                                          sessionController
+                                                  .userAuthRepository.currentUser!.completName ??
+                                              "",
+                                          maxLines: 1,
+                                          textAlign: TextAlign.center,
+                                          style: router.Get.textTheme.headline6!
+                                              .copyWith(fontSize: 18),
+                                        ),
                                       ),
                                       Text(
                                         sessionController
@@ -76,11 +87,17 @@ class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMi
                                       SizedBox(
                                         height: 15,
                                       ),
-                                      Container(
-                                          padding: EdgeInsets.symmetric(horizontal: 20),
-                                          child: Text(sessionController
-                                                  .userAuthRepository.currentUser!.bio ??
-                                              '')),
+                                      Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Container(
+                                            padding: EdgeInsets.symmetric(horizontal: 20),
+                                            child: Text(sessionController
+                                                    .userAuthRepository.currentUser!.bio ??
+                                                '')),
+                                      ),
+                                      SizedBox(
+                                        height: 20,
+                                      ),
                                       Row(
                                         children: [
                                           Expanded(
@@ -116,6 +133,16 @@ class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMi
                                             ),
                                           ),
                                         ],
+                                      ),
+                                      SizedBox(
+                                        height: 15,
+                                      ),
+                                      Container(
+                                        width: 280,
+                                        child: ElevatedButton(
+                                          child: Text('Editar Perfil'),
+                                          onPressed: profileController.editUserProfileIndos,
+                                        ),
                                       ),
                                     ],
                                   ),

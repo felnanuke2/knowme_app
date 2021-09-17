@@ -67,7 +67,7 @@ class LoginController extends GetxController {
       print(e.message);
     }
     _animationController.forward();
-    if (!hasError) Get.to(() => MainScreen());
+    if (!hasError) Get.offAll(() => MainScreen());
   }
 
   onTapRecoveryPasswordButton() {}

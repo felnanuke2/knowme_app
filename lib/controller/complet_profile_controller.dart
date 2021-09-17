@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
+import 'package:knowme/constants/constant_UF_and_citys.dart';
 import 'package:knowme/errors/requestError.dart';
 import 'package:knowme/interface/db_repository_interface.dart';
 import 'package:knowme/interface/user_auth_interface.dart';
@@ -16,31 +17,41 @@ import 'package:knowme/widgets/image_picker_bottom_sheet.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class CompletProfileController extends GetxController {
+  bool profileIsComplet = false;
   CompletProfileController(
       {required this.repository,
       required this.userAuthrepository,
       ThirdPartUserDataModel? dataModel}) {
-    userAuthrepository.currentUser?.birthDay = dataModel?.birthDay == null
-        ? null
-        : formatDate(dataModel!.birthDay!, [dd, '/', mm, '/', yyyy]);
-    userAuthrepository.currentUser?.sex = dataModel?.gender;
-    userAuthrepository.currentUser?.phoneNumber = dataModel?.phoneNumber;
+    profileIsComplet = userAuthrepository.currentUser?.profileComplet ?? false;
+    if (!profileIsComplet) {
+      userAuthrepository.currentUser?.birthDay = dataModel?.birthDay == null
+          ? null
+          : formatDate(dataModel!.birthDay!, [dd, '/', mm, '/', yyyy]);
+      userAuthrepository.currentUser?.sex = dataModel?.gender;
+      userAuthrepository.currentUser?.phoneNumber = dataModel?.phoneNumber;
+    }
     _setFieldsFromUserModel();
   }
+
   _setFieldsFromUserModel() async {
     if (userAuthrepository.currentUser != null) {
       nameTEC.text = userAuthrepository.currentUser!.completName ?? '';
       phoneTEC.text = userAuthrepository.currentUser!.phoneNumber ?? '';
       birthDayTEC.text = userAuthrepository.currentUser!.birthDay ?? '';
       sexType = userAuthrepository.currentUser!.sex;
-      if (userAuthrepository.currentUser!.profileImage != null) {
-        loadingProfileImage.value = true;
-        update();
-        var byteImage = await repository.getImageBytesFromURL(
-            url: userAuthrepository.currentUser!.profileImage!);
-        loadingProfileImage.value = false;
-        imageProfile = byteImage;
-        update();
+      if (profileIsComplet) {
+        final user = userAuthrepository.currentUser!;
+        profileNameTEC.text = user.profileName ?? '';
+        phoneTEC.text = user.phoneNumber ?? '';
+        birthDayTEC.text = user.birthDay ?? '';
+        ufTEC.text = user.uf ?? '';
+        bioTEC.text = user.bio ?? '';
+        if (user.uf != null) {
+          selectedUfModel =
+              BRAZILIAN_CITYS_JSON.firstWhere((element) => element?.sigla.toUpperCase() == user.uf);
+        }
+        cityTEC.text = user.city ?? '';
+        sexType = user.sex;
       }
     }
   }
@@ -54,6 +65,7 @@ class CompletProfileController extends GetxController {
   final birthDayTEC = TextEditingController();
   final cityTEC = TextEditingController();
   final ufTEC = TextEditingController();
+  final bioTEC = TextEditingController();
   final formKey = GlobalKey<FormState>();
   Sex? sexType;
   final RxString sextypeError = ''.obs;
@@ -120,28 +132,51 @@ class CompletProfileController extends GetxController {
 
       return;
     }
-    _callErrorSnackBar(title: 'Validando Dados', message: '', failure: false);
-    userAuthrepository.currentUser?.birthDay = birthDayTEC.text;
-    userAuthrepository.currentUser?.city = cityTEC.text;
-    userAuthrepository.currentUser?.uf = ufTEC.text;
-    userAuthrepository.currentUser?.completName = nameTEC.text;
-    userAuthrepository.currentUser?.bio = '';
-    userAuthrepository.currentUser?.contacts = UserContactsModel();
-    userAuthrepository.currentUser?.phoneNumber = phoneTEC.text;
-    userAuthrepository.currentUser?.postsList = [];
-    userAuthrepository.currentUser?.profileName = profileNameTEC.text;
-    userAuthrepository.currentUser?.profileComplet = true;
-    try {
-      if (imageProfile != null) {
-        final imagURl = await repository.upLoadImage(
-            imageByte: imageProfile!, userID: userAuthrepository.currentUser!.id!);
-        userAuthrepository.currentUser?.profileImage = imagURl;
-      }
+    if (!profileIsComplet) {
+      _callErrorSnackBar(title: 'Validando Dados', message: '', failure: false);
+      userAuthrepository.currentUser?.birthDay = birthDayTEC.text;
+      userAuthrepository.currentUser?.city = cityTEC.text;
+      userAuthrepository.currentUser?.uf = ufTEC.text;
+      userAuthrepository.currentUser?.uf = ufTEC.text;
+      userAuthrepository.currentUser?.completName = nameTEC.text;
+      userAuthrepository.currentUser?.bio = '';
 
-      await repository.createUser(userAuthrepository.currentUser!);
-      Get.offAll(() => MainScreen());
-    } on RequestError catch (e) {
-      _callErrorSnackBar(title: 'Erro ao Completar o Perfil', message: e.message ?? '');
+      userAuthrepository.currentUser?.phoneNumber = phoneTEC.text;
+
+      userAuthrepository.currentUser?.profileName = profileNameTEC.text;
+      userAuthrepository.currentUser?.profileComplet = true;
+      userAuthrepository.currentUser?.sex = sexType;
+
+      try {
+        if (imageProfile != null) {
+          final imagURl = await repository.upLoadImage(
+              imageByte: imageProfile!, userID: userAuthrepository.currentUser!.id!);
+          userAuthrepository.currentUser?.profileImage = imagURl;
+        }
+
+        await repository.createUser(userAuthrepository.currentUser!);
+        if (!userAuthrepository.currentUserdataCompleter.isCompleted)
+          userAuthrepository.currentUserdataCompleter.complete();
+        Get.offAll(() => MainScreen());
+      } on RequestError catch (e) {
+        _callErrorSnackBar(title: 'Erro ao Completar o Perfil', message: e.message ?? '');
+      }
+    } else {
+      try {
+        final responseUser = await repository.updateUser(userAuthrepository.currentUser!.id!,
+            birthDay: birthDayTEC.text,
+            city: cityTEC.text,
+            completName: nameTEC.text,
+            phoneNumber: phoneTEC.text,
+            profileName: profileNameTEC.text,
+            sex: sexType.toString(),
+            uf: ufTEC.text,
+            bio: bioTEC.text);
+        userAuthrepository.currentUser = responseUser..profileComplet = true;
+        Get.back(result: responseUser);
+      } on RequestError catch (e) {
+        _callErrorSnackBar(title: 'Erro ao Completar o Perfil', message: e.message ?? '');
+      }
     }
   }
 
@@ -177,8 +212,6 @@ class CompletProfileController extends GetxController {
     return null;
   }
 
-  String? validateProfissao(String? value) {}
-
   void changeSexType(Sex? value) {
     if (value == null) return;
     sexType = value;
@@ -201,4 +234,6 @@ class CompletProfileController extends GetxController {
         showProgressIndicator: !failure,
         snackStyle: SnackStyle.FLOATING);
   }
+
+  String? validateBio(String? value) {}
 }

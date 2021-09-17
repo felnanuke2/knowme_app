@@ -153,6 +153,19 @@ class SupabaseRepository implements DbRepositoryInterface {
     final mapToUpdate = {};
     if (profileImage != null) mapToUpdate['profileImage'] = profileImage;
     if (entryQuizId != null) mapToUpdate['entryQuizID'] = entryQuizId;
+    if (bio != null) mapToUpdate['bio'] = bio;
+    if (completName != null) mapToUpdate['completName'] = completName;
+    if (profileName != null) mapToUpdate['profileName'] = profileName;
+    if (birthDay != null) mapToUpdate['birthDay'] = birthDay;
+    if (city != null) mapToUpdate['city'] = city;
+    if (uf != null) mapToUpdate['uf'] = uf;
+    if (lat != null) mapToUpdate['lat'] = lat;
+    if (lng != null) mapToUpdate['lng'] = lng;
+    if (state != null) mapToUpdate['state'] = state;
+    if (sex != null) mapToUpdate['sex'] = sex;
+    if (phoneNumber != null) mapToUpdate['phoneNumber'] = phoneNumber;
+    if (firebaseToken != null) mapToUpdate['firebaseToken'] = firebaseToken;
+
     final response = await client.from('users').update(mapToUpdate).eq('uid', id).execute();
     if (response.error != null) throw RequestError(message: response.error!.message);
     final user = UserModel.fromMap(response.data[0]);
@@ -168,5 +181,37 @@ class SupabaseRepository implements DbRepositoryInterface {
     final imageUrl =
         'https://vxtotlcitdlsfylnfyxs.supabase.in/storage/v1/object/public/' + response.data!;
     return imageUrl;
+  }
+
+  @override
+  Future<List<UserModel>> searchUsers(String query) async {
+    final response = await client
+        .from('users')
+        .select('uid,profileName,completName,profileImage')
+        .ilike('profileName', '%$query%')
+        // .textSearch('profileName', '$query', type: TextSearchType.websearch)
+        .limit(40)
+        .execute();
+    if (response.error != null) throw RequestError(message: response.error!.message);
+    final userList = List.from(response.data).map((e) => UserModel.fromMap(e)).toList();
+    return userList;
+  }
+
+  String _generatePattern(String query) {
+    final sBuffer = StringBuffer();
+    final listchars = query.replaceAll(' ', '').split('');
+    listchars.forEach((char) {
+      if (sBuffer.isEmpty) {
+        sBuffer.write('%($char');
+      } else {
+        sBuffer.write('|$char');
+      }
+    });
+    final maximumMatches = query.length + 1;
+    final minimumMatches = query.length ~/ 2;
+
+    sBuffer.write('){$minimumMatches,$maximumMatches}%');
+    final result = sBuffer.toString();
+    return result;
   }
 }

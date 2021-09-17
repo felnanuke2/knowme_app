@@ -31,7 +31,10 @@ class CompletRegisterScreen extends StatelessWidget {
       ),
       builder: (controller) => Scaffold(
         appBar: AppBar(
-          title: Text('Finalizar Perfil'),
+          title: Text(controller.profileIsComplet ? 'Editar Perfil' : 'Finalizar Perfil'),
+          leading: controller.profileIsComplet
+              ? IconButton(onPressed: Get.back, icon: Icon(Icons.close))
+              : null,
           actions: [
             ElevatedButton.icon(
               onPressed: controller.onCompletProfile,
@@ -50,35 +53,36 @@ class CompletRegisterScreen extends StatelessWidget {
               child: Form(
                 key: controller.formKey,
                 child: Column(children: [
-                  Column(
-                    children: [
-                      InkWell(
-                        onTap: controller.onImagePfofilePressed,
-                        child: CircleAvatar(
-                          child: controller.imageProfile == null
-                              ? Icon(
-                                  Icons.camera_alt,
-                                  size: 34,
-                                )
-                              : Container(
-                                  width: 140,
-                                  height: 140,
-                                  child: ClipOval(
-                                    child: Image.memory(
-                                      controller.imageProfile!,
-                                      fit: BoxFit.cover,
+                  if (!controller.profileIsComplet)
+                    Column(
+                      children: [
+                        InkWell(
+                          onTap: controller.onImagePfofilePressed,
+                          child: CircleAvatar(
+                            child: controller.imageProfile == null
+                                ? Icon(
+                                    Icons.camera_alt,
+                                    size: 34,
+                                  )
+                                : Container(
+                                    width: 140,
+                                    height: 140,
+                                    child: ClipOval(
+                                      child: Image.memory(
+                                        controller.imageProfile!,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
-                                ),
-                          radius: 70,
+                            radius: 70,
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      Text('Foto de perfil')
-                    ],
-                  ),
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Text('Foto de perfil')
+                      ],
+                    ),
                   SizedBox(
                     height: 25,
                   ),
@@ -99,6 +103,21 @@ class CompletRegisterScreen extends StatelessWidget {
                         helperText: 'Exemplo: SeuNome211',
                         prefixIcon: Icon(Icons.person_add_alt_1_outlined)),
                   ),
+                  if (controller.profileIsComplet)
+                    SizedBox(
+                      height: 15,
+                    ),
+                  if (controller.profileIsComplet)
+                    TextFormField(
+                      textCapitalization: TextCapitalization.sentences,
+                      validator: controller.validateBio,
+                      controller: controller.bioTEC,
+                      minLines: 2,
+                      maxLines: 3,
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                          labelText: 'Bio (Opcional)', prefixIcon: Icon(Icons.description)),
+                    ),
                   SizedBox(
                     height: 15,
                   ),
