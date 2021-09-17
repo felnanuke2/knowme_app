@@ -2,9 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart' as router;
 import 'package:get/state_manager.dart';
+import 'package:knowme/errors/requestError.dart';
 
 import 'package:knowme/interface/db_repository_interface.dart';
 import 'package:knowme/interface/user_auth_interface.dart';
+import 'package:knowme/models/entry_quiz_model.dart';
 import 'package:knowme/models/interactions_model.dart';
 import 'package:knowme/models/post_model.dart';
 import 'package:knowme/screens/complet_register_screen.dart';
@@ -20,6 +22,7 @@ class SesssionController extends GetxController {
   final UserAuthInterface userAuthRepository;
   final interactionsSend = <InteractionsModel>[].obs;
   final interactionsReceived = <InteractionsModel>[].obs;
+  final quizesToAnswer = <EntryQuizModel>[].obs;
   final posts = <PostModel>[].obs;
 
   bool isLoadingCurrentUser = true;
@@ -30,6 +33,7 @@ class SesssionController extends GetxController {
   }) {
     _initUserData();
     getPosts();
+    getReceivedInteractions();
   }
   _initUserData() async {
     if (userAuthRepository.currentUserdataCompleter.isCompleted) {
@@ -98,6 +102,38 @@ class SesssionController extends GetxController {
     posts.clear();
     posts.addAll(result);
     return;
+  }
+
+  Future<void> getReceivedInteractions() async {
+    try {
+      final receivedInteractions =
+          await repository.getInteractionsReceived(userAuthRepository.currentUser!.id!);
+      this.interactionsReceived.value = receivedInteractions;
+    } on RequestError catch (e) {
+      print(e.message);
+    }
+  }
+
+  Future<void> updateInteraction(InteractionsModel interaction, int status) async {
+    final index = interactionsReceived.indexOf(interaction);
+    final user = interactionsReceived[index].user;
+    try {
+      final response = await repository.updateInteraction(interaction.id, status);
+      interactionsReceived[index] = response..user = user;
+      return;
+    } on RequestError catch (e) {
+      print(e.message);
+    }
+  }
+
+  Future<void> getListOfQuizes() async {
+    try {
+      final list = await repository.getLisOfQuizes(userAuthRepository.currentUser!.id!);
+      quizesToAnswer.clear();
+      quizesToAnswer.addAll(list);
+    } on RequestError catch (e) {
+      print(e.message);
+    }
   }
 
   List<InteractionsModel> get aceptedInteractions =>

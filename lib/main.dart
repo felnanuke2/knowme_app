@@ -33,6 +33,10 @@ class MyApp extends StatelessWidget {
       title: 'Know me',
       theme: ThemeData(
         accentColor: ACCET_COLOR,
+        dialogTheme:
+            DialogTheme(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18))),
+        cardTheme:
+            CardTheme(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18))),
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
         ),

@@ -7,6 +7,7 @@ import 'package:knowme/screens/main_screen/tabs/feed_tab.dart';
 import 'package:knowme/screens/main_screen/tabs/home_tab.dart';
 import 'package:knowme/screens/main_screen/tabs/profile_tab.dart';
 import 'package:get/instance_manager.dart';
+import 'package:knowme/screens/received_interactions_screen.dart';
 import 'package:knowme/widgets/main_screen_bottom_navigation_bar.dart';
 
 class MainScreen extends StatelessWidget {
@@ -58,7 +59,7 @@ class MainScreen extends StatelessWidget {
                               ),
                             ),
                             IconButton(
-                                onPressed: () {},
+                                onPressed: () => Get.to(() => ReceivedInteractionsScreen()),
                                 icon: Icon(
                                   Icons.notifications,
                                 )),

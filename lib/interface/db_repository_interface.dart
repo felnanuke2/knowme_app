@@ -53,4 +53,9 @@ abstract class DbRepositoryInterface {
   Future<List<PostModel>> getPosts(List<String> usersList);
 
   Future<List<UserModel>> searchUsers(String query);
+
+  /// on update use 1 for accept and 2 for refuse 0 is await for answer
+  Future<InteractionsModel> updateInteraction(String interactionId, int status);
+
+  Future<List<EntryQuizModel>> getLisOfQuizes(String userId);
 }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:knowme/models/question_model.dart';
+import 'package:knowme/models/user_model.dart';
 
 class EntryQuizModel {
   final String? id;
@@ -9,6 +10,7 @@ class EntryQuizModel {
   DateTime? createAt;
   DateTime? updateAt;
   final String createdByID;
+  UserModel? user;
 
   EntryQuizModel({
     this.id,
@@ -16,6 +18,7 @@ class EntryQuizModel {
     required this.questions,
     this.createAt,
     this.updateAt,
+    this.user,
     required this.createdByID,
   });
 
@@ -29,13 +32,13 @@ class EntryQuizModel {
 
   factory EntryQuizModel.fromMap(Map<String, dynamic> map) {
     return EntryQuizModel(
-      id: map['id'].toString(),
-      presentImagesList: List<String>.from(map['presentImagesList']),
-      questions: List<QuestionModel>.from(map['questions']?.map((x) => QuestionModel.fromMap(x))),
-      createAt: DateTime.parse(map['created_at'] ?? 0),
-      updateAt: DateTime.parse(map['updated_at'] ?? 0),
-      createdByID: map['created_by'],
-    );
+        id: map['id'].toString(),
+        presentImagesList: List<String>.from(map['presentImagesList']),
+        questions: List<QuestionModel>.from(map['questions']?.map((x) => QuestionModel.fromMap(x))),
+        createAt: DateTime.parse(map['created_at'] ?? 0),
+        updateAt: DateTime.parse(map['updated_at'] ?? 0),
+        createdByID: map['created_by'],
+        user: map['users'] == null ? null : UserModel.fromMap(map['users']));
   }
 
   String toJson() => json.encode(toMap());

@@ -55,9 +55,13 @@ class SupabaseRepository implements DbRepositoryInterface {
   }
 
   @override
-  Future<List<InteractionsModel>> getInteractionsReceived(String currentYserId) {
-    // TODO: implement getInteractionsReceived
-    throw UnimplementedError();
+  Future<List<InteractionsModel>> getInteractionsReceived(String currentUserId) async {
+    final response = await client.from('interactions').select('''
+  *, users: from_user ( profileName, completName, profileImage, uid )
+  ''').eq('to_user', currentUserId).order('created_at').limit(20).execute();
+    if (response.error != null) throw RequestError(message: response.error!.message);
+    final interactions = List.from(response.data).map((e) => InteractionsModel.fromMap(e)).toList();
+    return interactions;
   }
 
   @override
@@ -197,21 +201,31 @@ class SupabaseRepository implements DbRepositoryInterface {
     return userList;
   }
 
-  String _generatePattern(String query) {
-    final sBuffer = StringBuffer();
-    final listchars = query.replaceAll(' ', '').split('');
-    listchars.forEach((char) {
-      if (sBuffer.isEmpty) {
-        sBuffer.write('%($char');
-      } else {
-        sBuffer.write('|$char');
-      }
-    });
-    final maximumMatches = query.length + 1;
-    final minimumMatches = query.length ~/ 2;
+  @override
+  Future<InteractionsModel> updateInteraction(String interactionId, int status) async {
+    final response = await client
+        .from('interactions')
+        .update({'status': status}, returning: ReturningOption.representation)
+        .eq('id', int.parse(interactionId))
+        .execute();
+    if (response.error != null) throw RequestError(message: response.error?.message);
+    final interaction = InteractionsModel.fromMap(response.data[0]);
+    return interaction;
+  }
 
-    sBuffer.write('){$minimumMatches,$maximumMatches}%');
-    final result = sBuffer.toString();
-    return result;
+  @override
+  Future<List<EntryQuizModel>> getLisOfQuizes(String userId) async {
+    final response = await client.from('users').select(''' 
+    profileName,profileImage,uid, quizes: entryQuizID (*)
+    ''').not('entryQuizID', 'is', null).limit(30).execute();
+    if (response.error != null) throw RequestError(message: response.error?.message);
+    final listQuizes = List.from(response.data).map((e) {
+      final map = <String, dynamic>{};
+      map['users'] = e;
+      map.remove('quizes');
+      map.addAll(e['quizes']);
+      return EntryQuizModel.fromMap(map);
+    }).toList();
+    return listQuizes;
   }
 }
