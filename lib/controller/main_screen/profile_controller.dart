@@ -19,6 +19,12 @@ class ProfileController extends GetxController {
     required this.sesssionController,
   }) {
     getMyPosts();
+    getFriendsList();
+  }
+  getFriendsList() async {
+    final list = await sesssionController.repository
+        .getFriends(sesssionController.userAuthRepository.currentUser?.id ?? '');
+    print('list');
   }
 
   void changeProfileImage() async {

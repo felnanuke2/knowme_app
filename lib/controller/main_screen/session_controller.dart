@@ -22,6 +22,7 @@ class SesssionController extends GetxController {
   final UserAuthInterface userAuthRepository;
   final interactionsSend = <InteractionsModel>[].obs;
   final interactionsReceived = <InteractionsModel>[].obs;
+  final friends = <String>[].obs;
   final quizesToAnswer = <EntryQuizModel>[].obs;
   final posts = <PostModel>[].obs;
 
@@ -34,6 +35,7 @@ class SesssionController extends GetxController {
     _initUserData();
     getPosts();
     getReceivedInteractions();
+    getFirends();
   }
   _initUserData() async {
     if (userAuthRepository.currentUserdataCompleter.isCompleted) {
@@ -97,8 +99,8 @@ class SesssionController extends GetxController {
 
   Future<void> getPosts() async {
     print('helloworld');
-    final result = await repository.getPosts(aceptedInteractions.map((e) => e.id).toList()
-      ..add(this.userAuthRepository.currentUser?.id ?? '06546313153'));
+    final result = await repository
+        .getPosts(friends..add(this.userAuthRepository.currentUser?.id ?? '06546313153'));
     posts.clear();
     posts.addAll(result);
     return;
@@ -134,6 +136,12 @@ class SesssionController extends GetxController {
     } on RequestError catch (e) {
       print(e.message);
     }
+  }
+
+  getFirends() async {
+    final list = await repository.getFriends(userAuthRepository.currentUser?.id ?? '');
+    friends.clear();
+    friends.addAll(list);
   }
 
   List<InteractionsModel> get aceptedInteractions =>

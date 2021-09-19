@@ -8,6 +8,7 @@ import 'package:knowme/controller/answer_quiz_controller.dart';
 import 'package:knowme/models/entry_quiz_model.dart';
 import 'package:knowme/models/question_model.dart';
 import 'package:get/route_manager.dart';
+import 'package:get/instance_manager.dart';
 
 class AnswerQuizScreen extends StatelessWidget {
   const AnswerQuizScreen({
@@ -18,15 +19,28 @@ class AnswerQuizScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<AnswerQuizController>(
-      init: AnswerQuizController(quiz: quiz),
+      init: AnswerQuizController(quiz: quiz, sesssionController: Get.find()),
       builder: (controller) => Scaffold(
         appBar: AppBar(
           title: Text((quiz.user?.profileName ?? '') + '#'),
+          actions: [
+            TextButton.icon(
+                onPressed: controller.sendAsnwers,
+                icon: Icon(
+                  Icons.send,
+                  color: Colors.white,
+                ),
+                label: Text(
+                  'Enviar',
+                  style: TextStyle(color: Colors.white),
+                ))
+          ],
         ),
         body: Column(
           children: [
             Expanded(
                 child: ListView.builder(
+              padding: EdgeInsets.only(bottom: 40),
               itemCount: controller.quiz.questions.length,
               itemBuilder: (context, index) {
                 final itemQuestion = controller.quiz.questions[index];
@@ -100,7 +114,7 @@ class AnswerQuizScreen extends StatelessWidget {
                                   ),
                                 )
                               : Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 12),
+                                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                   child: TextField(
                                     decoration: InputDecoration(labelText: 'Resposta: '),
                                     onChanged: (value) => controller.selectAnser(

@@ -58,4 +58,8 @@ abstract class DbRepositoryInterface {
   Future<InteractionsModel> updateInteraction(String interactionId, int status);
 
   Future<List<EntryQuizModel>> getLisOfQuizes(String userId);
+
+  Future<InteractionsModel> sendInteraction(InteractionsModel interactionsModel);
+
+  Future<List<String>> getFriends(String id);
 }

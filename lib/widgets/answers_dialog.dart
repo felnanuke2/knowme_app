@@ -30,6 +30,19 @@ class AnswersDialog extends StatelessWidget {
               itemCount: answers.length,
               itemBuilder: (context, index) {
                 final key = answers.keys.toList()[index];
+                var answer = answers[key];
+                if (answer is List) {
+                  final buffer = StringBuffer();
+                  answer.forEach((value) {
+                    if (buffer.isEmpty) {
+                      buffer.write(value);
+                    } else {
+                      buffer.write(', ' + value);
+                    }
+                  });
+                  answer = buffer.toString();
+                }
+
                 return Container(
                   margin: EdgeInsets.all(8),
                   child: Row(
@@ -49,7 +62,7 @@ class AnswersDialog extends StatelessWidget {
                               borderRadius: BorderRadius.circular(18),
                               side: BorderSide(color: Get.theme.primaryColor)),
                           title: Text(key),
-                          subtitle: Text('\n' + answers[key]),
+                          subtitle: Text('\n' + answer),
                         ),
                       ),
                     ],

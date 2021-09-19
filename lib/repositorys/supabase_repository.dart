@@ -1,8 +1,6 @@
 import 'dart:typed_data';
 
 import 'dart:io';
-
-import 'package:get/get_connect/http/src/response/response.dart';
 import 'package:knowme/errors/requestError.dart';
 import 'package:knowme/interface/db_repository_interface.dart';
 import 'package:knowme/models/user_model.dart';
@@ -227,5 +225,21 @@ class SupabaseRepository implements DbRepositoryInterface {
       return EntryQuizModel.fromMap(map);
     }).toList();
     return listQuizes;
+  }
+
+  @override
+  Future<InteractionsModel> sendInteraction(InteractionsModel interactionsModel) async {
+    final response = await client.from('interactions').insert(interactionsModel.toMap()).execute();
+    if (response.error != null) throw RequestError(message: response.error?.message);
+    final iteraction = InteractionsModel.fromMap(response.data[0]);
+    return iteraction;
+  }
+
+  @override
+  Future<List<String>> getFriends(String id) async {
+    final response = await client.rpc('getfriends', params: {'uid': id}).execute();
+    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
+    final list = List<String>.from(response.data[0]['frieds_list']);
+    return list;
   }
 }

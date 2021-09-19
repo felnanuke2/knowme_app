@@ -11,7 +11,7 @@ class InteractionsModel {
   String toUser;
   DateTime createdAt;
   DateTime? updatedAt;
-  Map<String, String> answers;
+  Map<String, dynamic> answers;
   UserModel? user;
   InteractionsModel({
     required this.id,
@@ -41,7 +41,7 @@ class InteractionsModel {
         toUser: map['to_user'],
         createdAt: DateTime.parse(map['created_at']),
         updatedAt: DateTime.tryParse(map['updated_at']),
-        answers: Map<String, String>.from(map['answers']),
+        answers: Map<String, dynamic>.from(map['answers']),
         user: map['users'] == null ? null : UserModel.fromMap(map['users']));
   }
 
