@@ -1,8 +1,14 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'dart:io';
+import 'package:get/get_connect/http/src/response/response.dart';
 import 'package:knowme/errors/requestError.dart';
+import 'package:knowme/events/stream_event.dart';
 import 'package:knowme/interface/db_repository_interface.dart';
+import 'package:knowme/models/chat_room_model.dart';
+import 'package:knowme/models/message_model.dart';
 import 'package:knowme/models/user_model.dart';
 import 'package:knowme/models/post_model.dart';
 import 'package:knowme/models/interactions_model.dart';
@@ -241,5 +247,65 @@ class SupabaseRepository implements DbRepositoryInterface {
     if (response.error != null) throw RequestError(message: response.error?.message ?? '');
     final list = List<String>.from(response.data[0]['frieds_list']);
     return list;
+  }
+
+  @override
+  Future<MessageModel> sendMessage(String userId, String message, int type, {String? src}) async {
+    final response = await client.rpc('sendmessage', params: {
+      'message': message,
+      'to_user': userId,
+      'message_type': type,
+      'src': src
+    }).execute();
+    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
+    final messageResponse = MessageModel.fromMap(response.data);
+    return messageResponse;
+  }
+
+  @override
+  Future<List<ChatRoomModel>> getChatChannels(String userId) async {
+    final response = await client
+        .from('chat_room')
+        .select(
+            'id,user_a (profileName, completName, profileImage, uid ),user_b (profileName, completName, profileImage, uid ),created_at,status')
+        .or('user_a.eq.$userId,user_b.eq.$userId')
+        .execute();
+    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
+    final listRooms = List.from(response.data).map((e) => ChatRoomModel.fromMap(e)).toList();
+    return listRooms;
+  }
+
+  @override
+  Future<List<MessageModel>> getMessages(List<int> roomId) async {
+    final response = await client
+        .from('messages')
+        .select()
+        .in_('room_id', roomId)
+        .order('created_at', ascending: true)
+        .execute();
+    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
+    final listMessages = List.from(response.data).map((e) => MessageModel.fromMap(e)).toList();
+    return listMessages;
+  }
+
+  @override
+  StreamController<StreamEvent> roomListenMessages(int roomIds) {
+    final eventStream = StreamController<StreamEvent>.broadcast();
+    final response = client.from('messages').on(SupabaseEventTypes.all, (payload) {
+      print('called payload');
+      eventStream.add(StreamEventUpdate()..data = payload.newRecord);
+    }).subscribe(_onsubscribe);
+    eventStream.stream.listen((event) {
+      if (event is StreamEventCancel) {
+        client.removeSubscription(response);
+      }
+    });
+
+    return eventStream;
+  }
+
+  void _onsubscribe(String event, {String? errorMsg}) {
+    print(event);
+    print(errorMsg);
   }
 }

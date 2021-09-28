@@ -33,9 +33,8 @@ class SesssionController extends GetxController {
     required this.userAuthRepository,
   }) {
     _initUserData();
-    getPosts();
     getReceivedInteractions();
-    getFirends();
+    getPosts();
   }
   _initUserData() async {
     if (userAuthRepository.currentUserdataCompleter.isCompleted) {
@@ -98,7 +97,8 @@ class SesssionController extends GetxController {
   }
 
   Future<void> getPosts() async {
-    print('helloworld');
+    await getFriends();
+
     final result = await repository
         .getPosts(friends..add(this.userAuthRepository.currentUser?.id ?? '06546313153'));
     posts.clear();
@@ -138,7 +138,7 @@ class SesssionController extends GetxController {
     }
   }
 
-  getFirends() async {
+  getFriends() async {
     final list = await repository.getFriends(userAuthRepository.currentUser?.id ?? '');
     friends.clear();
     friends.addAll(list);

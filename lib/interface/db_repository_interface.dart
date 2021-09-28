@@ -1,8 +1,12 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:knowme/events/stream_event.dart';
+import 'package:knowme/models/chat_room_model.dart';
 import 'package:knowme/models/entry_quiz_model.dart';
 import 'package:knowme/models/interactions_model.dart';
+import 'package:knowme/models/message_model.dart';
 import 'package:knowme/models/post_model.dart';
 import 'package:knowme/models/user_model.dart';
 
@@ -62,4 +66,12 @@ abstract class DbRepositoryInterface {
   Future<InteractionsModel> sendInteraction(InteractionsModel interactionsModel);
 
   Future<List<String>> getFriends(String id);
+
+  Future<MessageModel> sendMessage(String userId, String message, int type, {String? src});
+
+  Future<List<ChatRoomModel>> getChatChannels(String userId);
+
+  Future<List<MessageModel>> getMessages(List<int> roomIds);
+
+  StreamController<StreamEvent> roomListenMessages(int roomIds);
 }

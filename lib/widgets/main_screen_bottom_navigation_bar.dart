@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:knowme/controller/main_screen/session_controller.dart';
@@ -44,6 +45,12 @@ class _MainScreenBottomNavigationBarState extends State<MainScreenBottomNavigati
               Icons.search,
             ),
             label: 'Explorar',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              CupertinoIcons.chat_bubble_2_fill,
+            ),
+            label: 'Chats',
           ),
           BottomNavigationBarItem(
               label: 'Perfil',

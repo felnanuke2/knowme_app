@@ -5,6 +5,7 @@ import 'package:knowme/controller/main_screen/session_controller.dart';
 import 'package:knowme/screens/main_screen/tabs/exploring_tab.dart';
 import 'package:knowme/screens/main_screen/tabs/feed_tab.dart';
 import 'package:knowme/screens/main_screen/tabs/home_tab.dart';
+import 'package:knowme/screens/main_screen/tabs/messages_tab.dart';
 import 'package:knowme/screens/main_screen/tabs/profile_tab.dart';
 import 'package:get/instance_manager.dart';
 import 'package:knowme/screens/received_interactions_screen.dart';
@@ -77,6 +78,7 @@ class MainScreen extends StatelessWidget {
                       HomeTab(),
                       FeedTab(),
                       ExploringTab(),
+                      MessagesTab(),
                       ProfileTab(),
                     ],
                   ),
