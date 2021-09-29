@@ -25,13 +25,6 @@ class ChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ChatController>(
-      initState: (state) {
-        print('init');
-        Get.find<ChatController>().onRegisterListen(room.id);
-      },
-      dispose: (state) {
-        state.controller?.closeStream();
-      },
       builder: (controller) => Scaffold(
         body: SafeArea(
           child: Column(
@@ -76,7 +69,9 @@ class ChatScreen extends StatelessWidget {
                         reverse: true,
                         itemCount: controller.chatsMap[room.id]?.length ?? 0,
                         itemBuilder: (context, index) {
-                          final itemChats = controller.chatsMap[room.id]!.reversed.toList()[index];
+                          final itemChats = controller.chatsMap[room.id]![index];
+                          if (itemChats.status != 2 && otherUser.id == itemChats.createdBy)
+                            controller.addMessagesForRead(itemChats.id);
                           return MessageTile(
                             messageModel: itemChats,
                             sendByMe: itemChats.createdBy == controller.currentUserID,
@@ -119,8 +114,8 @@ class ChatScreen extends StatelessWidget {
                             )
                           : Obx(() => controller.text.value.isNotEmpty
                               ? IconButton(
-                                  onPressed: () =>
-                                      controller.sendTextMessage(otherUser.id!, room.id),
+                                  onPressed: () => controller.sendTextMessage(otherUser.id!,
+                                      chatRoomID: room.id),
                                   icon: Icon(
                                     Icons.send,
                                     color: Get.theme.primaryColor,

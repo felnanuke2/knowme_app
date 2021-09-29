@@ -31,6 +31,7 @@ class _FeedTabState extends State<FeedTab> {
             itemBuilder: (context, index) {
               final itemPost = controller.posts[index];
               return PostWidget(
+                controller: controller,
                 postModel: itemPost,
                 key: Key(itemPost.id),
                 thisIndex: index,
@@ -46,6 +47,7 @@ class _FeedTabState extends State<FeedTab> {
         itemBuilder: (context, index) {
           final itemPost = controller.posts[index];
           return PostWidget(
+            controller: controller,
             postModel: itemPost,
             key: Key(index.toString()),
             thisIndex: index,

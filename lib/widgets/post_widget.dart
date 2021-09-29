@@ -3,26 +3,27 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/instance_manager.dart';
+import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
+import 'package:timeago/timeago.dart' as timeago;
 import 'package:video_player/video_player.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 import 'package:knowme/controller/main_screen/session_controller.dart';
 import 'package:knowme/models/post_model.dart';
 import 'package:knowme/models/user_model.dart';
-import 'package:get/state_manager.dart';
-import 'package:get/route_manager.dart';
-import 'package:timeago/timeago.dart' as timeago;
-import 'package:visibility_detector/visibility_detector.dart';
 
 class PostWidget extends StatefulWidget {
   const PostWidget({
     Key? key,
     required this.postModel,
     required this.thisIndex,
+    required this.controller,
   }) : super(key: key);
   final PostModel postModel;
 
   final int thisIndex;
+  final SesssionController controller;
 
   @override
   _PostWidgetState createState() => _PostWidgetState();
@@ -193,7 +194,14 @@ class _PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMi
               Icons.adaptive.more,
               color: Get.theme.primaryColor,
             ),
-            itemBuilder: (context) => [],
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                  child: TextButton.icon(
+                onPressed: () => this.widget.controller.openChat(this.widget.postModel.userModel),
+                icon: Text('Enviar mensagem'),
+                label: Icon(Icons.send),
+              ))
+            ],
           )
         ],
       ),

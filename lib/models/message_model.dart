@@ -38,7 +38,7 @@ class MessageModel {
   factory MessageModel.fromMap(Map<String, dynamic> map) {
     return MessageModel(
         id: map['id'] is int ? map['id'] : int.parse(map['id']),
-        createdAt: DateTime.parse(map['created_at']),
+        createdAt: DateTime.parse(map['created_at']).toLocal(),
         updatedAt: DateTime.parse(map['updated_at']),
         roomId: map['room_id'] is int ? map['room_id'] : int.parse(map['room_id']),
         type: map['type'],

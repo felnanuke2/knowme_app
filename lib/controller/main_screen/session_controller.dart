@@ -2,18 +2,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart' as router;
 import 'package:get/state_manager.dart';
+import 'package:knowme/controller/chat_controler.dart';
 import 'package:knowme/errors/requestError.dart';
 
 import 'package:knowme/interface/db_repository_interface.dart';
 import 'package:knowme/interface/user_auth_interface.dart';
+import 'package:knowme/models/chat_room_model.dart';
 import 'package:knowme/models/entry_quiz_model.dart';
 import 'package:knowme/models/interactions_model.dart';
 import 'package:knowme/models/post_model.dart';
+import 'package:knowme/models/user_model.dart';
+import 'package:knowme/screens/chat_screen.dart';
 import 'package:knowme/screens/complet_register_screen.dart';
 import 'package:knowme/screens/create_post_screen.dart';
 import 'package:knowme/screens/settings/quiz/quiz_settings_screen.dart';
 import 'package:knowme/screens/settings/settings_screen.dart';
 import 'package:knowme/widgets/image_picker_bottom_sheet.dart';
+import 'package:get/instance_manager.dart';
 
 class SesssionController extends GetxController {
   var pageController = PageController();
@@ -25,6 +30,7 @@ class SesssionController extends GetxController {
   final friends = <String>[].obs;
   final quizesToAnswer = <EntryQuizModel>[].obs;
   final posts = <PostModel>[].obs;
+  late ChatController chatController;
 
   bool isLoadingCurrentUser = true;
 
@@ -35,6 +41,7 @@ class SesssionController extends GetxController {
     _initUserData();
     getReceivedInteractions();
     getPosts();
+    chatController = Get.put(ChatController(sesssionController: this));
   }
   _initUserData() async {
     if (userAuthRepository.currentUserdataCompleter.isCompleted) {
@@ -146,4 +153,30 @@ class SesssionController extends GetxController {
 
   List<InteractionsModel> get aceptedInteractions =>
       interactionsSend.where((element) => element.status == 1).toList();
+
+  openChat(UserModel? userModel) async {
+    if (userModel == null) return;
+    pageController.jumpToPage(3);
+    Get.back();
+    try {
+      _openChatCreen(userModel);
+    } catch (e) {
+      final message = await chatController.sendTextMessage(
+        userModel.id!,
+        messageTextInput: '',
+      );
+      if (message == null) return;
+      _openChatCreen(userModel);
+    }
+  }
+
+  _openChatCreen(UserModel userModel) {
+    final room = chatController.chatRooms.firstWhere(
+        (element) => element.user_a.id == userModel.id || element.user_b.id == userModel.id);
+
+    Get.to(() => ChatScreen(
+        chatList: chatController.chatsMap[room.id] ?? [],
+        room: room,
+        currentUserId: userAuthRepository.currentUser!.id!));
+  }
 }

@@ -16,20 +16,15 @@ class _MessagesTabState extends State<MessagesTab> with AutomaticKeepAliveClient
   Widget build(BuildContext context) {
     super.build(context);
     return GetBuilder<ChatController>(
-      init: ChatController(sesssionController: Get.find()),
       builder: (controller) => Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          child: Icon(Icons.person),
-        ),
         body: Container(
           child: Obx(() => RefreshIndicator(
                 onRefresh: controller.onRefresh,
                 child: ListView.builder(
                   padding: EdgeInsets.only(bottom: 80),
-                  itemCount: controller.listChat.length,
+                  itemCount: controller.chatRooms.length,
                   itemBuilder: (context, index) {
-                    final roomItem = controller.listChat[index];
+                    final roomItem = controller.chatRooms[index];
 
                     return Obx(() {
                       final lastMessage = controller.chatsMap[roomItem.id];

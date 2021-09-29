@@ -71,7 +71,9 @@ abstract class DbRepositoryInterface {
 
   Future<List<ChatRoomModel>> getChatChannels(String userId);
 
-  Future<List<MessageModel>> getMessages(List<int> roomIds);
+  Future<List<MessageModel>> getMessages(int roomIds);
 
-  StreamController<StreamEvent> roomListenMessages(int roomIds);
+  StreamController<StreamEvent> chatRoomListen(String uid);
+
+  Future<void> readMessage(int messageId);
 }

@@ -60,14 +60,29 @@ class ChatConvesationTile extends StatelessWidget {
                               style: GoogleFonts.montserrat(
                                   fontWeight: FontWeight.bold, fontSize: 15)),
                         ),
-                        Text(timeago.format(listMessages.last.createdAt, locale: 'pt'),
-                            maxLines: 1, style: GoogleFonts.montserrat(fontSize: 12)),
+                        Text(date, maxLines: 1, style: GoogleFonts.montserrat(fontSize: 12)),
                       ],
                     ),
-                    Text(
-                      listMessages.last.text,
-                      maxLines: 2,
-                      style: GoogleFonts.openSans(),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            text,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.openSans(),
+                          ),
+                        ),
+                        if (unreadMessages != '0')
+                          CircleAvatar(
+                            radius: 14,
+                            child: Text(
+                              unreadMessages,
+                              style: GoogleFonts.openSans(fontSize: 12),
+                              maxLines: 1,
+                            ),
+                          )
+                      ],
                     )
                   ],
                 ),
@@ -82,5 +97,25 @@ class ChatConvesationTile extends StatelessWidget {
   UserModel get otherUser {
     if (chatRoom.user_a.id == currentUserId) return chatRoom.user_b;
     return chatRoom.user_a;
+  }
+
+  String get unreadMessages {
+    return listMessages
+        .where((element) => element.status != 2 && element.createdBy == otherUser.id)
+        .toList()
+        .length
+        .toString();
+  }
+
+  String get text {
+    if (listMessages.isEmpty) return '';
+    return listMessages.first.text;
+  }
+
+  String get date {
+    if (listMessages.isEmpty) return '';
+    return timeago
+        .format(listMessages.first.createdAt, locale: 'pt')
+        .replaceAll('há poucos segundos', 'agora');
   }
 }

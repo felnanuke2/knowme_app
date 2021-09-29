@@ -11,21 +11,37 @@ import 'package:knowme/models/chat_room_model.dart';
 import 'package:knowme/models/message_model.dart';
 
 class ChatController extends GetxController {
-  final listChat = <ChatRoomModel>[].obs;
+  final chatRooms = <ChatRoomModel>[].obs;
   final chatsMap = <int, RxList<MessageModel>>{}.obs;
   final SesssionController sesssionController;
   late DbRepositoryInterface repository;
   String get currentUserID => sesssionController.userAuthRepository.currentUser!.id!;
   final messageTEC = TextEditingController();
   final sendingMessage = false.obs;
-  StreamController? stream;
-
+  StreamController? roomStream;
+  final messagesForRead = <int>[];
+  late Timer timer;
   final text = ''.obs;
 
   ChatController({
     required this.sesssionController,
   }) {
     repository = sesssionController.repository;
+    onRefresh();
+    _readMessagesLoop();
+  }
+
+  List<String> get usersChatsUids {
+    final list = <String>[];
+    list.addAll(chatRooms.map((element) => element.user_a.id!));
+    list.addAll(chatRooms.map((element) => element.user_b.id!));
+    return list;
+  }
+
+  disponse() {
+    timer.cancel();
+    messageTEC.dispose();
+    closeStream();
   }
 
   Future<void> onRefresh() async {
@@ -36,26 +52,34 @@ class ChatController extends GetxController {
   _getChatRooms() async {
     final response =
         await repository.getChatChannels(sesssionController.userAuthRepository.currentUser!.id!);
-    listChat.clear();
-    listChat.addAll(response);
+    chatRooms.clear();
+    chatRooms.addAll(response);
+    onRegisterListen();
   }
 
   _getMessages() async {
-    for (var i = 0; i < listChat.length; i++) {
-      final listChats = await repository.getMessages([listChat[i].id]);
-      chatsMap[listChat[i].id] = listChats.obs;
+    for (var i = 0; i < chatRooms.length; i++) {
+      final listChats = await repository.getMessages(chatRooms[i].id);
+      chatsMap[chatRooms[i].id] = listChats.obs;
     }
   }
 
-  void sendTextMessage(String userid, int chatRoomID) async {
+  Future<MessageModel?> sendTextMessage(String userid,
+      {int? chatRoomID, String? messageTextInput}) async {
     try {
       sendingMessage.value = true;
       final messageText = messageTEC.text;
 
       messageTEC.clear();
 
-      final message = await repository.sendMessage(userid, messageText, 0);
-      chatsMap[chatRoomID]?.add(message);
+      final message = await repository.sendMessage(userid, messageTextInput ?? messageText, 0);
+      if (chatRoomID != null) {
+        chatsMap[chatRoomID]?.insert(0, message);
+      } else {
+        await onRefresh();
+      }
+      sendingMessage.value = false;
+      return message;
     } on RequestError catch (e) {
       print(e);
     }
@@ -68,19 +92,51 @@ class ChatController extends GetxController {
     text.value = value;
   }
 
-  void onRegisterListen(int roomId) {
-    stream = repository.roomListenMessages(roomId);
-    stream?.stream.listen((event) async {
+  void onRegisterListen() {
+    if (roomStream != null) return;
+    this.roomStream =
+        repository.chatRoomListen(sesssionController.userAuthRepository.currentUser!.id!);
+    roomStream?.stream.listen((event) async {
       if (event is StreamEventUpdate) {
-        final response = await repository.getMessages([roomId]);
-        chatsMap[roomId] = response.obs;
+        final data = event.data;
+        if (data is Map) {
+          if (data.containsKey('id')) {
+            final roomId = data['id'];
+            final listChat = await repository.getMessages(roomId);
+            chatsMap[roomId] = listChat.obs;
+            final listRoomsId = chatRooms.map((element) => element.id).toList();
+            _getChatRooms();
+          }
+        }
       }
     });
   }
 
-  void closeStream() {
-    stream?.add(StreamEventCancel());
-    stream?.close();
-    stream = null;
+  void closeStream() async {
+    this.roomStream?.add(StreamEventCancel());
+    await this.roomStream?.close();
+    this.roomStream = null;
+  }
+
+  void addMessagesForRead(int messageId) {
+    if (messagesForRead.contains(messageId)) return;
+    messagesForRead.add(messageId);
+  }
+
+  bool isSending = false;
+  void _readMessagesLoop() {
+    Timer.periodic(Duration(seconds: 1), (timer) async {
+      if (isSending) return;
+      if (messagesForRead.isEmpty) return;
+      try {
+        isSending = true;
+        final messageId = messagesForRead.first;
+        await repository.readMessage(messageId);
+        messagesForRead.remove(messageId);
+      } catch (e) {
+        print(e.toString());
+      }
+      isSending = false;
+    });
   }
 }

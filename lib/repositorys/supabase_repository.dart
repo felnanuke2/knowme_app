@@ -1,9 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:typed_data';
-
 import 'dart:io';
-import 'package:get/get_connect/http/src/response/response.dart';
 import 'package:knowme/errors/requestError.dart';
 import 'package:knowme/events/stream_event.dart';
 import 'package:knowme/interface/db_repository_interface.dart';
@@ -269,6 +266,7 @@ class SupabaseRepository implements DbRepositoryInterface {
         .select(
             'id,user_a (profileName, completName, profileImage, uid ),user_b (profileName, completName, profileImage, uid ),created_at,status')
         .or('user_a.eq.$userId,user_b.eq.$userId')
+        .order('updated_at', ascending: false)
         .execute();
     if (response.error != null) throw RequestError(message: response.error?.message ?? '');
     final listRooms = List.from(response.data).map((e) => ChatRoomModel.fromMap(e)).toList();
@@ -276,36 +274,38 @@ class SupabaseRepository implements DbRepositoryInterface {
   }
 
   @override
-  Future<List<MessageModel>> getMessages(List<int> roomId) async {
-    final response = await client
-        .from('messages')
-        .select()
-        .in_('room_id', roomId)
-        .order('created_at', ascending: true)
-        .execute();
+  Future<List<MessageModel>> getMessages(int roomId) async {
+    final response = await client.rpc('get_last_messages', params: {'room': roomId}).execute();
     if (response.error != null) throw RequestError(message: response.error?.message ?? '');
     final listMessages = List.from(response.data).map((e) => MessageModel.fromMap(e)).toList();
     return listMessages;
   }
 
   @override
-  StreamController<StreamEvent> roomListenMessages(int roomIds) {
-    final eventStream = StreamController<StreamEvent>.broadcast();
-    final response = client.from('messages').on(SupabaseEventTypes.all, (payload) {
-      print('called payload');
-      eventStream.add(StreamEventUpdate()..data = payload.newRecord);
-    }).subscribe(_onsubscribe);
-    eventStream.stream.listen((event) {
-      if (event is StreamEventCancel) {
-        client.removeSubscription(response);
-      }
-    });
-
-    return eventStream;
+  Future<void> readMessage(int messageId) async {
+    final response = await client.rpc('read_message', params: {'message_id': messageId}).execute();
+    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
   }
 
-  void _onsubscribe(String event, {String? errorMsg}) {
-    print(event);
+  @override
+  StreamController<StreamEvent> chatRoomListen(String uid) {
+    final stream = StreamController<StreamEvent>.broadcast();
+    final responseA = client.from('chat_room:user_a=eq.$uid').on(SupabaseEventTypes.all, (payload) {
+      stream.add(StreamEventUpdate()..data = payload.newRecord);
+    }).subscribe(_onSubscribe);
+    final responseB = client.from('chat_room:user_b=eq.$uid').on(SupabaseEventTypes.all, (payload) {
+      stream.add(StreamEventUpdate()..data = payload.newRecord);
+    }).subscribe(_onSubscribe);
+    stream.stream.listen((event) {
+      if (event is StreamEventCancel) {
+        client.removeSubscription(responseA);
+        client.removeSubscription(responseB);
+      }
+    });
+    return stream;
+  }
+
+  void _onSubscribe(String event, {String? errorMsg}) {
     print(errorMsg);
   }
 }
