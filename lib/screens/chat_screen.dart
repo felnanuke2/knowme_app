@@ -75,6 +75,8 @@ class ChatScreen extends StatelessWidget {
                           return MessageTile(
                             messageModel: itemChats,
                             sendByMe: itemChats.createdBy == controller.currentUserID,
+                            controller: controller,
+                            key: Key(itemChats.id.toString()),
                           );
                         },
                       ))),
@@ -84,8 +86,8 @@ class ChatScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(10.0),
                   child: Row(
                     children: [
-                      PopupMenuButton(
-                        itemBuilder: (context) => [],
+                      IconButton(
+                        onPressed: () => controller.sendMediaMessage(otherUser.id!, room.id),
                         icon: Icon(
                           Icons.attach_file,
                           color: Get.theme.primaryColor,

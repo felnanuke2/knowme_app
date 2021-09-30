@@ -42,7 +42,9 @@ class ImageServices {
     await file.writeAsBytes(imageByte);
     await file.create();
     var cropedImage = await ImageCropper.cropImage(
-        aspectRatio: CropAspectRatio(ratioX: ratioX ?? 1, ratioY: ratioY ?? 1),
+        aspectRatio: ratioY != null && ratioX != null
+            ? CropAspectRatio(ratioX: ratioX, ratioY: ratioY)
+            : null,
         sourcePath: file.path,
         cropStyle: circular ? CropStyle.circle : CropStyle.rectangle,
         androidUiSettings: AndroidUiSettings(toolbarTitle: 'Cortar imagem'),

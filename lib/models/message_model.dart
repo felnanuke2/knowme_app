@@ -44,6 +44,7 @@ class MessageModel {
         type: map['type'],
         text: map['text'],
         createdBy: map['created_by'],
+        src: map['src'],
         status: map['status']);
   }
 

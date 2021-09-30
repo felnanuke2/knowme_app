@@ -308,4 +308,23 @@ class SupabaseRepository implements DbRepositoryInterface {
   void _onSubscribe(String event, {String? errorMsg}) {
     print(errorMsg);
   }
+
+  @override
+  Future<String> sendImage(int roomID, File file) async {
+    final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    final response =
+        await client.storage.from('messages.files').upload('$roomID/images/$fileName', file);
+    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
+    return response.data!;
+  }
+
+  @override
+  Future<String> getImageUrl(String src) async {
+    final response = await client.storage
+        .from('messages.files')
+        .createSignedUrl(src.replaceAll('messages.files/', ''), 900);
+    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
+
+    return response.data!;
+  }
 }

@@ -76,4 +76,8 @@ abstract class DbRepositoryInterface {
   StreamController<StreamEvent> chatRoomListen(String uid);
 
   Future<void> readMessage(int messageId);
+
+  Future<String> sendImage(int roomID, File file);
+
+  Future<String> getImageUrl(String src);
 }

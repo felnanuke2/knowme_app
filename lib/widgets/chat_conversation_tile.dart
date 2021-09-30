@@ -5,6 +5,7 @@ import 'package:get/route_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
+import 'package:knowme/controller/chat_controler.dart';
 import 'package:knowme/models/chat_room_model.dart';
 import 'package:knowme/models/message_model.dart';
 import 'package:knowme/models/user_model.dart';
@@ -14,11 +15,13 @@ class ChatConvesationTile extends StatelessWidget {
   final ChatRoomModel chatRoom;
   final String currentUserId;
   final List<MessageModel> listMessages;
+  final ChatController controller;
   const ChatConvesationTile({
     Key? key,
     required this.chatRoom,
     required this.currentUserId,
     required this.listMessages,
+    required this.controller,
   }) : super(key: key);
 
   @override
@@ -100,14 +103,20 @@ class ChatConvesationTile extends StatelessWidget {
   }
 
   String get unreadMessages {
-    return listMessages
+    final unread = listMessages
         .where((element) => element.status != 2 && element.createdBy == otherUser.id)
-        .toList()
-        .length
+        .toList();
+
+    return (unread.length -
+            unread
+                .where((element) => controller.messagesForRead.contains(element.id))
+                .toList()
+                .length)
         .toString();
   }
 
   String get text {
+    if (listMessages.first.type == 1) return 'imagem';
     if (listMessages.isEmpty) return '';
     return listMessages.first.text;
   }

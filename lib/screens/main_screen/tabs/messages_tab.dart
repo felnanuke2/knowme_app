@@ -29,6 +29,7 @@ class _MessagesTabState extends State<MessagesTab> with AutomaticKeepAliveClient
                     return Obx(() {
                       final lastMessage = controller.chatsMap[roomItem.id];
                       return ChatConvesationTile(
+                        controller: controller,
                         chatRoom: roomItem,
                         listMessages: lastMessage ?? [],
                         currentUserId: controller.currentUserID,
