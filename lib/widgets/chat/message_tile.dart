@@ -50,7 +50,7 @@ class _MessageTileState extends State<MessageTile> {
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
             child: Container(
               constraints: BoxConstraints(
-                  maxWidth: widget.messageModel.type == 2 ? Get.width : Get.width * 0.70,
+                  maxWidth: widget.messageModel.type == 3 ? Get.width : Get.width * 0.70,
                   minWidth: 40),
               child: Wrap(
                 alignment: WrapAlignment.end,

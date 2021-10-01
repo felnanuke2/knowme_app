@@ -1,12 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
-
-import 'package:get/route_manager.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:knowme/models/image_upload_model.dart';
-import 'package:knowme/widgets/trimmer_widget.dart';
-import 'package:video_trimmer/video_trimmer.dart';
 
 class ImageServices {
   static final _imagePicker = ImagePicker();
@@ -56,14 +52,10 @@ class ImageServices {
   }
 
   static Future<dynamic> pickVideo(ImageSource source) async {
-    final _trimmer = Trimmer();
     final pickedVideo =
         await _imagePicker.pickVideo(source: source, preferredCameraDevice: CameraDevice.front);
     if (pickedVideo == null) return;
-    final file = File(pickedVideo.path);
-    _trimmer.loadVideo(videoFile: file);
 
-    final video = Get.to(() => TrimmerEditorScreen(trimmer: _trimmer));
-    return video;
+    return pickedVideo.path;
   }
 }

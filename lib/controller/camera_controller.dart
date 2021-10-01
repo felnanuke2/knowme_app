@@ -9,11 +9,11 @@ import 'package:flutter/services.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
 import 'package:knowme/services/image_service.dart';
-import 'package:video_trimmer/video_trimmer.dart';
+
 
 class CameraController extends GetxController {
   final videoDuration = DateTime.now().obs;
-  final _trimmerController = Trimmer();
+
   final isRec = false.obs;
   final _videoController = VideoController();
   final _pictureController = PictureController();
