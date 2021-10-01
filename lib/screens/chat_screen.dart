@@ -140,7 +140,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                       otherUserId: otherUser.id!,
                                       roomId: widget.room.id,
                                       controller: controller,
-                                      recorder: controller.soundRecorder,
                                     )
                                   : TextFormField(
                                       controller: controller.messageTEC,

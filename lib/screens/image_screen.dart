@@ -23,11 +23,6 @@ class _ImageScreenState extends State<ImageScreen> {
   void initState() {
     image = CachedNetworkImageProvider(widget.imageUrl, cacheKey: widget.cacheKey);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack, overlays: [SystemUiOverlay.bottom]);
-    PaletteGenerator.fromImageProvider(image, maximumColorCount: 5, timeout: Duration(seconds: 3))
-        .then((value) {
-      color = value.dominantColor?.color;
-      setState(() {});
-    });
     super.initState();
   }
 

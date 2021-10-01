@@ -15,12 +15,11 @@ import 'package:knowme/controller/chat_controler.dart';
 class RecorderTile extends StatefulWidget {
   RecorderTile({
     Key? key,
-    required this.recorder,
     required this.controller,
     required this.otherUserId,
     required this.roomId,
   }) : super(key: key);
-  final FlutterSoundRecorder recorder;
+
   final ChatController controller;
   final String otherUserId;
   final int roomId;
@@ -43,6 +42,7 @@ class _RecorderTileState extends State<RecorderTile> {
 
   final duration = DateTime(0).obs;
   final isPaused = false.obs;
+  String? path;
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +77,7 @@ class _RecorderTileState extends State<RecorderTile> {
                   style: GoogleFonts.openSans(fontSize: 16, fontWeight: FontWeight.w600))),
           Obx(() => isPaused.value
               ? SizedBox.shrink()
-              : IconButton(onPressed: stopRecorder, icon: Icon(Icons.stop_rounded))),
+              : IconButton(onPressed: _stopRecoreder, icon: Icon(Icons.stop_rounded))),
           Obx(() => !isPaused.value
               ? SizedBox.shrink()
               : IconButton(
@@ -92,13 +92,13 @@ class _RecorderTileState extends State<RecorderTile> {
   }
 
   Future<Track> _load(BuildContext context) async {
-    final path = await this.widget.recorder.stopRecorder();
     final track = Track(trackPath: path);
     return track;
   }
 
-  void stopRecorder() async {
-    final path = await this.widget.recorder.stopRecorder();
+  void _stopRecoreder() async {
+    path = await widget.controller.stopRecorder();
+    if (path == null) return;
     isPaused.value = true;
   }
 }

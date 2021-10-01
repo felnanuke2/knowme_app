@@ -17,6 +17,7 @@ import 'package:knowme/screens/video_screen.dart';
 import 'package:knowme/widgets/image_picker_bottom_sheet.dart';
 import 'package:get/route_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:record/record.dart';
 
 class ChatController extends GetxController {
   final chatRooms = <ChatRoomModel>[].obs;
@@ -30,8 +31,8 @@ class ChatController extends GetxController {
   final messagesForRead = <int>[];
   final text = ''.obs;
   final isRecAudio = false.obs;
-  FlutterSoundRecorder soundRecorder = FlutterSoundRecorder();
-  String? recorderName;
+  final record = Record();
+  String? recorderPath;
   final haveNoMoreMessages = false.obs;
 
   ChatController({
@@ -56,7 +57,6 @@ class ChatController extends GetxController {
 
   disposeChatScreen() async {
     isRecAudio.value = false;
-    await soundRecorder.stopRecorder();
   }
 
   Future<void> onRefresh() async {
@@ -112,10 +112,8 @@ class ChatController extends GetxController {
   void recAudio() async {
     final permissionStatus = await requestMicPermissions();
     if (!permissionStatus) return;
-    await soundRecorder.openAudioSession();
-    recorderName = DateTime.now().millisecondsSinceEpoch.toString();
-    await soundRecorder.startRecorder(
-        toFile: recorderName, sampleRate: 128000, bitRate: 128000, numChannels: 2);
+    recorderPath = DateTime.now().millisecondsSinceEpoch.toString();
+    await record.start();
     isRecAudio.value = true;
   }
 
@@ -230,9 +228,9 @@ class ChatController extends GetxController {
   void sendAudio(String uid, int roomId) async {
     isRecAudio.value = false;
     this.sendingMessage.value = true;
-    final path = await soundRecorder.stopRecorder();
-    if (path == null) return;
-    final src = await repository.sendAudio(roomId, File(path));
+
+    if (recorderPath == null) return;
+    final src = await repository.sendAudio(roomId, File(recorderPath!));
 
     messageTEC.clear();
     await repository.sendMessage(uid, '', 3, src: src);
@@ -240,8 +238,15 @@ class ChatController extends GetxController {
   }
 
   void deletAudio() async {
-    await soundRecorder.deleteRecord(fileName: recorderName!);
+    if (recorderPath != null) {
+      File(recorderPath!)..delete();
+    }
+
     isRecAudio.value = false;
-    await soundRecorder.closeAudioSession();
+  }
+
+  Future<String?> stopRecorder() async {
+    recorderPath = await record.stop();
+    return recorderPath;
   }
 }

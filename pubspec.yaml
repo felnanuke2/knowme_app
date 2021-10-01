@@ -64,6 +64,7 @@ dependencies:
   permission_handler: ^8.1.6
   extended_image: ^5.1.2
   palette_generator: ^0.3.1
+  record: ^3.0.0
   
  
   
