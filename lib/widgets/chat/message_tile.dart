@@ -8,6 +8,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:knowme/controller/chat_controler.dart';
 import 'package:knowme/models/message_model.dart';
+import 'package:knowme/screens/image_screen.dart';
+import 'package:knowme/widgets/chat/audio_tile.dart';
 
 class MessageTile extends StatefulWidget {
   final MessageModel messageModel;
@@ -47,9 +49,13 @@ class _MessageTileState extends State<MessageTile> {
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
             child: Container(
-              constraints: BoxConstraints(maxWidth: Get.width * 0.70, minWidth: 40),
+              constraints: BoxConstraints(
+                  maxWidth: widget.messageModel.type == 2 ? Get.width : Get.width * 0.70,
+                  minWidth: 40),
               child: Wrap(
                 alignment: WrapAlignment.end,
+                crossAxisAlignment: WrapCrossAlignment.end,
+                runSpacing: 12,
                 children: [
                   sourceWidget,
                   Text(
@@ -57,14 +63,18 @@ class _MessageTileState extends State<MessageTile> {
                     style: GoogleFonts.openSans(),
                   ),
                   Container(
-                    width: 68,
+                    constraints: BoxConstraints(minWidth: 68, maxWidth: 150),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         SizedBox(
                           width: 8,
                         ),
                         Text(
-                          formatDate(widget.messageModel.createdAt, [HH, ':', mm]),
+                          DateTime.now().difference(widget.messageModel.createdAt).inHours >= 24
+                              ? formatDate(widget.messageModel.createdAt,
+                                  [dd, '/', mm, '/', yyyy, ' ', HH, ':', mm])
+                              : formatDate(widget.messageModel.createdAt, [HH, ':', mm]),
                           textAlign: TextAlign.end,
                           style: GoogleFonts.openSans(color: Colors.grey.shade800.withOpacity(0.8)),
                         ),
@@ -117,18 +127,47 @@ class _MessageTileState extends State<MessageTile> {
 
   Widget get sourceWidget {
     if (widget.messageModel.type == 0) return SizedBox.shrink();
+    if (widget.messageModel.type == 3)
+      return AudioMessageTile(
+          audioPath: widget.messageModel.src!,
+          controller: widget.controller.sesssionController,
+          key: Key(widget.messageModel.id.toString()));
+    if (widget.messageModel.type == 2)
+      return Container(
+        width: 120,
+        height: 40,
+        child: ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18))),
+          onPressed: () => this.widget.controller.openVideoScreen(widget.messageModel.src),
+          icon: Text('Video'),
+          label: Icon(Icons.play_arrow_rounded),
+        ),
+      );
     if (widget.messageModel.type == 1)
       return FutureBuilder<String>(
           future: _future,
           builder: (context, snapshot) {
-            return CachedNetworkImage(
-              key: Key(snapshot.data ?? widget.messageModel.src!),
-              imageUrl: snapshot.data ?? widget.messageModel.src!,
-              cacheKey: widget.messageModel.id.toString(),
-              errorWidget: (context, url, error) {
-                return CircularProgressIndicator.adaptive();
-              },
-              progressIndicatorBuilder: (context, url, progress) => LinearProgressIndicator(),
+            return InkWell(
+              onTap: snapshot.hasData
+                  ? () => Get.to(() => ImageScreen(
+                        imageUrl: snapshot.data ?? '',
+                        imageKey: Key('abc'),
+                        cacheKey: widget.messageModel.id.toString(),
+                      ))
+                  : null,
+              child: Hero(
+                tag: snapshot.data ?? '',
+                child: CachedNetworkImage(
+                  key: Key(snapshot.data ?? widget.messageModel.src ?? ''),
+                  imageUrl: snapshot.data ?? widget.messageModel.src!,
+                  cacheKey: widget.messageModel.id.toString(),
+                  errorWidget: (context, url, error) {
+                    return CircularProgressIndicator.adaptive();
+                  },
+                  progressIndicatorBuilder: (context, url, progress) => LinearProgressIndicator(),
+                ),
+              ),
             );
           });
     return SizedBox.shrink();

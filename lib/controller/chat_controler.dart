@@ -3,6 +3,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_sound/flutter_sound.dart';
+import 'package:flutter_sound/public/flutter_sound_player.dart';
 import 'package:get/state_manager.dart';
 
 import 'package:knowme/controller/main_screen/session_controller.dart';
@@ -11,8 +13,10 @@ import 'package:knowme/events/stream_event.dart';
 import 'package:knowme/interface/db_repository_interface.dart';
 import 'package:knowme/models/chat_room_model.dart';
 import 'package:knowme/models/message_model.dart';
+import 'package:knowme/screens/video_screen.dart';
 import 'package:knowme/widgets/image_picker_bottom_sheet.dart';
 import 'package:get/route_manager.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ChatController extends GetxController {
   final chatRooms = <ChatRoomModel>[].obs;
@@ -24,8 +28,11 @@ class ChatController extends GetxController {
   final sendingMessage = false.obs;
   StreamController? roomStream;
   final messagesForRead = <int>[];
-  late Timer timer;
   final text = ''.obs;
+  final isRecAudio = false.obs;
+  FlutterSoundRecorder soundRecorder = FlutterSoundRecorder();
+  String? recorderName;
+  final haveNoMoreMessages = false.obs;
 
   ChatController({
     required this.sesssionController,
@@ -42,10 +49,14 @@ class ChatController extends GetxController {
     return list;
   }
 
-  disponse() {
-    timer.cancel();
+  disponse() async {
     messageTEC.dispose();
     closeStream();
+  }
+
+  disposeChatScreen() async {
+    isRecAudio.value = false;
+    await soundRecorder.stopRecorder();
   }
 
   Future<void> onRefresh() async {
@@ -66,6 +77,14 @@ class ChatController extends GetxController {
       final listChats = await repository.getMessages(chatRooms[i].id);
       chatsMap[chatRooms[i].id] = listChats.obs;
     }
+  }
+
+  getMessagesBefore(int roomId, int lastMessageid) async {
+    final listMessagesBefore = await repository.getMessagesBefore(roomId, lastMessageid);
+    if (listMessagesBefore.isEmpty) {
+      haveNoMoreMessages.value = true;
+    }
+    chatsMap[roomId]?.addAll(listMessagesBefore);
   }
 
   Future<MessageModel?> sendTextMessage(String userid,
@@ -90,7 +109,15 @@ class ChatController extends GetxController {
     sendingMessage.value = false;
   }
 
-  void recAudio() {}
+  void recAudio() async {
+    final permissionStatus = await requestMicPermissions();
+    if (!permissionStatus) return;
+    await soundRecorder.openAudioSession();
+    recorderName = DateTime.now().millisecondsSinceEpoch.toString();
+    await soundRecorder.startRecorder(
+        toFile: recorderName, sampleRate: 128000, bitRate: 128000, numChannels: 2);
+    isRecAudio.value = true;
+  }
 
   void onMessageChange(String value) {
     text.value = value;
@@ -108,7 +135,7 @@ class ChatController extends GetxController {
             final roomId = data['id'];
             final listChat = await repository.getMessages(roomId);
             chatsMap[roomId] = listChat.obs;
-            final listRoomsId = chatRooms.map((element) => element.id).toList();
+
             _getChatRooms();
           }
         }
@@ -162,6 +189,15 @@ class ChatController extends GetxController {
             File(Directory.systemTemp.path + '/${DateTime.now()}.png')..writeAsBytesSync(source));
       } catch (e) {}
     }
+    if (source is String) {
+      try {
+        type = 2;
+        src = await repository.sendVideo(roomID, File(source));
+      } catch (e) {
+        print(e.toString());
+      }
+    }
+
     this.sendingMessage.value = false;
     if (src != null) {
       return {'type': type, 'src': src};
@@ -169,12 +205,43 @@ class ChatController extends GetxController {
   }
 
   sendMediaMessage(String toUser, int roomId) async {
+    this.sendingMessage.value = true;
+    final message = messageTEC.text;
     final picked = await _openSourcePicker(roomId);
     if (picked == null) return;
-    final message = messageTEC.text;
     messageTEC.clear();
-    this.sendingMessage.value = false;
     await repository.sendMessage(toUser, message, picked['type'], src: picked['src']);
     this.sendingMessage.value = false;
+  }
+
+  openVideoScreen(String? src) {
+    Get.to(() => VideoScreen(src: src!, controller: sesssionController));
+  }
+
+  Future<bool> requestMicPermissions() async {
+    final status = await Permission.microphone.request();
+    if (status.isGranted) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  void sendAudio(String uid, int roomId) async {
+    isRecAudio.value = false;
+    this.sendingMessage.value = true;
+    final path = await soundRecorder.stopRecorder();
+    if (path == null) return;
+    final src = await repository.sendAudio(roomId, File(path));
+
+    messageTEC.clear();
+    await repository.sendMessage(uid, '', 3, src: src);
+    this.sendingMessage.value = false;
+  }
+
+  void deletAudio() async {
+    await soundRecorder.deleteRecord(fileName: recorderName!);
+    isRecAudio.value = false;
+    await soundRecorder.closeAudioSession();
   }
 }

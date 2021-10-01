@@ -60,8 +60,8 @@ class ChatConvesationTile extends StatelessWidget {
                         Expanded(
                           child: Text(otherUser.completName!,
                               maxLines: 1,
-                              style: GoogleFonts.montserrat(
-                                  fontWeight: FontWeight.bold, fontSize: 15)),
+                              style:
+                                  GoogleFonts.openSans(fontWeight: FontWeight.w600, fontSize: 15)),
                         ),
                         Text(date, maxLines: 1, style: GoogleFonts.montserrat(fontSize: 12)),
                       ],
@@ -116,7 +116,9 @@ class ChatConvesationTile extends StatelessWidget {
   }
 
   String get text {
-    if (listMessages.first.type == 1) return 'imagem';
+    if (listMessages.first.type == 1) return 'Imagem';
+    if (listMessages.first.type == 2) return 'Video';
+    if (listMessages.first.type == 3) return 'Áudio';
     if (listMessages.isEmpty) return '';
     return listMessages.first.text;
   }

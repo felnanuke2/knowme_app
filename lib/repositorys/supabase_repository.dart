@@ -282,6 +282,15 @@ class SupabaseRepository implements DbRepositoryInterface {
   }
 
   @override
+  Future<List<MessageModel>> getMessagesBefore(int roomId, int lastMessage) async {
+    final response = await client
+        .rpc('get_messages_before', params: {'room': roomId, 'messsage_id': lastMessage}).execute();
+    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
+    final listMessages = List.from(response.data).map((e) => MessageModel.fromMap(e)).toList();
+    return listMessages;
+  }
+
+  @override
   Future<void> readMessage(int messageId) async {
     final response = await client.rpc('read_message', params: {'message_id': messageId}).execute();
     if (response.error != null) throw RequestError(message: response.error?.message ?? '');
@@ -322,9 +331,27 @@ class SupabaseRepository implements DbRepositoryInterface {
   Future<String> getImageUrl(String src) async {
     final response = await client.storage
         .from('messages.files')
-        .createSignedUrl(src.replaceAll('messages.files/', ''), 900);
+        .createSignedUrl(src.replaceAll('messages.files/', ''), 20);
     if (response.error != null) throw RequestError(message: response.error?.message ?? '');
 
+    return response.data!;
+  }
+
+  @override
+  Future<String> sendVideo(int roomID, File file) async {
+    final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    final response =
+        await client.storage.from('messages.files').upload('$roomID/videos/$fileName', file);
+    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
+    return response.data!;
+  }
+
+  @override
+  Future<String> sendAudio(int roomId, File file) async {
+    final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    final response =
+        await client.storage.from('messages.files').upload('$roomId/audios/$fileName', file);
+    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
     return response.data!;
   }
 }

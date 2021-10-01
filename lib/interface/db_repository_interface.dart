@@ -72,12 +72,16 @@ abstract class DbRepositoryInterface {
   Future<List<ChatRoomModel>> getChatChannels(String userId);
 
   Future<List<MessageModel>> getMessages(int roomIds);
+  Future<List<MessageModel>> getMessagesBefore(int roomId, int lastMessage);
 
   StreamController<StreamEvent> chatRoomListen(String uid);
 
   Future<void> readMessage(int messageId);
 
   Future<String> sendImage(int roomID, File file);
+
+  Future<String> sendVideo(int roomID, File file);
+  Future<String> sendAudio(int roomId, File file);
 
   Future<String> getImageUrl(String src);
 }
