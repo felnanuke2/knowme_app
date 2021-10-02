@@ -1,6 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class GoogleSigInRepo {
   final googleSignIN = GoogleSignIn(scopes: [
@@ -14,12 +12,5 @@ class GoogleSigInRepo {
     final googleSignInAccount = await googleSignIN.signIn();
     if (googleSignInAccount == null) return 'Falha ao Conectar-se com o google';
     final googleSignInAuthentication = await googleSignInAccount.authentication;
-    try {
-      await FirebaseAuth.instance.signInWithCredential(GoogleAuthProvider.credential(
-          accessToken: googleSignInAuthentication.accessToken,
-          idToken: googleSignInAuthentication.idToken));
-    } on FirebaseAuthException catch (e) {
-      return e.message;
-    }
   }
 }

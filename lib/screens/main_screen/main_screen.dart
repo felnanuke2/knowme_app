@@ -51,7 +51,7 @@ class MainScreen extends StatelessWidget {
                             ),
                             Obx(
                               () => Visibility(
-                                visible: mainScreenController.currentPage.value == 3,
+                                visible: mainScreenController.currentPage.value == 4,
                                 child: IconButton(
                                     onPressed: mainScreenController.onSettingsPressed,
                                     icon: Icon(

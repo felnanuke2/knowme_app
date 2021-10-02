@@ -1,6 +1,18 @@
 import 'dart:convert';
 
-enum Sex { NONE, MALE, FEMALE }
+import 'package:hive/hive.dart';
+import 'package:knowme/constants/constant_hive_ids.dart';
+part 'user_model.g.dart';
+
+@HiveType(typeId: SEX_HIVE_ID)
+enum Sex {
+  @HiveField(0)
+  NONE,
+  @HiveField(1)
+  MALE,
+  @HiveField(2)
+  FEMALE
+}
 
 enum AccountState {
   ACTIVE,
@@ -24,28 +36,50 @@ class AccountStateConvert {
   }
 }
 
+@HiveType(typeId: USER_HIVE_ID)
 class UserModel {
+  @HiveField(0)
   String? id;
+  @HiveField(1)
   String? profileImage;
+  @HiveField(2)
   String? bio;
+  @HiveField(3)
   String? birthDay;
+  @HiveField(4)
   String? completName;
+  @HiveField(5)
   String? profileName;
+  @HiveField(6)
   String? phoneNumber;
+  @HiveField(7)
   String? uf;
+  @HiveField(8)
   String? city;
+  @HiveField(9)
   String? lat;
+  @HiveField(10)
   String? lng;
+  @HiveField(11)
   DateTime? createdAt;
+  @HiveField(12)
   String? email;
-  AccountState? state;
+  @HiveField(13)
+  int? state;
+  @HiveField(14)
   DateTime? updatedAt;
+  @HiveField(15)
   Sex? sex;
 
+  @HiveField(16)
   UserContactsModel? contacts;
+  @HiveField(17)
   bool? emailConfirm;
+  @HiveField(18)
   List<String>? postsList;
+  @HiveField(19)
   String? entryQuizID;
+  @HiveField(20)
   bool profileComplet;
   UserModel(
       {this.id,
@@ -108,7 +142,7 @@ class UserModel {
       createdAt:
           map['createdAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(map['createdAt']),
       email: map['email'],
-      state: map['state'] == 0 ? AccountState.ACTIVE : AccountState.BLOCK,
+      state: map['state'],
       updatedAt:
           map['updatedAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(map['updatedAt']),
       sex: SexFromString().call(map['sex']),

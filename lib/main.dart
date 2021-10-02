@@ -1,25 +1,21 @@
-import 'package:firebase_core/firebase_core.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:get/instance_manager.dart';
+
 import 'package:knowme/constants/constant_colors.dart';
-import 'package:knowme/interface/db_repository_interface.dart';
-import 'package:knowme/interface/user_auth_interface.dart';
-import 'package:knowme/repositorys/firebase_repository.dart';
-import 'package:knowme/repositorys/firebase_user_auth_repository.dart';
-import 'package:knowme/repositorys/supabase_repository.dart';
-import 'package:knowme/repositorys/supabase_use_auth_repository.dart';
 
 import 'package:knowme/screens/secundary_splash_screen.dart';
 import 'package:material_color_generator/material_color_generator.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  static final initializationComplete = Completer();
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -42,22 +38,7 @@ class MyApp extends StatelessWidget {
         ),
         primarySwatch: generateMaterialColor(color: PRIMARY_COLOR),
       ),
-      home: FutureBuilder(
-          future: Firebase.initializeApp(),
-          builder: (context, snapshotFirebase) {
-            if (snapshotFirebase.connectionState == ConnectionState.done) _inectDependency();
-            return SecundarySplashScreen(
-              snapshotFirebase,
-            );
-          }),
+      home: SecundarySplashScreen(),
     );
-  }
-
-  _inectDependency() {
-    Get.put<DbRepositoryInterface>(SupabaseRepository(), permanent: true);
-    Get.put<UserAuthInterface>(
-        SupabaseUserAuthRepository(repositoryInterface: Get.find<DbRepositoryInterface>()),
-        permanent: true);
-    timeago.setLocaleMessages('pt', timeago.PtBrMessages());
   }
 }

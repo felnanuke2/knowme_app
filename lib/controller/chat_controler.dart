@@ -34,6 +34,7 @@ class ChatController extends GetxController {
   final record = Record();
   String? recorderPath;
   final haveNoMoreMessages = false.obs;
+  final getRoomsCompleter = Completer();
 
   ChatController({
     required this.sesssionController,
@@ -56,12 +57,14 @@ class ChatController extends GetxController {
   }
 
   disposeChatScreen() async {
+    messageTEC.clear();
     isRecAudio.value = false;
   }
 
   Future<void> onRefresh() async {
     await _getChatRooms();
     await _getMessages();
+    getRoomsCompleter.complete();
   }
 
   _getChatRooms() async {

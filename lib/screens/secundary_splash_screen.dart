@@ -1,17 +1,22 @@
 import 'dart:async';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
+import 'package:knowme/interface/db_repository_interface.dart';
+import 'package:knowme/interface/local_db_interface.dart';
 import 'package:knowme/interface/user_auth_interface.dart';
+import 'package:knowme/main.dart';
+import 'package:knowme/repositorys/hive_local_db.dart';
+import 'package:knowme/repositorys/supabase_repository.dart';
+import 'package:knowme/repositorys/supabase_use_auth_repository.dart';
 import 'package:knowme/screens/main_screen/main_screen.dart';
 import 'package:get/instance_manager.dart' as instance;
-
+import 'package:knowme/services/push_notifications_services.dart';
+import 'package:timeago/timeago.dart' as timeago;
 import 'login_screen.dart';
 
 class SecundarySplashScreen extends StatefulWidget {
-  SecundarySplashScreen(this.snapshotFirebase);
-  final AsyncSnapshot<Object?> snapshotFirebase;
-
   @override
   _SecundarySplashScreenState createState() => _SecundarySplashScreenState();
 }
@@ -26,21 +31,18 @@ class _SecundarySplashScreenState extends State<SecundarySplashScreen> {
   }
 
   _animateContainer() async {
-    await Future.delayed(Duration(milliseconds: 500));
+    final _completer = Completer();
+
+    _initializeDependencys().then((value) => _completer.complete());
+    await Future.delayed(Duration(milliseconds: 700));
     isCompleted = !isCompleted;
     setState(() {});
+    await _completer.future;
 
-    Timer.periodic(Duration(seconds: 3), (timer) async {
-      if (widget.snapshotFirebase.connectionState == ConnectionState.done) {
-        timer.cancel();
-        isCompleted = !isCompleted;
-        setState(() {});
+    Get.off(() =>
+        instance.Get.find<UserAuthInterface>().currentUser != null ? MainScreen() : LoginScreen());
 
-        Get.off(() => instance.Get.find<UserAuthInterface>().currentUser != null
-            ? MainScreen()
-            : LoginScreen());
-      }
-    });
+    print('complete');
   }
 
   @override
@@ -61,5 +63,22 @@ class _SecundarySplashScreenState extends State<SecundarySplashScreen> {
         ),
       ),
     );
+  }
+
+  late LocalDbInterface localDb;
+
+  Future<void> _initializeDependencys() async {
+    localDb = Get.put<LocalDbInterface>(HiveLocalDb());
+    await localDb.initializeDatabase();
+    Get.put<DbRepositoryInterface>(SupabaseRepository(), permanent: true);
+    Get.put<UserAuthInterface>(
+        SupabaseUserAuthRepository(repositoryInterface: Get.find<DbRepositoryInterface>()),
+        permanent: true);
+    timeago.setLocaleMessages('pt', timeago.PtBrMessages());
+    await Firebase.initializeApp();
+    MyApp.initializationComplete.complete();
+
+    await PushNotificationsServices.init();
+    print(await PushNotificationsServices.getToken());
   }
 }

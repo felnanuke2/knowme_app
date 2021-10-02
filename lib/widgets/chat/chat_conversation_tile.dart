@@ -116,10 +116,11 @@ class ChatConvesationTile extends StatelessWidget {
   }
 
   String get text {
+    if (listMessages.isEmpty) return '';
     if (listMessages.first.type == 1) return 'Imagem';
     if (listMessages.first.type == 2) return 'Video';
     if (listMessages.first.type == 3) return 'Áudio';
-    if (listMessages.isEmpty) return '';
+
     return listMessages.first.text;
   }
 

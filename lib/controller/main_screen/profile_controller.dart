@@ -42,7 +42,8 @@ class ProfileController extends GetxController {
 
       await sesssionController.repository.updateUser(user.id!, profileImage: imageUrl);
       final lastImageProfile = user.profileImage;
-      sesssionController.userAuthRepository.currentUser!.profileImage = imageUrl;
+      sesssionController.userAuthRepository.currentUser =
+          sesssionController.userAuthRepository.currentUser!..profileImage = imageUrl;
       sesssionController.repository.deletImage(lastImageProfile!);
     } catch (e) {
       print(e);

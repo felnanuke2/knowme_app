@@ -9,7 +9,8 @@ import 'package:knowme/sucess/login_sucess_interface.dart';
 abstract class UserAuthInterface {
   Completer currentUserdataCompleter = Completer();
 
-  UserModel? currentUser;
+  UserModel? get currentUser;
+  set currentUser(UserModel? user);
 
   final DbRepositoryInterface repositoryInterface;
   UserAuthInterface({

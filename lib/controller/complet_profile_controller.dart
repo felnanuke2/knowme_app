@@ -134,24 +134,25 @@ class CompletProfileController extends GetxController {
     }
     if (!profileIsComplet) {
       _callErrorSnackBar(title: 'Validando Dados', message: '', failure: false);
-      userAuthrepository.currentUser?.birthDay = birthDayTEC.text;
-      userAuthrepository.currentUser?.city = cityTEC.text;
-      userAuthrepository.currentUser?.uf = ufTEC.text;
-      userAuthrepository.currentUser?.uf = ufTEC.text;
-      userAuthrepository.currentUser?.completName = nameTEC.text;
-      userAuthrepository.currentUser?.bio = '';
+      userAuthrepository.currentUser = userAuthrepository.currentUser?..birthDay = birthDayTEC.text;
+      userAuthrepository.currentUser = userAuthrepository.currentUser?..city = cityTEC.text;
+      userAuthrepository.currentUser = userAuthrepository.currentUser?..uf = ufTEC.text;
+      userAuthrepository.currentUser = userAuthrepository.currentUser?..uf = ufTEC.text;
+      userAuthrepository.currentUser = userAuthrepository.currentUser?..completName = nameTEC.text;
+      userAuthrepository.currentUser = userAuthrepository.currentUser?..bio = '';
 
-      userAuthrepository.currentUser?.phoneNumber = phoneTEC.text;
+      userAuthrepository.currentUser = userAuthrepository.currentUser?..phoneNumber = phoneTEC.text;
 
-      userAuthrepository.currentUser?.profileName = profileNameTEC.text;
-      userAuthrepository.currentUser?.profileComplet = true;
-      userAuthrepository.currentUser?.sex = sexType;
+      userAuthrepository.currentUser = userAuthrepository.currentUser
+        ?..profileName = profileNameTEC.text;
+      userAuthrepository.currentUser = userAuthrepository.currentUser?..profileComplet = true;
+      userAuthrepository.currentUser = userAuthrepository.currentUser?..sex = sexType;
 
       try {
         if (imageProfile != null) {
           final imagURl = await repository.upLoadImage(
               imageByte: imageProfile!, userID: userAuthrepository.currentUser!.id!);
-          userAuthrepository.currentUser?.profileImage = imagURl;
+          userAuthrepository.currentUser = userAuthrepository.currentUser?..profileImage = imagURl;
         }
 
         await repository.createUser(userAuthrepository.currentUser!);

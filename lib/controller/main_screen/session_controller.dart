@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart' as router;
@@ -17,6 +19,7 @@ import 'package:knowme/screens/complet_register_screen.dart';
 import 'package:knowme/screens/create_post_screen.dart';
 import 'package:knowme/screens/settings/quiz/quiz_settings_screen.dart';
 import 'package:knowme/screens/settings/settings_screen.dart';
+import 'package:knowme/services/push_notifications_services.dart';
 import 'package:knowme/widgets/image_picker_bottom_sheet.dart';
 import 'package:get/instance_manager.dart';
 
@@ -32,19 +35,28 @@ class SesssionController extends GetxController {
   final posts = <PostModel>[].obs;
   late ChatController chatController;
 
-  bool isLoadingCurrentUser = true;
+  bool isLoadingCurrentUser;
 
   SesssionController({
     required this.repository,
     required this.userAuthRepository,
+    this.isLoadingCurrentUser = true,
   }) {
     _initUserData();
     getReceivedInteractions();
     getPosts();
     chatController = Get.put(ChatController(sesssionController: this));
+    if (userAuthRepository.currentUser != null) {
+      PushNotificationsServices.getToken().then((token) {
+        if (token != null) {
+          repository.updateUser(userAuthRepository.currentUser!.id!, firebaseToken: token);
+        }
+      });
+    }
   }
   _initUserData() async {
-    if (userAuthRepository.currentUserdataCompleter.isCompleted) {
+    if (userAuthRepository.currentUserdataCompleter.isCompleted ||
+        userAuthRepository.currentUser?.profileComplet == true) {
       isLoadingCurrentUser = false;
       update();
       await Future.delayed(Duration(milliseconds: 333));
@@ -106,8 +118,8 @@ class SesssionController extends GetxController {
   Future<void> getPosts() async {
     await getFriends();
 
-    final result = await repository
-        .getPosts(friends..add(this.userAuthRepository.currentUser?.id ?? '06546313153'));
+    final result =
+        await repository.getPosts(friends..add(this.userAuthRepository.currentUser?.id ?? ''));
     posts.clear();
     posts.addAll(result);
     return;

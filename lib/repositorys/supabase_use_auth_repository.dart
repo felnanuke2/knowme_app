@@ -1,23 +1,40 @@
 import 'dart:async';
 
+import 'package:get/state_manager.dart';
 import 'package:knowme/errors/requestError.dart';
 import 'package:knowme/interface/db_repository_interface.dart';
+import 'package:knowme/interface/local_db_interface.dart';
 import 'package:knowme/interface/user_auth_interface.dart';
+import 'package:knowme/main.dart';
 import 'package:knowme/models/third_part_user_data_model.dart';
 import 'package:knowme/models/user_model.dart';
 import 'package:knowme/repositorys/supabase_repository.dart';
 import 'package:knowme/sucess/login_sucess_interface.dart';
 import 'package:knowme/sucess/supabase_login_sucess.dart';
 import 'package:supabase/supabase.dart';
+import 'package:get/instance_manager.dart';
 
 class SupabaseUserAuthRepository implements UserAuthInterface {
   SupabaseUserAuthRepository({
     required this.repositoryInterface,
   }) {
-    if ((repositoryInterface as SupabaseRepository).client.auth.currentUser != null) {}
+    if (local.getAuthToken() != null) {
+      (repositoryInterface as SupabaseRepository).client.auth.recoverSession(local.getAuthToken()!);
+    }
+    (repositoryInterface as SupabaseRepository).client.auth.onAuthStateChange((event, session) {
+      if (session != null) local.putAuthToken(session.persistSessionString);
+    });
   }
-  @override
-  UserModel? currentUser;
+  UserModel? _currentUser;
+  final local = Get.find<LocalDbInterface>();
+
+  UserModel? get currentUser => _currentUser ?? local.getUser();
+
+  set currentUser(UserModel? user) {
+    _currentUser = user;
+    if (user == null) return;
+    local.cacheUser(user);
+  }
 
   @override
   Completer currentUserdataCompleter = Completer();
@@ -35,6 +52,7 @@ class SupabaseUserAuthRepository implements UserAuthInterface {
     final response = await repo.client.auth.signIn(email: email, password: password);
     if (response.error != null) throw RequestError(message: response.error?.message ?? '');
     await _setuserData(response.user!);
+
     return SupabaseLoginSucess(user: currentUser!);
   }
 
@@ -52,18 +70,20 @@ class SupabaseUserAuthRepository implements UserAuthInterface {
 
   Future<dynamic> _setuserData(User responseUser) async {
     final repo = (repositoryInterface as SupabaseRepository);
-    currentUser = UserModel();
-    currentUser?.id = responseUser.id;
-    currentUser?.email = responseUser.email;
-    currentUser?.emailConfirm = responseUser.emailConfirmedAt != null ? true : false;
+    final u = UserModel();
+    u.id = responseUser.id;
+    u.email = responseUser.email;
+    u.emailConfirm = responseUser.emailConfirmedAt != null ? true : false;
+    currentUser = u;
     try {
       var user = await repositoryInterface.getCurrentUser(responseUser.id);
       currentUser = user..profileComplet = true;
+
       if (!currentUserdataCompleter.isCompleted) currentUserdataCompleter.complete();
       return user;
     } on RequestError catch (e) {
       if (!currentUserdataCompleter.isCompleted) currentUserdataCompleter.complete();
-      return currentUser?..profileComplet = false;
+      return currentUser = currentUser?..profileComplet = false;
     }
   }
 
