@@ -6,6 +6,7 @@ import 'package:knowme/interface/db_repository_interface.dart';
 import 'package:knowme/interface/local_db_interface.dart';
 import 'package:knowme/interface/user_auth_interface.dart';
 import 'package:knowme/main.dart';
+
 import 'package:knowme/models/third_part_user_data_model.dart';
 import 'package:knowme/models/user_model.dart';
 import 'package:knowme/repositorys/supabase_repository.dart';
@@ -15,13 +16,35 @@ import 'package:supabase/supabase.dart';
 import 'package:get/instance_manager.dart';
 
 class SupabaseUserAuthRepository implements UserAuthInterface {
+  @override
+  // TODO: implement completer
+  Completer get completer => throw UnimplementedError();
+
   SupabaseUserAuthRepository({
     required this.repositoryInterface,
   }) {
     if (local.getAuthToken() != null) {
-      (repositoryInterface as SupabaseRepository).client.auth.recoverSession(local.getAuthToken()!);
+      (repositoryInterface as SupabaseRepository)
+          .client
+          .auth
+          .recoverSession(local.getAuthToken()!)
+          .then((value) {
+        print('recoverysessio = ' + (value.error?.message).toString());
+        if (value.error == null) {
+          local.putAuthToken(value.data!.persistSessionString);
+          MyApp.initializationComplete.complete();
+        } else {
+          MyApp.initializationComplete.completeError(value.error!.message);
+        }
+      });
+    } else {
+      MyApp.initializationComplete.complete();
     }
-    (repositoryInterface as SupabaseRepository).client.auth.onAuthStateChange((event, session) {
+    (repositoryInterface as SupabaseRepository)
+        .client
+        .auth
+        .onAuthStateChange((event, session) async {
+      print('auth stateChange');
       if (session != null) local.putAuthToken(session.persistSessionString);
     });
   }

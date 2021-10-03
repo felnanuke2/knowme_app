@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: [const Locale('pt')],
-      title: 'Know me',
+      title: 'ConePlay',
       theme: ThemeData(
         accentColor: ACCET_COLOR,
         dialogTheme:

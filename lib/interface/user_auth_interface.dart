@@ -9,6 +9,8 @@ import 'package:knowme/sucess/login_sucess_interface.dart';
 abstract class UserAuthInterface {
   Completer currentUserdataCompleter = Completer();
 
+  Completer get completer;
+
   UserModel? get currentUser;
   set currentUser(UserModel? user);
 

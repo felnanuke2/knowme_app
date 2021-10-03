@@ -7,7 +7,7 @@
  <uses-permission android:name="android.permission.RECORD_AUDIO"/>
  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
    <application
-        android:label="knowme"
+        android:label="ConePlay"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

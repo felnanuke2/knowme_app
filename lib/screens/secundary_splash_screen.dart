@@ -6,7 +6,7 @@ import 'package:get/route_manager.dart';
 import 'package:knowme/interface/db_repository_interface.dart';
 import 'package:knowme/interface/local_db_interface.dart';
 import 'package:knowme/interface/user_auth_interface.dart';
-import 'package:knowme/main.dart';
+
 import 'package:knowme/repositorys/hive_local_db.dart';
 import 'package:knowme/repositorys/supabase_repository.dart';
 import 'package:knowme/repositorys/supabase_use_auth_repository.dart';
@@ -37,7 +37,12 @@ class _SecundarySplashScreenState extends State<SecundarySplashScreen> {
     await Future.delayed(Duration(milliseconds: 700));
     isCompleted = !isCompleted;
     setState(() {});
-    await _completer.future;
+    try {
+      await _completer.future;
+    } catch (e) {
+      Get.snackbar('Erro', e.toString());
+      Get.off(() => LoginScreen());
+    }
 
     Get.off(() =>
         instance.Get.find<UserAuthInterface>().currentUser != null ? MainScreen() : LoginScreen());
@@ -76,9 +81,5 @@ class _SecundarySplashScreenState extends State<SecundarySplashScreen> {
         permanent: true);
     timeago.setLocaleMessages('pt', timeago.PtBrMessages());
     await Firebase.initializeApp();
-    MyApp.initializationComplete.complete();
-
-    await PushNotificationsServices.init();
-    print(await PushNotificationsServices.getToken());
   }
 }

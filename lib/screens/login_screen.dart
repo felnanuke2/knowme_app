@@ -32,16 +32,16 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             children: [
               Container(
                 width: 340,
-                height: 170,
+                height: 220,
                 child: Image.asset(
-                  'assets/knowme logo.png',
+                  'assets/knowme_logo-removebg.png',
                   fit: BoxFit.fitWidth,
                 ),
               ),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 35),
                 child: Text(
-                  'Olá, seja bem vindo ao Know me!',
+                  'Olá, seja bem vindo ao ConePlay!',
                   style: route.Get.textTheme.headline5,
                 ),
               ),

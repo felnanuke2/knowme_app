@@ -146,7 +146,7 @@ class PushNotificationsServices {
       importance: Importance.max,
       priority: Priority.high,
       showWhen: true,
-      icon: '@mipmap/ic_launcher',
+      icon: '@drawable/ic_notification',
       category: 'msg',
       styleInformation: messaginInformation,
     );

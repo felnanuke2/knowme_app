@@ -43,16 +43,6 @@ class SesssionController extends GetxController {
     this.isLoadingCurrentUser = true,
   }) {
     _initUserData();
-    getReceivedInteractions();
-    getPosts();
-    chatController = Get.put(ChatController(sesssionController: this));
-    if (userAuthRepository.currentUser != null) {
-      PushNotificationsServices.getToken().then((token) {
-        if (token != null) {
-          repository.updateUser(userAuthRepository.currentUser!.id!, firebaseToken: token);
-        }
-      });
-    }
   }
   _initUserData() async {
     if (userAuthRepository.currentUserdataCompleter.isCompleted ||
@@ -69,6 +59,22 @@ class SesssionController extends GetxController {
       update();
     }
     if (userAuthRepository.currentUser?.entryQuizID == null) _requestQuizCompletationDialog();
+    await getReceivedInteractions();
+    await getPosts();
+    chatController = Get.put(ChatController(sesssionController: this));
+    if (userAuthRepository.currentUser != null) {
+      try {
+        PushNotificationsServices.getToken().then((token) {
+          if (token != null) {
+            repository.updateUser(userAuthRepository.currentUser!.id!, firebaseToken: token);
+          }
+        });
+      } on RequestError catch (e) {
+        print(e.message);
+      }
+    }
+    await PushNotificationsServices.init();
+    print(await PushNotificationsServices.getToken());
   }
 
   _verifyIfNeedCompletProfile() {
