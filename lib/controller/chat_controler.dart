@@ -24,7 +24,7 @@ class ChatController extends GetxController {
   final chatsMap = <int, RxList<MessageModel>>{}.obs;
   final SesssionController sesssionController;
   late DbRepositoryInterface repository;
-  String get currentUserID => sesssionController.userAuthRepository.currentUser!.id!;
+  String get currentUserID => sesssionController.userAuthRepository.getCurrentUser!.id!;
   final messageTEC = TextEditingController();
   final sendingMessage = false.obs;
   StreamController? roomStream;
@@ -69,7 +69,7 @@ class ChatController extends GetxController {
 
   _getChatRooms() async {
     final response =
-        await repository.getChatChannels(sesssionController.userAuthRepository.currentUser!.id!);
+        await repository.getChatChannels(sesssionController.userAuthRepository.getCurrentUser!.id!);
     chatRooms.clear();
     chatRooms.addAll(response);
     onRegisterListen();
@@ -127,7 +127,7 @@ class ChatController extends GetxController {
   void onRegisterListen() {
     if (roomStream != null) return;
     this.roomStream =
-        repository.chatRoomListen(sesssionController.userAuthRepository.currentUser!.id!);
+        repository.chatRoomListen(sesssionController.userAuthRepository.getCurrentUser!.id!);
     roomStream?.stream.listen((event) async {
       if (event is StreamEventUpdate) {
         final data = event.data;

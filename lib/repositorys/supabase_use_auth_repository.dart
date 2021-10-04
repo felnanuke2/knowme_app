@@ -16,10 +16,6 @@ import 'package:supabase/supabase.dart';
 import 'package:get/instance_manager.dart';
 
 class SupabaseUserAuthRepository implements UserAuthInterface {
-  @override
-  // TODO: implement completer
-  Completer get completer => throw UnimplementedError();
-
   SupabaseUserAuthRepository({
     required this.repositoryInterface,
   }) {
@@ -51,9 +47,9 @@ class SupabaseUserAuthRepository implements UserAuthInterface {
   UserModel? _currentUser;
   final local = Get.find<LocalDbInterface>();
 
-  UserModel? get currentUser => _currentUser ?? local.getUser();
+  UserModel? get getCurrentUser => _currentUser ?? local.getUser();
 
-  set currentUser(UserModel? user) {
+  set setCurrentUser(UserModel? user) {
     _currentUser = user;
     if (user == null) return;
     local.cacheUser(user);
@@ -76,7 +72,7 @@ class SupabaseUserAuthRepository implements UserAuthInterface {
     if (response.error != null) throw RequestError(message: response.error?.message ?? '');
     await _setuserData(response.user!);
 
-    return SupabaseLoginSucess(user: currentUser!);
+    return SupabaseLoginSucess(user: getCurrentUser!);
   }
 
   @override
@@ -84,11 +80,11 @@ class SupabaseUserAuthRepository implements UserAuthInterface {
     final repo = (repositoryInterface as SupabaseRepository);
     final response = await repo.client.auth.signUp(email, password);
     if (response.error != null) throw RequestError(message: response.error!.message);
-    currentUser = UserModel(
+    setCurrentUser = UserModel(
       id: response.user!.id,
       email: response.user!.email,
     );
-    return SupabaseLoginSucess(user: currentUser!);
+    return SupabaseLoginSucess(user: getCurrentUser!);
   }
 
   Future<dynamic> _setuserData(User responseUser) async {
@@ -97,16 +93,16 @@ class SupabaseUserAuthRepository implements UserAuthInterface {
     u.id = responseUser.id;
     u.email = responseUser.email;
     u.emailConfirm = responseUser.emailConfirmedAt != null ? true : false;
-    currentUser = u;
+    setCurrentUser = u;
     try {
       var user = await repositoryInterface.getCurrentUser(responseUser.id);
-      currentUser = user..profileComplet = true;
+      setCurrentUser = user..profileComplet = true;
 
       if (!currentUserdataCompleter.isCompleted) currentUserdataCompleter.complete();
       return user;
     } on RequestError catch (e) {
       if (!currentUserdataCompleter.isCompleted) currentUserdataCompleter.complete();
-      return currentUser = currentUser?..profileComplet = false;
+      return setCurrentUser = getCurrentUser?..profileComplet = false;
     }
   }
 

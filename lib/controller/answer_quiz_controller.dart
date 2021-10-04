@@ -40,7 +40,7 @@ class AnswerQuizController extends GetxController {
       final interaction = InteractionsModel(
           id: '',
           status: 0,
-          fromUser: sesssionController.userAuthRepository.currentUser?.id ?? '',
+          fromUser: sesssionController.userAuthRepository.getCurrentUser?.id ?? '',
           toUser: quiz.user?.id ?? '',
           createdAt: DateTime.now(),
           answers: answersMap);

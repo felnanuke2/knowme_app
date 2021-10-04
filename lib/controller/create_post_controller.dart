@@ -17,7 +17,7 @@ class CreatePostController extends GetxController {
   void createpost(dynamic src) async {
     if (!formKey.currentState!.validate()) return;
     bool isVideo = false;
-    final userId = sesssionController.userAuthRepository.currentUser!.id!;
+    final userId = sesssionController.userAuthRepository.getCurrentUser!.id!;
     String srcUrl = '';
     String? thumnail;
     if (src is String) {

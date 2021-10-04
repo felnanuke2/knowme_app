@@ -30,7 +30,7 @@ class QuizController extends GetxController {
     required this.userAuthRepo,
     required this.repository,
   }) {
-    if (userAuthRepo.currentUser?.entryQuizID == null) {
+    if (userAuthRepo.getCurrentUser?.entryQuizID == null) {
       _setDefaultQuestionsList();
     } else {
       _getQuizData();
@@ -42,7 +42,7 @@ class QuizController extends GetxController {
   _getQuizData() async {
     loadingQuiz = true;
     update();
-    var responseQuiz = await repository.getQuiz(userAuthRepo.currentUser!.entryQuizID!);
+    var responseQuiz = await repository.getQuiz(userAuthRepo.getCurrentUser!.entryQuizID!);
 
     await _setDefaultQuestionsList(quiz: responseQuiz);
     loadingQuiz = false;
@@ -157,7 +157,7 @@ class QuizController extends GetxController {
         _callErrorSnackBar(
             title: 'Enviando Imagens', message: 'Estamos Enviando suas Imagens', failure: false);
         final url = await repository.upLoadImage(
-            imageByte: image.byteImage!, userID: userAuthRepo.currentUser!.id!);
+            imageByte: image.byteImage!, userID: userAuthRepo.getCurrentUser!.id!);
         imagesListUrl.add(url);
       } else {
         imagesListUrl.add(image.imageUrl!);
@@ -171,7 +171,7 @@ class QuizController extends GetxController {
       id: quizModel?.id,
       presentImagesList: imagesListUrl,
       questions: questions,
-      createdByID: userAuthRepo.currentUser!.id!,
+      createdByID: userAuthRepo.getCurrentUser!.id!,
     );
     if (quiz.id == null) {
       final quizResponse = await repository.createQuiz(quiz);
@@ -180,8 +180,8 @@ class QuizController extends GetxController {
       final quizResponse = await repository.updateQuiz(quiz);
       quizModel = quizResponse;
     }
-    userAuthRepo.currentUser!.entryQuizID = quizModel?.id;
-    await repository.updateUser(userAuthRepo.currentUser!.id!, entryQuizId: quizModel!.id!);
+    userAuthRepo.setCurrentUser = userAuthRepo.getCurrentUser!..entryQuizID = quizModel?.id;
+    await repository.updateUser(userAuthRepo.getCurrentUser!.id!, entryQuizId: quizModel!.id!);
 
     while (Get.isSnackbarOpen == true) {
       Get.back();

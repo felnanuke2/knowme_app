@@ -23,7 +23,7 @@ class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMi
         builder: (sessionController) => GetBuilder<ProfileController>(
               init: ProfileController(sesssionController: sessionController),
               builder: (profileController) => Container(
-                  child: sessionController.userAuthRepository.currentUser == null
+                  child: sessionController.userAuthRepository.getCurrentUser == null
                       ? Text('Erro ao Obter o Usuário')
                       : NestedScrollView(
                           headerSliverBuilder: (context, innerBoxIsScrolled) => [
@@ -43,7 +43,7 @@ class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMi
                                                         child: CircularProgressIndicator(),
                                                       )
                                                     : sessionController.userAuthRepository
-                                                                .currentUser!.profileImage ==
+                                                                .getCurrentUser!.profileImage ==
                                                             null
                                                         ? InkWell(
                                                             onTap: profileController
@@ -58,7 +58,7 @@ class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMi
                                                             child: CachedNetworkImage(
                                                               imageUrl: sessionController
                                                                   .userAuthRepository
-                                                                  .currentUser!
+                                                                  .getCurrentUser!
                                                                   .profileImage!,
                                                               fit: BoxFit.cover,
                                                             ),
@@ -69,7 +69,7 @@ class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMi
                                       Container(
                                         child: Text(
                                           sessionController
-                                                  .userAuthRepository.currentUser!.completName ??
+                                                  .userAuthRepository.getCurrentUser!.completName ??
                                               "",
                                           maxLines: 1,
                                           textAlign: TextAlign.center,
@@ -79,7 +79,7 @@ class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMi
                                       ),
                                       Text(
                                         sessionController
-                                                .userAuthRepository.currentUser!.profileName ??
+                                                .userAuthRepository.getCurrentUser!.profileName ??
                                             '' + '#',
                                         style:
                                             router.Get.textTheme.headline3!.copyWith(fontSize: 15),
@@ -92,7 +92,7 @@ class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMi
                                         child: Container(
                                             padding: EdgeInsets.symmetric(horizontal: 20),
                                             child: Text(sessionController
-                                                    .userAuthRepository.currentUser!.bio ??
+                                                    .userAuthRepository.getCurrentUser!.bio ??
                                                 '')),
                                       ),
                                       SizedBox(

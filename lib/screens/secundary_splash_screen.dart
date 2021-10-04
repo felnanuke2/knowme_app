@@ -44,8 +44,9 @@ class _SecundarySplashScreenState extends State<SecundarySplashScreen> {
       Get.off(() => LoginScreen());
     }
 
-    Get.off(() =>
-        instance.Get.find<UserAuthInterface>().currentUser != null ? MainScreen() : LoginScreen());
+    Get.off(() => instance.Get.find<UserAuthInterface>().getCurrentUser != null
+        ? MainScreen()
+        : LoginScreen());
 
     print('complete');
   }

@@ -18,7 +18,7 @@ class ExploringController extends GetxController {
         context: Get.context!, delegate: ExploringSearchDelegate(controller: this));
     if (result == null) return;
     if (result is UserModel) {
-      if (result.id != sesssionController.userAuthRepository.currentUser?.id) {
+      if (result.id != sesssionController.userAuthRepository.getCurrentUser?.id) {
         await Future.delayed(Duration(seconds: 1));
         Get.to(() => UsersProfileScreen(userModel: result));
       } else {

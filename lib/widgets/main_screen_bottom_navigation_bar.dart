@@ -55,13 +55,13 @@ class _MainScreenBottomNavigationBarState extends State<MainScreenBottomNavigati
           BottomNavigationBarItem(
               label: 'Perfil',
               icon: CircleAvatar(
-                  child: widget.controller.userAuthRepository.currentUser?.profileImage != null
+                  child: widget.controller.userAuthRepository.getCurrentUser?.profileImage != null
                       ? Container(
                           width: 49,
                           height: 49,
                           child: ClipOval(
                             child: Image.network(
-                              widget.controller.userAuthRepository.currentUser!.profileImage!,
+                              widget.controller.userAuthRepository.getCurrentUser!.profileImage!,
                               fit: BoxFit.cover,
                             ),
                           ),

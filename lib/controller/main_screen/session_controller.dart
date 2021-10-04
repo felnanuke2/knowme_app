@@ -46,7 +46,7 @@ class SesssionController extends GetxController {
   }
   _initUserData() async {
     if (userAuthRepository.currentUserdataCompleter.isCompleted ||
-        userAuthRepository.currentUser?.profileComplet == true) {
+        userAuthRepository.getCurrentUser?.profileComplet == true) {
       isLoadingCurrentUser = false;
       update();
       await Future.delayed(Duration(milliseconds: 333));
@@ -58,15 +58,15 @@ class SesssionController extends GetxController {
       isLoadingCurrentUser = false;
       update();
     }
-    if (userAuthRepository.currentUser?.entryQuizID == null) _requestQuizCompletationDialog();
+    if (userAuthRepository.getCurrentUser?.entryQuizID == null) _requestQuizCompletationDialog();
     await getReceivedInteractions();
     await getPosts();
     chatController = Get.put(ChatController(sesssionController: this));
-    if (userAuthRepository.currentUser != null) {
+    if (userAuthRepository.getCurrentUser != null) {
       try {
         PushNotificationsServices.getToken().then((token) {
           if (token != null) {
-            repository.updateUser(userAuthRepository.currentUser!.id!, firebaseToken: token);
+            repository.updateUser(userAuthRepository.getCurrentUser!.id!, firebaseToken: token);
           }
         });
       } on RequestError catch (e) {
@@ -78,7 +78,7 @@ class SesssionController extends GetxController {
   }
 
   _verifyIfNeedCompletProfile() {
-    if (userAuthRepository.currentUser?.profileComplet == false) {
+    if (userAuthRepository.getCurrentUser?.profileComplet == false) {
       Get.off(() => CompletRegisterScreen());
       return true;
     }
@@ -125,7 +125,7 @@ class SesssionController extends GetxController {
     await getFriends();
 
     final result =
-        await repository.getPosts(friends..add(this.userAuthRepository.currentUser?.id ?? ''));
+        await repository.getPosts(friends..add(this.userAuthRepository.getCurrentUser?.id ?? ''));
     posts.clear();
     posts.addAll(result);
     return;
@@ -134,7 +134,7 @@ class SesssionController extends GetxController {
   Future<void> getReceivedInteractions() async {
     try {
       final receivedInteractions =
-          await repository.getInteractionsReceived(userAuthRepository.currentUser!.id!);
+          await repository.getInteractionsReceived(userAuthRepository.getCurrentUser!.id!);
       this.interactionsReceived.value = receivedInteractions;
     } on RequestError catch (e) {
       print(e.message);
@@ -155,7 +155,7 @@ class SesssionController extends GetxController {
 
   Future<void> getListOfQuizes() async {
     try {
-      final list = await repository.getLisOfQuizes(userAuthRepository.currentUser!.id!);
+      final list = await repository.getLisOfQuizes(userAuthRepository.getCurrentUser!.id!);
       quizesToAnswer.clear();
       quizesToAnswer.addAll(list);
     } on RequestError catch (e) {
@@ -164,7 +164,7 @@ class SesssionController extends GetxController {
   }
 
   getFriends() async {
-    final list = await repository.getFriends(userAuthRepository.currentUser?.id ?? '');
+    final list = await repository.getFriends(userAuthRepository.getCurrentUser?.id ?? '');
     friends.clear();
     friends.addAll(list);
   }
@@ -195,6 +195,6 @@ class SesssionController extends GetxController {
     Get.to(() => ChatScreen(
         chatList: chatController.chatsMap[room.id] ?? [],
         room: room,
-        currentUserId: userAuthRepository.currentUser!.id!));
+        currentUserId: userAuthRepository.getCurrentUser!.id!));
   }
 }

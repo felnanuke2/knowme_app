@@ -22,25 +22,28 @@ class CompletProfileController extends GetxController {
       {required this.repository,
       required this.userAuthrepository,
       ThirdPartUserDataModel? dataModel}) {
-    profileIsComplet = userAuthrepository.currentUser?.profileComplet ?? false;
+    profileIsComplet = userAuthrepository.getCurrentUser?.profileComplet ?? false;
     if (!profileIsComplet) {
-      userAuthrepository.currentUser?.birthDay = dataModel?.birthDay == null
-          ? null
-          : formatDate(dataModel!.birthDay!, [dd, '/', mm, '/', yyyy]);
-      userAuthrepository.currentUser?.sex = dataModel?.gender;
-      userAuthrepository.currentUser?.phoneNumber = dataModel?.phoneNumber;
+      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
+        ?..birthDay = dataModel?.birthDay == null
+            ? null
+            : formatDate(dataModel!.birthDay!, [dd, '/', mm, '/', yyyy]);
+      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
+        ?..sex = dataModel?.gender;
+      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
+        ?..phoneNumber = dataModel?.phoneNumber;
     }
     _setFieldsFromUserModel();
   }
 
   _setFieldsFromUserModel() async {
-    if (userAuthrepository.currentUser != null) {
-      nameTEC.text = userAuthrepository.currentUser!.completName ?? '';
-      phoneTEC.text = userAuthrepository.currentUser!.phoneNumber ?? '';
-      birthDayTEC.text = userAuthrepository.currentUser!.birthDay ?? '';
-      sexType = userAuthrepository.currentUser!.sex;
+    if (userAuthrepository.getCurrentUser != null) {
+      nameTEC.text = userAuthrepository.getCurrentUser!.completName ?? '';
+      phoneTEC.text = userAuthrepository.getCurrentUser!.phoneNumber ?? '';
+      birthDayTEC.text = userAuthrepository.getCurrentUser!.birthDay ?? '';
+      sexType = userAuthrepository.getCurrentUser!.sex;
       if (profileIsComplet) {
-        final user = userAuthrepository.currentUser!;
+        final user = userAuthrepository.getCurrentUser!;
         profileNameTEC.text = user.profileName ?? '';
         phoneTEC.text = user.phoneNumber ?? '';
         birthDayTEC.text = user.birthDay ?? '';
@@ -134,28 +137,32 @@ class CompletProfileController extends GetxController {
     }
     if (!profileIsComplet) {
       _callErrorSnackBar(title: 'Validando Dados', message: '', failure: false);
-      userAuthrepository.currentUser = userAuthrepository.currentUser?..birthDay = birthDayTEC.text;
-      userAuthrepository.currentUser = userAuthrepository.currentUser?..city = cityTEC.text;
-      userAuthrepository.currentUser = userAuthrepository.currentUser?..uf = ufTEC.text;
-      userAuthrepository.currentUser = userAuthrepository.currentUser?..uf = ufTEC.text;
-      userAuthrepository.currentUser = userAuthrepository.currentUser?..completName = nameTEC.text;
-      userAuthrepository.currentUser = userAuthrepository.currentUser?..bio = '';
+      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
+        ?..birthDay = birthDayTEC.text;
+      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser?..city = cityTEC.text;
+      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser?..uf = ufTEC.text;
+      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser?..uf = ufTEC.text;
+      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
+        ?..completName = nameTEC.text;
+      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser?..bio = '';
 
-      userAuthrepository.currentUser = userAuthrepository.currentUser?..phoneNumber = phoneTEC.text;
+      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
+        ?..phoneNumber = phoneTEC.text;
 
-      userAuthrepository.currentUser = userAuthrepository.currentUser
+      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
         ?..profileName = profileNameTEC.text;
-      userAuthrepository.currentUser = userAuthrepository.currentUser?..profileComplet = true;
-      userAuthrepository.currentUser = userAuthrepository.currentUser?..sex = sexType;
+      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser?..profileComplet = true;
+      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser?..sex = sexType;
 
       try {
         if (imageProfile != null) {
           final imagURl = await repository.upLoadImage(
-              imageByte: imageProfile!, userID: userAuthrepository.currentUser!.id!);
-          userAuthrepository.currentUser = userAuthrepository.currentUser?..profileImage = imagURl;
+              imageByte: imageProfile!, userID: userAuthrepository.getCurrentUser!.id!);
+          userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
+            ?..profileImage = imagURl;
         }
 
-        await repository.createUser(userAuthrepository.currentUser!);
+        await repository.createUser(userAuthrepository.getCurrentUser!);
         if (!userAuthrepository.currentUserdataCompleter.isCompleted)
           userAuthrepository.currentUserdataCompleter.complete();
         Get.offAll(() => MainScreen());
@@ -164,7 +171,7 @@ class CompletProfileController extends GetxController {
       }
     } else {
       try {
-        final responseUser = await repository.updateUser(userAuthrepository.currentUser!.id!,
+        final responseUser = await repository.updateUser(userAuthrepository.getCurrentUser!.id!,
             birthDay: birthDayTEC.text,
             city: cityTEC.text,
             completName: nameTEC.text,
@@ -173,7 +180,7 @@ class CompletProfileController extends GetxController {
             sex: sexType.toString(),
             uf: ufTEC.text,
             bio: bioTEC.text);
-        userAuthrepository.currentUser = responseUser..profileComplet = true;
+        userAuthrepository.setCurrentUser = responseUser..profileComplet = true;
         Get.back(result: responseUser);
       } on RequestError catch (e) {
         _callErrorSnackBar(title: 'Erro ao Completar o Perfil', message: e.message ?? '');

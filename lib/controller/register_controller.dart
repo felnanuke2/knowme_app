@@ -92,7 +92,7 @@ class RegisterController extends GetxController {
     if (!(formKey.currentState?.validate() ?? false)) return;
     await userAuthRepository.signUp(email: emailTEC.text, password: passwordConfirmTEC.text);
     Get.offAll(() => CompletRegisterScreen(
-          userModel: userAuthRepository.currentUser,
+          userModel: userAuthRepository.getCurrentUser,
         ));
   }
 }
