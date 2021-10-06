@@ -1,16 +1,19 @@
-import 'dart:math';
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/route_manager.dart';
-
+import 'package:get/state_manager.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:knowme/controller/main_screen/exploring_controller.dart';
 import 'package:knowme/models/entry_quiz_model.dart';
 import 'package:knowme/screens/answer_quiz_scree.dart';
 import 'package:knowme/widgets/profile_image_widget.dart';
 
 class QuizToAnswer extends StatelessWidget {
-  const QuizToAnswer({
+  QuizToAnswer({
     Key? key,
     required this.quiz,
   }) : super(key: key);
@@ -18,37 +21,117 @@ class QuizToAnswer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          _buildHeaders(),
-          Expanded(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                    child: CachedNetworkImage(
-                  imageUrl: quiz.presentImagesList[0],
-                  fit: BoxFit.cover,
-                )),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: List.generate(
-                        (quiz.presentImagesList.length - 1) < 3
-                            ? quiz.presentImagesList.length - 1
-                            : 3,
-                        (index) => Expanded(
-                                child: CachedNetworkImage(
-                              imageUrl: quiz.presentImagesList[index + 1],
-                              fit: BoxFit.cover,
-                            ))),
+    return GetBuilder<ExploringController>(
+      builder: (controller) => Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Expanded(
+                child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: AspectRatio(
+                  aspectRatio: 3 / 4,
+                  child: PageView.builder(
+                    itemCount: quiz.presentImagesList.length,
+                    itemBuilder: (context, index) => Center(
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(18),
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              CachedNetworkImage(
+                                imageUrl: quiz.presentImagesList[index],
+                                progressIndicatorBuilder: (context, url, progress) =>
+                                    Center(child: LinearProgressIndicator()),
+                                fit: BoxFit.cover,
+                              ),
+                              Positioned(
+                                  bottom: 0,
+                                  left: 0,
+                                  right: 0,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(18),
+                                    child: BackdropFilter(
+                                        filter: ImageFilter.blur(sigmaX: 0.5, sigmaY: 0.5),
+                                        child: Container(
+                                            color: Colors.black12,
+                                            padding: EdgeInsets.symmetric(horizontal: 12),
+                                            height: 80,
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  (quiz.user?.profileName ?? '') + '#',
+                                                  style: GoogleFonts.openSans(
+                                                      color: Colors.white,
+                                                      fontSize: 18,
+                                                      fontWeight: FontWeight.w600),
+                                                ),
+                                                Row(
+                                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.pin_drop,
+                                                      color: Colors.white,
+                                                    ),
+                                                    Text(
+                                                      '${quiz.user?.city ?? ''} - ${quiz.user?.uf ?? ''} • ${quiz.user?.distance ?? '?'} km',
+                                                      style: GoogleFonts.openSans(
+                                                        color: Colors.white,
+                                                        fontSize: 14,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                              ],
+                                            ))),
+                                  ))
+                            ],
+                          )),
+                    ),
                   ),
-                )
-              ],
+                ),
+              ),
+            )),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(primary: Colors.white, shape: CircleBorder()),
+                      onPressed: controller.removeUserFromExploring,
+                      child: CircleAvatar(
+                          backgroundColor: Colors.transparent,
+                          radius: 30,
+                          child: Icon(
+                            Icons.close,
+                            color: Colors.red,
+                            size: 25,
+                          ))),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(shape: CircleBorder(), primary: Colors.green),
+                      onPressed: () => controller.answerQuiz(quiz),
+                      child: CircleAvatar(
+                          backgroundColor: Colors.transparent,
+                          radius: 30,
+                          child: SvgPicture.asset(
+                            'assets/question-and-answer-svgrepo-com.svg',
+                            color: Colors.white,
+                            height: 28,
+                            width: 28,
+                          )))
+                ],
+              ),
             ),
-          )
-        ],
+            SizedBox(
+              height: 15,
+            )
+          ],
+        ),
       ),
     );
   }

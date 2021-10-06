@@ -1,10 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:knowme/controller/main_screen/exploring_controller.dart';
 import 'package:get/instance_manager.dart';
 import 'package:knowme/controller/main_screen/session_controller.dart';
+import 'package:knowme/models/entry_quiz_model.dart';
+import 'package:knowme/widgets/exploring_tab_filter_drawer.dart';
+import 'package:knowme/widgets/no_nearby_widget.dart';
+
 import 'package:knowme/widgets/quiz_to_answer.dart';
 
 class ExploringTab extends StatefulWidget {
@@ -15,78 +22,104 @@ class ExploringTab extends StatefulWidget {
 }
 
 class _ExploringTabState extends State<ExploringTab> with AutomaticKeepAliveClientMixin {
-  final SesssionController controller = Get.find();
-  final loadingQuizes = false.obs;
   @override
-  void initState() {
-    _getQuizes();
-    super.initState();
-  }
-
-  _getQuizes() {
-    loadingQuizes.value = true;
-    controller.getListOfQuizes().then((value) => loadingQuizes.value = false);
-  }
-
   @override
   Widget build(BuildContext context) {
-    _getQuizes();
     super.build(context);
     return GetBuilder<ExploringController>(
-      init: ExploringController(sesssionController: controller),
-      builder: (explringController) => Scaffold(
-        body: Column(
+      builder: (exploringController) => Scaffold(
+        key: exploringController.scaffoldKey,
+        endDrawer: ExploringTabFilterDrawer(controller: exploringController),
+        body: Stack(
+          fit: StackFit.expand,
           children: [
-            AppBar(
-              leadingWidth: 0,
-              leading: SizedBox.shrink(),
-              titleSpacing: 0,
-              title: Row(
-                children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: explringController.openSearch,
-                      child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 15),
-                        padding: EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                            color: Colors.white, borderRadius: BorderRadius.circular(18)),
-                        child: Row(
-                          children: [
-                            Icon(
-                              CupertinoIcons.search,
-                              color: Get.theme.primaryColor,
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Text(
-                              'Pesquisar',
-                              style: TextStyle(color: Colors.grey, fontSize: 16),
-                            ),
-                          ],
-                        ),
-                      ),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Get.theme.primaryColor,
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(35), bottomRight: Radius.circular(35))),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 65,
                     ),
-                  ),
-                ],
+                    SizedBox(
+                      height: 160,
+                    ),
+                  ],
+                ),
               ),
             ),
-            Obx(() => Visibility(
-                visible: loadingQuizes.value,
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ))),
-            Expanded(
-              flex: 4,
-              child: Obx(() => PageView.builder(
-                    itemCount: explringController.sesssionController.quizesToAnswer.length,
-                    itemBuilder: (context, index) {
-                      final itemQuiz = explringController.sesssionController.quizesToAnswer[index];
-                      return QuizToAnswer(quiz: itemQuiz);
-                    },
-                  )),
-            ),
+            Column(
+              children: [
+                SizedBox(
+                  height: 65,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Perto de Você',
+                          style: GoogleFonts.montserrat(
+                              color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20)),
+                      Row(
+                        children: [
+                          ElevatedButton(
+                              onPressed: exploringController.openSearch,
+                              style: ElevatedButton.styleFrom(
+                                  shape: CircleBorder(), primary: Colors.white),
+                              child: Icon(
+                                Icons.search,
+                                color: Get.theme.primaryColor,
+                              )),
+                          ElevatedButton(
+                              onPressed: exploringController.openFilterDrawer,
+                              style: ElevatedButton.styleFrom(
+                                  shape: CircleBorder(), primary: Colors.white),
+                              child: Icon(
+                                Icons.filter_list_rounded,
+                                color: Get.theme.primaryColor,
+                              )),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 35,
+                ),
+                Expanded(
+                  child: StreamBuilder<List<EntryQuizModel>>(
+                      stream: exploringController.sesssionController.quizesToAnswer.stream,
+                      builder: (context, snapshot) {
+                        return PageView.builder(
+                          key: UniqueKey(),
+                          physics: NeverScrollableScrollPhysics(),
+                          controller: exploringController.pageController,
+                          itemCount:
+                              exploringController.sesssionController.quizesToAnswer.length + 1,
+                          itemBuilder: (context, index) {
+                            if (exploringController.sesssionController.quizesToAnswer.length ==
+                                index) {
+                              return NoNearbyWidget(
+                                  imageUrl: exploringController.sesssionController
+                                      .userAuthRepository.getCurrentUser!.profileImage!);
+                            }
+                            final itemQuiz =
+                                exploringController.sesssionController.quizesToAnswer[index];
+                            return QuizToAnswer(quiz: itemQuiz);
+                          },
+                        );
+                      }),
+                ),
+              ],
+            )
           ],
         ),
       ),

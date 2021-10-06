@@ -84,4 +84,7 @@ abstract class DbRepositoryInterface {
   Future<String> sendAudio(int roomId, File file);
 
   Future<String> getImageUrl(String src);
+
+  Future<List<EntryQuizModel>> getNearbyUsers(
+      {double maxDistance = 50, required double latitude, required double longitude});
 }

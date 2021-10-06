@@ -18,10 +18,24 @@ class SupabaseRepository implements DbRepositoryInterface {
 
   @override
   Future<UserModel> createUser(UserModel userModel) async {
-    final response = await client.from('users').insert([userModel.toMap()]).execute();
+    final privateData = {};
+    if (userModel.phoneNumber != null) privateData['phone_number'] = userModel.phoneNumber;
+    if (userModel.email != null) privateData['email'] = userModel.email;
+    if (userModel.city != null) privateData['city'] = userModel.city;
+    if (userModel.uf != null) privateData['uf'] = userModel.uf;
+    privateData['uid'] = userModel.id;
+    final privateResponse = await client.from('private_infos').insert(privateData).execute();
+    if (privateResponse.error != null) throw RequestError(message: privateResponse.error!.message);
+    final response = await client
+        .from('users')
+        .insert(userModel.toMap()
+          ..['private_infos'] = privateResponse.data[0]['id']
+          ..removeWhere((key, value) => value == null))
+        .execute();
     if (response.error != null) throw RequestError(message: response.error!.message);
     final user = UserModel.fromMap(response.data[0]);
-    return user;
+
+    return user..profileComplet = true;
   }
 
   @override
@@ -162,14 +176,23 @@ class SupabaseRepository implements DbRepositoryInterface {
     if (completName != null) mapToUpdate['completName'] = completName;
     if (profileName != null) mapToUpdate['profileName'] = profileName;
     if (birthDay != null) mapToUpdate['birthDay'] = birthDay;
-    if (city != null) mapToUpdate['city'] = city;
-    if (uf != null) mapToUpdate['uf'] = uf;
-    if (lat != null) mapToUpdate['lat'] = lat;
-    if (lng != null) mapToUpdate['lng'] = lng;
-    if (state != null) mapToUpdate['state'] = state;
     if (sex != null) mapToUpdate['sex'] = sex;
-    if (phoneNumber != null) mapToUpdate['phoneNumber'] = phoneNumber;
+    if (state != null) mapToUpdate['state'] = state;
     if (firebaseToken != null) mapToUpdate['firebaseToken'] = firebaseToken;
+
+    final privateData = {};
+
+    if (city != null) privateData['city'] = city;
+    if (uf != null) privateData['uf'] = uf;
+    if (lat != null) privateData['lat'] = lat;
+    if (lng != null) privateData['lng'] = lng;
+    if (phoneNumber != null) privateData['phone_number'] = phoneNumber;
+    if (privateData.isNotEmpty) {
+      final privateResponse =
+          await client.from('private_infos').update(privateData).eq('uid', id).execute();
+      if (privateResponse.error != null)
+        throw RequestError(message: privateResponse.error!.message);
+    }
 
     final response = await client.from('users').update(mapToUpdate).eq('uid', id).execute();
     if (response.error != null) throw RequestError(message: response.error!.message);
@@ -353,5 +376,15 @@ class SupabaseRepository implements DbRepositoryInterface {
         await client.storage.from('messages.files').upload('$roomId/audios/$fileName', file);
     if (response.error != null) throw RequestError(message: response.error?.message ?? '');
     return response.data!;
+  }
+
+  @override
+  Future<List<EntryQuizModel>> getNearbyUsers(
+      {double maxDistance = 50, required double latitude, required double longitude}) async {
+    final response = await client.rpc('get_nearby_users',
+        params: {'lat': latitude, 'max_distance': maxDistance, 'lng': longitude}).execute();
+    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
+    final listQuiz = List.from(response.data).map((e) => EntryQuizModel.fromMap(e));
+    return listQuiz.toList();
   }
 }

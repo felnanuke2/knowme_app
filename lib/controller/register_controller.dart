@@ -3,10 +3,7 @@ import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/route_manager.dart';
 import 'package:knowme/interface/user_auth_interface.dart';
 import 'package:knowme/screens/complet_register_screen.dart';
-import 'package:knowme/screens/main_screen/main_screen.dart';
 import 'package:string_validator/string_validator.dart';
-
-import 'package:knowme/repositorys/firebase_user_auth_repository.dart';
 
 class RegisterController extends GetxController {
   final UserAuthInterface userAuthRepository;

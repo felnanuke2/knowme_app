@@ -11,8 +11,6 @@ import 'package:knowme/mock/entry_quiz_mock.dart';
 import 'package:knowme/models/entry_quiz_model.dart';
 import 'package:knowme/models/image_upload_model.dart';
 import 'package:knowme/models/question_model.dart';
-import 'package:knowme/repositorys/firebase_repository.dart';
-import 'package:knowme/screens/main_screen/main_screen.dart';
 import 'package:knowme/screens/settings/quiz/create_update_question_scree.dart';
 
 class QuizController extends GetxController {

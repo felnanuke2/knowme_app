@@ -73,8 +73,8 @@ class _MessageTileState extends State<MessageTile> {
                         Text(
                           DateTime.now().difference(widget.messageModel.createdAt).inHours >= 24
                               ? formatDate(widget.messageModel.createdAt,
-                                  [dd, '/', mm, '/', yyyy, ' ', HH, ':', mm])
-                              : formatDate(widget.messageModel.createdAt, [HH, ':', mm]),
+                                  [dd, '/', mm, '/', yyyy, ' ', HH, ':', nn])
+                              : formatDate(widget.messageModel.createdAt, [HH, ':', nn]),
                           textAlign: TextAlign.end,
                           style: GoogleFonts.openSans(color: Colors.grey.shade800.withOpacity(0.8)),
                         ),

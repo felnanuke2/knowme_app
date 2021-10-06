@@ -162,11 +162,16 @@ class CompletProfileController extends GetxController {
             ?..profileImage = imagURl;
         }
 
-        await repository.createUser(userAuthrepository.getCurrentUser!);
-        if (!userAuthrepository.currentUserdataCompleter.isCompleted)
+        final user = await repository.createUser(userAuthrepository.getCurrentUser!);
+        userAuthrepository.setCurrentUser = user;
+        await Future.delayed(Duration(seconds: 2));
+        if (!userAuthrepository.currentUserdataCompleter.isCompleted) {
           userAuthrepository.currentUserdataCompleter.complete();
+        }
+
         Get.offAll(() => MainScreen());
       } on RequestError catch (e) {
+        print(e.message);
         _callErrorSnackBar(title: 'Erro ao Completar o Perfil', message: e.message ?? '');
       }
     } else {

@@ -81,6 +81,7 @@ class UserModel {
   String? entryQuizID;
   @HiveField(20)
   bool profileComplet;
+  double? distance;
   UserModel(
       {this.id,
       this.profileImage,
@@ -101,7 +102,8 @@ class UserModel {
       this.emailConfirm,
       this.postsList,
       this.entryQuizID,
-      this.profileComplet = false});
+      this.profileComplet = false,
+      this.distance});
 
   Map<String, dynamic> toMap() {
     final map = {
@@ -109,47 +111,41 @@ class UserModel {
       'profileImage': profileImage,
       'bio': bio,
       'birthDay': birthDay,
-      'phoneNumber': phoneNumber,
       'completName': completName,
       'profileName': profileName,
-      'uf': uf,
-      'city': city,
-      'lat': lat,
-      'lng': lng,
-      'email': email,
       'state': 0,
       'sex': sex?.toString(),
     };
     if (entryQuizID != null) {
-      map['entryQuizID'] = entryQuizID;
+      map['entry_quiz'] = entryQuizID;
     }
     return map;
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      id: map['uid'],
-      profileImage: map['profileImage'],
-      bio: map['bio'],
-      birthDay: map['birthDay'],
-      completName: map['completName'],
-      profileName: map['profileName'],
-      uf: map['uf'],
-      city: map['city'],
-      lat: map['lat'],
-      lng: map['lng'],
-      phoneNumber: map['phoneNumber'],
-      createdAt:
-          map['createdAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(map['createdAt']),
-      email: map['email'],
-      state: map['state'],
-      updatedAt:
-          map['updatedAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(map['updatedAt']),
-      sex: SexFromString().call(map['sex']),
-      emailConfirm: map['emailConfirm'],
-      postsList: List<String>.from(map['postsList'] ?? []),
-      entryQuizID: map['entryQuizID'] == null ? null : map['entryQuizID'].toString(),
-    );
+        id: map['uid'],
+        profileImage: map['profileImage'],
+        bio: map['bio'],
+        birthDay: map['birthDay'],
+        completName: map['completName'],
+        profileName: map['profileName'],
+        uf: map['uf'],
+        city: map['city'],
+        lat: map['lat'],
+        lng: map['lng'],
+        phoneNumber: map['phoneNumber'],
+        createdAt:
+            map['createdAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(map['createdAt']),
+        email: map['email'],
+        state: map['state'],
+        updatedAt:
+            map['updatedAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(map['updatedAt']),
+        sex: SexFromString().call(map['sex']),
+        emailConfirm: map['emailConfirm'],
+        postsList: List<String>.from(map['postsList'] ?? []),
+        entryQuizID: map['entryQuizID'] == null ? null : map['entryQuizID'].toString(),
+        distance: map['distance'] == null ? null : (map['distance'] as num).toDouble());
   }
 
   String toJson() => json.encode(toMap());

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart' as router;
 import 'package:get/state_manager.dart';
 import 'package:knowme/controller/chat_controler.dart';
+import 'package:knowme/controller/main_screen/exploring_controller.dart';
 import 'package:knowme/errors/requestError.dart';
 
 import 'package:knowme/interface/db_repository_interface.dart';
@@ -19,6 +20,7 @@ import 'package:knowme/screens/complet_register_screen.dart';
 import 'package:knowme/screens/create_post_screen.dart';
 import 'package:knowme/screens/settings/quiz/quiz_settings_screen.dart';
 import 'package:knowme/screens/settings/settings_screen.dart';
+import 'package:knowme/services/location_services.dart';
 import 'package:knowme/services/push_notifications_services.dart';
 import 'package:knowme/widgets/image_picker_bottom_sheet.dart';
 import 'package:get/instance_manager.dart';
@@ -44,10 +46,12 @@ class SesssionController extends GetxController {
   }) {
     _initUserData();
   }
+
   _initUserData() async {
     if (userAuthRepository.currentUserdataCompleter.isCompleted ||
         userAuthRepository.getCurrentUser?.profileComplet == true) {
       isLoadingCurrentUser = false;
+      Get.put(ExploringController(sesssionController: this));
       update();
       await Future.delayed(Duration(milliseconds: 333));
       if (_verifyIfNeedCompletProfile() == true) return;
@@ -62,11 +66,14 @@ class SesssionController extends GetxController {
     await getReceivedInteractions();
     await getPosts();
     chatController = Get.put(ChatController(sesssionController: this));
+
+    final latLng = await LocationServices.getLocation();
     if (userAuthRepository.getCurrentUser != null) {
       try {
         PushNotificationsServices.getToken().then((token) {
           if (token != null) {
-            repository.updateUser(userAuthRepository.getCurrentUser!.id!, firebaseToken: token);
+            repository.updateUser(userAuthRepository.getCurrentUser!.id!,
+                firebaseToken: token, lat: latLng?.lat, lng: latLng?.lng);
           }
         });
       } on RequestError catch (e) {
@@ -153,9 +160,14 @@ class SesssionController extends GetxController {
     }
   }
 
-  Future<void> getListOfQuizes() async {
+  Future<void> getListOfQuizes({double maxDistance = 50}) async {
+    print('callGetQuizes');
     try {
-      final list = await repository.getLisOfQuizes(userAuthRepository.getCurrentUser!.id!);
+      final latLng = await LocationServices.getLocation();
+      if (latLng == null) return;
+
+      final list = await repository.getNearbyUsers(
+          latitude: latLng.lat, longitude: latLng.lng, maxDistance: maxDistance);
       quizesToAnswer.clear();
       quizesToAnswer.addAll(list);
     } on RequestError catch (e) {
