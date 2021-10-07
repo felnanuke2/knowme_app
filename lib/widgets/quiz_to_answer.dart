@@ -103,7 +103,7 @@ class QuizToAnswer extends StatelessWidget {
                 children: [
                   ElevatedButton(
                       style: ElevatedButton.styleFrom(primary: Colors.white, shape: CircleBorder()),
-                      onPressed: controller.removeUserFromExploring,
+                      onPressed: controller.passQuiz,
                       child: CircleAvatar(
                           backgroundColor: Colors.transparent,
                           radius: 30,

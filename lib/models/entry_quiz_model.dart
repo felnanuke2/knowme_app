@@ -32,6 +32,15 @@ class EntryQuizModel {
 
   factory EntryQuizModel.fromMap(Map<String, dynamic> map) {
     final quiz = map['quiz'];
+    if (quiz == null)
+      return EntryQuizModel(
+          id: map['id'].toString(),
+          createAt: DateTime.tryParse(map['created_at']),
+          updateAt: DateTime.tryParse(map['updated_at']),
+          presentImagesList: List<String>.from(map['presentImagesList']),
+          questions:
+              List<QuestionModel>.from(map['questions']?.map((x) => QuestionModel.fromMap(x))),
+          createdByID: map['created_by']);
     return EntryQuizModel(
         id: quiz['id'].toString(),
         presentImagesList: List<String>.from(quiz['images']),

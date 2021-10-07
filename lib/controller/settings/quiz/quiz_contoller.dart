@@ -24,6 +24,7 @@ class QuizController extends GetxController {
   var pageIndex = 0.obs;
   List<String> deletedImages = [];
   bool loadingQuiz = false;
+  final completeLoading = false.obs;
   QuizController({
     required this.userAuthRepo,
     required this.repository,
@@ -149,11 +150,9 @@ class QuizController extends GetxController {
       return;
     }
     final List<String> imagesListUrl = [];
-
+    this.completeLoading.value = true;
     for (var image in imagesList) {
       if (image.imageUrl == null) {
-        _callErrorSnackBar(
-            title: 'Enviando Imagens', message: 'Estamos Enviando suas Imagens', failure: false);
         final url = await repository.upLoadImage(
             imageByte: image.byteImage!, userID: userAuthRepo.getCurrentUser!.id!);
         imagesListUrl.add(url);
@@ -180,10 +179,7 @@ class QuizController extends GetxController {
     }
     userAuthRepo.setCurrentUser = userAuthRepo.getCurrentUser!..entryQuizID = quizModel?.id;
     await repository.updateUser(userAuthRepo.getCurrentUser!.id!, entryQuizId: quizModel!.id!);
-
-    while (Get.isSnackbarOpen == true) {
-      Get.back();
-    }
+    this.completeLoading.value = false;
     Get.back();
   }
 

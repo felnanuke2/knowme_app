@@ -96,23 +96,23 @@ class _ExploringTabState extends State<ExploringTab> with AutomaticKeepAliveClie
                 ),
                 Expanded(
                   child: StreamBuilder<List<EntryQuizModel>>(
-                      stream: exploringController.sesssionController.quizesToAnswer.stream,
+                      stream: exploringController.sessionController.quizesToAnswer.stream,
                       builder: (context, snapshot) {
                         return PageView.builder(
                           key: UniqueKey(),
                           physics: NeverScrollableScrollPhysics(),
                           controller: exploringController.pageController,
                           itemCount:
-                              exploringController.sesssionController.quizesToAnswer.length + 1,
+                              exploringController.sessionController.quizesToAnswer.length + 1,
                           itemBuilder: (context, index) {
-                            if (exploringController.sesssionController.quizesToAnswer.length ==
+                            if (exploringController.sessionController.quizesToAnswer.length ==
                                 index) {
                               return NoNearbyWidget(
-                                  imageUrl: exploringController.sesssionController
-                                      .userAuthRepository.getCurrentUser!.profileImage!);
+                                  imageUrl: exploringController.sessionController.userAuthRepository
+                                      .getCurrentUser!.profileImage!);
                             }
                             final itemQuiz =
-                                exploringController.sesssionController.quizesToAnswer[index];
+                                exploringController.sessionController.quizesToAnswer[index];
                             return QuizToAnswer(quiz: itemQuiz);
                           },
                         );

@@ -12,11 +12,11 @@ import 'package:get/instance_manager.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class ExploringController extends GetxController {
-  final SesssionController sesssionController;
+  final SesssionController sessionController;
   ExploringController({
-    required this.sesssionController,
+    required this.sessionController,
   }) {
-    sesssionController.getListOfQuizes();
+    sessionController.getListOfQuizes();
   }
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final pageController = PageController();
@@ -28,28 +28,31 @@ class ExploringController extends GetxController {
         context: Get.context!, delegate: ExploringSearchDelegate(controller: this));
     if (result == null) return;
     if (result is UserModel) {
-      if (result.id != sesssionController.userAuthRepository.getCurrentUser?.id) {
+      if (result.id != sessionController.userAuthRepository.getCurrentUser?.id) {
         await Future.delayed(Duration(seconds: 1));
         Get.to(() => UsersProfileScreen(userModel: result));
       } else {
-        sesssionController.pageController.jumpToPage(3);
+        sessionController.pageController.jumpToPage(3);
       }
     }
   }
 
   Future<List<UserModel>> searchUsers(String query) async {
-    final usersList = await sesssionController.repository.searchUsers(query);
+    final usersList = await sessionController.repository.searchUsers(query);
     return usersList;
   }
 
-  void removeUserFromExploring() {
+  void passQuiz() {
     pageController.nextPage(duration: Duration(milliseconds: 350), curve: Curves.easeInExpo);
+    final quiz = sessionController.quizesToAnswer.removeAt(pageController.page!.round());
+    sessionController.repository.passQuiz(int.parse(quiz.id!));
   }
 
-  answerQuiz(EntryQuizModel quiz) {
-    Get.to(() => AnswerQuizScreen(
+  answerQuiz(EntryQuizModel quiz) async {
+    final result = await Get.to(() => AnswerQuizScreen(
           quiz: quiz,
         ));
+    if (result != null) sessionController.quizesToAnswer.remove(quiz);
   }
 
   void openFilterDrawer() {
@@ -57,7 +60,7 @@ class ExploringController extends GetxController {
   }
 
   void setNewFilters() {
-    sesssionController.getListOfQuizes(maxDistance: double.parse(distanceTEC.text));
+    sessionController.getListOfQuizes(maxDistance: double.parse(distanceTEC.text));
     Get.back();
   }
 }

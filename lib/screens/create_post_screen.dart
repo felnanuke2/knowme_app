@@ -46,51 +46,68 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       builder: (postController) => Scaffold(
         appBar: AppBar(
           actions: [
-            TextButton.icon(
-                onPressed: () => postController.createpost(widget.src),
-                icon: Icon(
-                  Icons.check,
-                  color: Colors.green,
-                ),
-                label: Text(
-                  'Finalizar',
-                  style: TextStyle(color: Colors.white),
-                ))
+            Obx(() => postController.loading.value
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : TextButton.icon(
+                    onPressed: () => postController.createpost(widget.src),
+                    icon: Icon(
+                      Icons.check,
+                      color: Colors.green,
+                    ),
+                    label: Text(
+                      'Finalizar',
+                      style: TextStyle(color: Colors.white),
+                    ))),
           ],
           title: Text('Nova Publicação'),
         ),
-        body: SingleChildScrollView(
-          child: Form(
-            key: postController.formKey,
-            child: Column(
-              children: [
-                AspectRatio(
-                  aspectRatio: 1,
-                  child: ClipRRect(
-                    child: widget.src is String
-                        ? Center(
-                            child: AspectRatio(
-                                aspectRatio: controller!.value.aspectRatio,
-                                child: VideoPlayer(controller!)))
-                        : Image.memory(widget.src),
-                  ),
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            SingleChildScrollView(
+              child: Form(
+                key: postController.formKey,
+                child: Column(
+                  children: [
+                    AspectRatio(
+                      aspectRatio: 1,
+                      child: ClipRRect(
+                        child: widget.src is String
+                            ? Center(
+                                child: AspectRatio(
+                                    aspectRatio: controller!.value.aspectRatio,
+                                    child: VideoPlayer(controller!)))
+                            : Image.memory(widget.src),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: TextFormField(
+                        controller: postController.descriptionController,
+                        validator: postController.validateDescription,
+                        minLines: 3,
+                        maxLines: 5,
+                        decoration: InputDecoration(labelText: 'Descrição'),
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  height: 20,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: TextFormField(
-                    controller: postController.descriptionController,
-                    validator: postController.validateDescription,
-                    minLines: 3,
-                    maxLines: 5,
-                    decoration: InputDecoration(labelText: 'Descrição'),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+            Obx(() => Visibility(
+                visible: postController.loading.value,
+                child: Container(
+                  child: Center(
+                    child: LinearProgressIndicator(),
+                  ),
+                  color: Colors.white.withOpacity(0.6),
+                )))
+          ],
         ),
       ),
     );

@@ -87,4 +87,6 @@ abstract class DbRepositoryInterface {
 
   Future<List<EntryQuizModel>> getNearbyUsers(
       {double maxDistance = 50, required double latitude, required double longitude});
+
+  Future<void> passQuiz(int quizId);
 }

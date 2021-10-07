@@ -14,12 +14,15 @@ class CreatePostController extends GetxController {
   CreatePostController({
     required this.sesssionController,
   });
+
+  final loading = false.obs;
   void createpost(dynamic src) async {
     if (!formKey.currentState!.validate()) return;
     bool isVideo = false;
     final userId = sesssionController.userAuthRepository.getCurrentUser!.id!;
     String srcUrl = '';
     String? thumnail;
+    loading.value = true;
     if (src is String) {
       try {
         final thumbData =
@@ -48,7 +51,9 @@ class CreatePostController extends GetxController {
         createAt: DateTime.now(),
         description: descriptionController.text);
 
-    final postid = await sesssionController.repository.createpost(post);
+    await sesssionController.repository.createpost(post);
+    loading.value = false;
+    sesssionController.getPosts();
     Get.back();
   }
 

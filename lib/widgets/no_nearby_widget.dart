@@ -13,7 +13,7 @@ class NoNearbyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    image.evict;
+    image.evict();
     return Container(
       color: Get.theme.primaryColor,
       child: Center(

@@ -51,7 +51,7 @@ class SesssionController extends GetxController {
     if (userAuthRepository.currentUserdataCompleter.isCompleted ||
         userAuthRepository.getCurrentUser?.profileComplet == true) {
       isLoadingCurrentUser = false;
-      Get.put(ExploringController(sesssionController: this));
+      Get.put(ExploringController(sessionController: this));
       update();
       await Future.delayed(Duration(milliseconds: 333));
       if (_verifyIfNeedCompletProfile() == true) return;

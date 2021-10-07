@@ -387,4 +387,11 @@ class SupabaseRepository implements DbRepositoryInterface {
     final listQuiz = List.from(response.data).map((e) => EntryQuizModel.fromMap(e));
     return listQuiz.toList();
   }
+
+  @override
+  Future<void> passQuiz(int quizId) async {
+    final response = await client.rpc('pass_quiz', params: {'quiz_id': quizId}).execute();
+
+    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
+  }
 }
