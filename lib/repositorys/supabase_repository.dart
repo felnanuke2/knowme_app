@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:io';
 import 'package:knowme/errors/requestError.dart';
@@ -6,6 +7,7 @@ import 'package:knowme/events/stream_event.dart';
 import 'package:knowme/interface/db_repository_interface.dart';
 import 'package:knowme/models/chat_room_model.dart';
 import 'package:knowme/models/message_model.dart';
+import 'package:knowme/models/plans_model.dart';
 import 'package:knowme/models/user_model.dart';
 import 'package:knowme/models/post_model.dart';
 import 'package:knowme/models/interactions_model.dart';
@@ -393,5 +395,45 @@ class SupabaseRepository implements DbRepositoryInterface {
     final response = await client.rpc('pass_quiz', params: {'quiz_id': quizId}).execute();
 
     if (response.error != null) throw RequestError(message: response.error?.message ?? '');
+  }
+
+  @override
+  Future<String> createPaymentSession() async {
+    final response = await client
+        .rpc(
+          'create_impression',
+        )
+        .execute();
+    final preferenceId = await _paymentLoop(response.data);
+    print(preferenceId);
+    return preferenceId['id'];
+  }
+
+  Future _paymentLoop(int requestID) async {
+    final completer = Completer<Map>();
+    while (!completer.isCompleted) {
+      final response = await client.rpc('get_payment_preferences', params: {
+        'request_id': requestID,
+      }).execute();
+      if (response.error != null) throw RequestError(message: response.error!.message);
+      if (response.data[0]['status'] == 'PENDING') {
+        await Future.delayed(Duration(seconds: 1));
+      } else {
+        completer.complete(jsonDecode(response.data[0]['response']['body']));
+      }
+    }
+    return await completer.future;
+  }
+
+  @override
+  Future<List<PlansModel>> getPlans() async {
+    final response = await client
+        .rpc(
+          'get_plans',
+        )
+        .execute();
+    if (response.error != null) throw RequestError(message: response.error!.message);
+    final plansList = List.from(response.data).map((e) => PlansModel.fromMap(e)).toList();
+    return plansList;
   }
 }

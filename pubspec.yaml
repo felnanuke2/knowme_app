@@ -66,7 +66,9 @@ dependencies:
   hive_flutter: ^1.1.0
   build_runner: ^2.1.4
   hive_generator: ^1.1.1
-  geolocator: ^7.6.2
+  geolocator: ^7.7.0
+  mercado_pago_mobile_checkout: ^0.1.1
+  animate_do: ^2.0.0
   
   
  

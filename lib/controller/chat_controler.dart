@@ -64,7 +64,7 @@ class ChatController extends GetxController {
   Future<void> onRefresh() async {
     await _getChatRooms();
     await _getMessages();
-    getRoomsCompleter.complete();
+    if (!getRoomsCompleter.isCompleted) getRoomsCompleter.complete();
   }
 
   _getChatRooms() async {
@@ -101,13 +101,14 @@ class ChatController extends GetxController {
       final message = await repository.sendMessage(userid, messageTextInput ?? messageText, 0);
       if (chatRoomID != null) {
         chatsMap[chatRoomID]?.insert(0, message);
-      } else {
-        await onRefresh();
       }
       sendingMessage.value = false;
       return message;
     } on RequestError catch (e) {
       print(e);
+      await onRefresh();
+    } catch (e) {
+      await onRefresh();
     }
     sendingMessage.value = false;
   }

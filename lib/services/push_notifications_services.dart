@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:davinci/core/davinci_capture.dart';
-import 'package:davinci/core/davinci_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +9,8 @@ import 'package:http/http.dart';
 import 'package:get/instance_manager.dart';
 import 'package:knowme/controller/main_screen/session_controller.dart';
 import 'package:knowme/models/user_model.dart';
-
+import 'package:knowme/screens/received_interactions_screen.dart';
+import 'package:knowme/screens/users_profile_screen.dart';
 import '../main.dart';
 
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -93,6 +92,14 @@ class PushNotificationsServices {
         id: userMap['uid'],
       ));
     }
+    if (type == 'interaction_received') {
+      await MyApp.initializationComplete.future;
+      Get.to(() => ReceivedInteractionsScreen());
+    }
+    if (type == 'interaction_updated') {
+      await MyApp.initializationComplete.future;
+      Get.to(UsersProfileScreen(userModel: UserModel(id: data['uid'])));
+    }
   }
 
   static Future onDidReceiveLocalNotification(
@@ -101,24 +108,10 @@ class PushNotificationsServices {
   static showNotification(RemoteMessage message) async {
     final data = jsonDecode(message.data['data']);
     final type = data['type'];
-    if (type == 'message') {
-      if (Get.currentRoute == '/ChatScreen') return;
-      final title = data['title'];
-      final userMap = data['user'];
-      final profileImage = await _downloadAndSaveFile(userMap['profile_image'], 'profileImage');
-      final id = int.parse(data['room']);
-      final person = Person(
-        key: userMap['uid'],
-        name: userMap['name'],
-        icon: BitmapFilePathAndroidIcon(profileImage),
-      );
-      final messages = List.from(data['message'])
-          .map((e) => Message(e['text'], DateTime.parse(e['date_time']), person))
-          .toList();
+    if (type == 'message') _showMessageNotfication(payload: jsonEncode(data));
 
-      _showMessageNotfication(
-          messages: messages, payload: jsonEncode(data), person: person, title: title, id: id);
-    }
+    if (type == 'interaction_received' || type == 'interaction_updated')
+      _showInteractionsNotifications(payload: jsonEncode(data));
   }
 
   static Future<String> _downloadAndSaveFile(String url, String fileName) async {
@@ -130,13 +123,48 @@ class PushNotificationsServices {
     return filePath;
   }
 
-  static _showMessageNotfication({
-    required String title,
-    required Person person,
+  static _showInteractionsNotifications({
     required String payload,
-    required List<Message> messages,
-    required int id,
   }) async {
+    final data = jsonDecode(payload);
+    final profileImage = await _downloadAndSaveFile(data['profile_image'], 'profileImage');
+    final AndroidNotificationDetails androidSettings = AndroidNotificationDetails(
+      MESSAGE_ANDROID_NOTIFICATION_ID,
+      MESSAGE_CHANNEL_NOTIFICATION_NAME,
+      MESSAGE_CHANNEL_NOTIFICATION_DESCRIPTION,
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: true,
+      icon: '@drawable/ic_notification',
+      largeIcon: FilePathAndroidBitmap(profileImage),
+    );
+
+    final notificationDetails = NotificationDetails(
+      android: androidSettings,
+    );
+    await flutterLocalNotificationsPlugin
+        .show(data['id'], data['title'], data['body'], notificationDetails, payload: payload);
+    await Get.find<SesssionController>().getReceivedInteractions();
+  }
+
+  static _showMessageNotfication({
+    required String payload,
+  }) async {
+    final data = jsonDecode(payload);
+    if (Get.currentRoute == '/ChatScreen') return;
+    final title = data['title'];
+    final userMap = data['user'];
+    final profileImage = await _downloadAndSaveFile(userMap['profile_image'], 'profileImage');
+    final id = int.parse(data['room']);
+    final person = Person(
+      key: userMap['uid'],
+      name: userMap['name'],
+      icon: BitmapFilePathAndroidIcon(profileImage),
+    );
+    final messages = List.from(data['message'])
+        .map((e) => Message(e['text'], DateTime.parse(e['date_time']), person))
+        .toList();
+
     final messaginInformation = MessagingStyleInformation(person, messages: messages);
 
     final AndroidNotificationDetails androidSettings = AndroidNotificationDetails(

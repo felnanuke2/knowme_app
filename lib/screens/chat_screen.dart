@@ -31,6 +31,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final showDropButton = false.obs;
   final sController = ScrollController();
+  late ChatController _chatController;
   @override
   void initState() {
     sController.addListener(() {
@@ -46,168 +47,183 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ChatController>(
-      dispose: (state) => state.controller?.disposeChatScreen(),
-      builder: (controller) => Scaffold(
-        body: SafeArea(
-          child: Stack(
-            children: [
-              Column(
+        dispose: (state) => state.controller?.disposeChatScreen(),
+        builder: (controller) {
+          _chatController = controller;
+          return Scaffold(
+            body: SafeArea(
+              child: Stack(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 18),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 18),
+                        child: Column(
                           children: [
-                            Align(
-                              alignment: Alignment.topLeft,
-                              child: BackButton(
-                                color: Get.theme.primaryColor,
-                              ),
-                            ),
-                            Container(
-                              margin: EdgeInsets.symmetric(horizontal: 14),
-                              width: 50,
-                              height: 50,
-                              child: ClipOval(
-                                child: CachedNetworkImage(
-                                  imageUrl: otherUser.profileImage ?? '',
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Align(
+                                  alignment: Alignment.topLeft,
+                                  child: BackButton(
+                                    color: Get.theme.primaryColor,
+                                  ),
                                 ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 14,
-                            ),
-                            Text(
-                              otherUser.completName ?? '',
-                              style:
-                                  GoogleFonts.montserrat(fontWeight: FontWeight.bold, fontSize: 15),
+                                Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 14),
+                                  width: 50,
+                                  height: 50,
+                                  child: ClipOval(
+                                    child: CachedNetworkImage(
+                                      imageUrl: otherUser.profileImage ?? '',
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 14,
+                                ),
+                                Text(
+                                  otherUser.completName ?? '',
+                                  style: GoogleFonts.montserrat(
+                                      fontWeight: FontWeight.bold, fontSize: 15),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                      child: Obx(() => ListView.builder(
-                            controller: sController,
-                            reverse: true,
-                            itemCount: (controller.chatsMap[widget.room.id]?.length ?? 0) + 1,
-                            itemBuilder: (context, index) {
-                              if (index == controller.chatsMap[widget.room.id]?.length) {
-                                if (!controller.haveNoMoreMessages.value) {
-                                  controller.getMessagesBefore(widget.room.id,
-                                      controller.chatsMap[widget.room.id]?.last.id ?? 0);
-                                }
-                                return Center(
-                                    child: Obx(() => controller.haveNoMoreMessages.value
-                                        ? SizedBox.shrink()
-                                        : Container(
-                                            margin: EdgeInsets.all(8),
-                                            child: CircularProgressIndicator())));
-                              }
-                              final itemChats = controller.chatsMap[widget.room.id]![index];
-                              if (itemChats.status != 2 && otherUser.id == itemChats.createdBy)
-                                controller.addMessagesForRead(itemChats.id);
-                              return MessageTile(
-                                messageModel: itemChats,
-                                sendByMe: itemChats.createdBy == controller.currentUserID,
-                                controller: controller,
-                                key: Key(itemChats.id.toString()),
-                              );
-                            },
-                          ))),
-                  Card(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Row(
-                        children: [
-                          Obx(() => controller.isRecAudio.value
-                              ? SizedBox.shrink()
-                              : IconButton(
-                                  onPressed: () =>
-                                      controller.sendMediaMessage(otherUser.id!, widget.room.id),
-                                  icon: Icon(
-                                    Icons.attach_file,
-                                    color: Get.theme.primaryColor,
-                                  ),
-                                )),
-                          Obx(() => Expanded(
-                              child: controller.isRecAudio.value
-                                  ? RecorderTile(
-                                      otherUserId: otherUser.id!,
-                                      roomId: widget.room.id,
-                                      controller: controller,
-                                    )
-                                  : TextFormField(
-                                      controller: controller.messageTEC,
-                                      onChanged: controller.onMessageChange,
-                                      minLines: 1,
-                                      maxLines: 3,
-                                      decoration: InputDecoration(
-                                          filled: true,
-                                          fillColor: Colors.grey.withOpacity(0.05),
-                                          enabledBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(22),
-                                              borderSide: BorderSide(color: Colors.transparent)),
-                                          focusedBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(22),
-                                              borderSide: BorderSide(color: Colors.transparent))),
-                                    ))),
-                          Obx(() => controller.sendingMessage.value
-                              ? Center(
-                                  child: Container(
-                                      width: 28, height: 28, child: CircularProgressIndicator()),
-                                )
-                              : Obx(() => controller.isRecAudio.value
-                                  ? SizedBox.shrink()
-                                  : controller.text.value.isNotEmpty
-                                      ? IconButton(
-                                          onPressed: () => controller.sendTextMessage(otherUser.id!,
-                                              chatRoomID: widget.room.id),
-                                          icon: Icon(
-                                            Icons.send,
-                                            color: Get.theme.primaryColor,
-                                          ))
-                                      : IconButton(
-                                          onPressed: controller.recAudio,
-                                          icon: Icon(
-                                            Icons.mic,
-                                            color: Get.theme.primaryColor,
-                                          )))),
-                        ],
                       ),
-                    ),
-                  )
+                      Expanded(
+                          child: Obx(() => ListView.builder(
+                                controller: sController,
+                                reverse: true,
+                                itemCount: (controller.chatsMap[widget.room.id]?.length ?? 0) + 1,
+                                itemBuilder: _buildMessages,
+                              ))),
+                      Card(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Row(
+                            children: [
+                              Obx(() => controller.isRecAudio.value
+                                  ? SizedBox.shrink()
+                                  : IconButton(
+                                      onPressed: () => controller.sendMediaMessage(
+                                          otherUser.id!, widget.room.id),
+                                      icon: Icon(
+                                        Icons.attach_file,
+                                        color: Get.theme.primaryColor,
+                                      ),
+                                    )),
+                              Obx(() => Expanded(
+                                  child: controller.isRecAudio.value
+                                      ? RecorderTile(
+                                          otherUserId: otherUser.id!,
+                                          roomId: widget.room.id,
+                                          controller: controller,
+                                        )
+                                      : TextFormField(
+                                          controller: controller.messageTEC,
+                                          onChanged: controller.onMessageChange,
+                                          minLines: 1,
+                                          maxLines: 3,
+                                          decoration: InputDecoration(
+                                              filled: true,
+                                              fillColor: Colors.grey.withOpacity(0.05),
+                                              enabledBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(22),
+                                                  borderSide:
+                                                      BorderSide(color: Colors.transparent)),
+                                              focusedBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(22),
+                                                  borderSide:
+                                                      BorderSide(color: Colors.transparent))),
+                                        ))),
+                              Obx(() => controller.sendingMessage.value
+                                  ? Center(
+                                      child: Container(
+                                          width: 28,
+                                          height: 28,
+                                          child: CircularProgressIndicator()),
+                                    )
+                                  : Obx(() => controller.isRecAudio.value
+                                      ? SizedBox.shrink()
+                                      : controller.text.value.isNotEmpty
+                                          ? IconButton(
+                                              onPressed: () => controller.sendTextMessage(
+                                                  otherUser.id!,
+                                                  chatRoomID: widget.room.id),
+                                              icon: Icon(
+                                                Icons.send,
+                                                color: Get.theme.primaryColor,
+                                              ))
+                                          : IconButton(
+                                              onPressed: controller.recAudio,
+                                              icon: Icon(
+                                                Icons.mic,
+                                                color: Get.theme.primaryColor,
+                                              )))),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  Obx(() => !showDropButton.value
+                      ? SizedBox.shrink()
+                      : Positioned(
+                          bottom: 130,
+                          right: 8,
+                          child: FloatingActionButton(
+                            onPressed: () {
+                              sController.animateTo(0,
+                                  duration: Duration(seconds: 2), curve: Curves.linearToEaseOut);
+                            },
+                            backgroundColor: Get.theme.primaryColor,
+                            child: Icon(
+                              Icons.arrow_drop_down,
+                              size: 40,
+                            ),
+                          )))
                 ],
               ),
-              Obx(() => !showDropButton.value
-                  ? SizedBox.shrink()
-                  : Positioned(
-                      bottom: 130,
-                      right: 8,
-                      child: FloatingActionButton(
-                        onPressed: () {
-                          sController.animateTo(0,
-                              duration: Duration(seconds: 2), curve: Curves.linearToEaseOut);
-                        },
-                        backgroundColor: Get.theme.primaryColor,
-                        child: Icon(
-                          Icons.arrow_drop_down,
-                          size: 40,
-                        ),
-                      )))
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          );
+        });
   }
 
   UserModel get otherUser {
     if (widget.room.user_a.id == widget.currentUserId) return widget.room.user_b;
     return widget.room.user_a;
+  }
+
+  void _setHasReadMessages(ChatController controller) {
+    if (!controller.haveNoMoreMessages.value) {
+      if (controller.chatsMap[widget.room.id]?.isNotEmpty ?? false)
+        controller.getMessagesBefore(
+            widget.room.id, controller.chatsMap[widget.room.id]?.last.id ?? 0);
+      else
+        controller.haveNoMoreMessages.value = true;
+    }
+  }
+
+  Widget _buildMessages(BuildContext context, int index) {
+    final controller = _chatController;
+    if (index == controller.chatsMap[widget.room.id]?.length) {
+      _setHasReadMessages(controller);
+      return Center(
+          child: Obx(() => controller.haveNoMoreMessages.value
+              ? SizedBox.shrink()
+              : Container(margin: EdgeInsets.all(8), child: CircularProgressIndicator())));
+    }
+    final itemChats = controller.chatsMap[widget.room.id]![index];
+    if (itemChats.status != 2 && otherUser.id == itemChats.createdBy)
+      controller.addMessagesForRead(itemChats.id);
+    return MessageTile(
+      messageModel: itemChats,
+      sendByMe: itemChats.createdBy == controller.currentUserID,
+      controller: controller,
+      key: Key(itemChats.id.toString()),
+    );
   }
 }

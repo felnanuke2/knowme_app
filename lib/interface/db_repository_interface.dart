@@ -7,6 +7,7 @@ import 'package:knowme/models/chat_room_model.dart';
 import 'package:knowme/models/entry_quiz_model.dart';
 import 'package:knowme/models/interactions_model.dart';
 import 'package:knowme/models/message_model.dart';
+import 'package:knowme/models/plans_model.dart';
 import 'package:knowme/models/post_model.dart';
 import 'package:knowme/models/user_model.dart';
 
@@ -89,4 +90,9 @@ abstract class DbRepositoryInterface {
       {double maxDistance = 50, required double latitude, required double longitude});
 
   Future<void> passQuiz(int quizId);
+
+  /// return somthing to start checkout
+  Future<String> createPaymentSession();
+
+  Future<List<PlansModel>> getPlans();
 }

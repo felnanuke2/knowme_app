@@ -7,10 +7,8 @@ import 'package:get/state_manager.dart';
 import 'package:knowme/controller/chat_controler.dart';
 import 'package:knowme/controller/main_screen/exploring_controller.dart';
 import 'package:knowme/errors/requestError.dart';
-
 import 'package:knowme/interface/db_repository_interface.dart';
 import 'package:knowme/interface/user_auth_interface.dart';
-import 'package:knowme/models/chat_room_model.dart';
 import 'package:knowme/models/entry_quiz_model.dart';
 import 'package:knowme/models/interactions_model.dart';
 import 'package:knowme/models/post_model.dart';
@@ -63,6 +61,7 @@ class SesssionController extends GetxController {
       update();
     }
     if (userAuthRepository.getCurrentUser?.entryQuizID == null) _requestQuizCompletationDialog();
+
     await getReceivedInteractions();
     await getPosts();
     chatController = Get.put(ChatController(sesssionController: this));
@@ -195,18 +194,24 @@ class SesssionController extends GetxController {
         userModel.id!,
         messageTextInput: '',
       );
-      if (message == null) return;
+
       _openChatCreen(userModel);
     }
   }
 
   _openChatCreen(UserModel userModel) {
-    final room = chatController.chatRooms.firstWhere(
-        (element) => element.user_a.id == userModel.id || element.user_b.id == userModel.id);
+    print(chatController.chatRooms.length);
+    final room = chatController.chatRooms.firstWhere((element) =>
+        [userModel.id, userAuthRepository.getCurrentUser?.id].contains(element.user_a.id) &&
+        [userModel.id, userAuthRepository.getCurrentUser?.id].contains(element.user_b.id));
 
     Get.to(() => ChatScreen(
         chatList: chatController.chatsMap[room.id] ?? [],
         room: room,
         currentUserId: userAuthRepository.getCurrentUser!.id!));
+  }
+
+  createPaymentsession() async {
+    repository.createPaymentSession();
   }
 }

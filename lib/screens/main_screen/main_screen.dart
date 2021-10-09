@@ -18,7 +18,7 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<SesssionController>(
         init: SesssionController(repository: Get.find(), userAuthRepository: Get.find()),
-        builder: (mainScreenController) => mainScreenController.isLoadingCurrentUser == true
+        builder: (sessionController) => sessionController.isLoadingCurrentUser == true
             ? Container(
                 color: Colors.white,
                 child: Center(
@@ -27,7 +27,7 @@ class MainScreen extends StatelessWidget {
               )
             : Obx(
                 () => Scaffold(
-                  appBar: mainScreenController.currentPage.value != 2
+                  appBar: sessionController.currentPage.value != 2
                       ? AppBar(
                           iconTheme: IconThemeData(color: Get.theme.primaryColor),
                           backgroundColor: Colors.white,
@@ -41,9 +41,9 @@ class MainScreen extends StatelessWidget {
                           actions: [
                             Obx(
                               () => Visibility(
-                                visible: mainScreenController.currentPage.value == 1,
+                                visible: sessionController.currentPage.value == 1,
                                 child: IconButton(
-                                    onPressed: mainScreenController.createPost,
+                                    onPressed: sessionController.createPost,
                                     icon: Icon(
                                       Icons.add,
                                     )),
@@ -51,9 +51,9 @@ class MainScreen extends StatelessWidget {
                             ),
                             Obx(
                               () => Visibility(
-                                visible: mainScreenController.currentPage.value == 4,
+                                visible: sessionController.currentPage.value == 4,
                                 child: IconButton(
-                                    onPressed: mainScreenController.onSettingsPressed,
+                                    onPressed: sessionController.onSettingsPressed,
                                     icon: Icon(
                                       Icons.settings,
                                     )),
@@ -61,19 +61,33 @@ class MainScreen extends StatelessWidget {
                             ),
                             IconButton(
                                 onPressed: () => Get.to(() => ReceivedInteractionsScreen()),
-                                icon: Icon(
-                                  Icons.notifications,
+                                icon: Stack(
+                                  children: [
+                                    Icon(
+                                      Icons.notifications,
+                                    ),
+                                    Obx(() => Visibility(
+                                          visible: sessionController.interactionsReceived
+                                              .where((e) => e.status == 0)
+                                              .toList()
+                                              .isNotEmpty,
+                                          child: CircleAvatar(
+                                            radius: 5,
+                                            backgroundColor: Colors.green,
+                                          ),
+                                        )),
+                                  ],
                                 )),
                           ],
                         )
                       : null,
                   bottomNavigationBar: MainScreenBottomNavigationBar(
-                    controller: mainScreenController,
+                    controller: sessionController,
                   ),
                   body: PageView(
-                    onPageChanged: (value) => mainScreenController.currentPage.value = value,
+                    onPageChanged: (value) => sessionController.currentPage.value = value,
                     physics: NeverScrollableScrollPhysics(),
-                    controller: mainScreenController.pageController,
+                    controller: sessionController.pageController,
                     children: [
                       HomeTab(),
                       FeedTab(),
