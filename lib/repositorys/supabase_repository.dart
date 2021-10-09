@@ -398,12 +398,8 @@ class SupabaseRepository implements DbRepositoryInterface {
   }
 
   @override
-  Future<String> createPaymentSession() async {
-    final response = await client
-        .rpc(
-          'create_impression',
-        )
-        .execute();
+  Future<String> createPaymentSession(int plantId) async {
+    final response = await client.rpc('create_impression', params: {'plan_id': plantId}).execute();
     final preferenceId = await _paymentLoop(response.data);
     print(preferenceId);
     return preferenceId['id'];

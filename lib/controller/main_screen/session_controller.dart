@@ -210,8 +210,4 @@ class SesssionController extends GetxController {
         room: room,
         currentUserId: userAuthRepository.getCurrentUser!.id!));
   }
-
-  createPaymentsession() async {
-    repository.createPaymentSession();
-  }
 }
