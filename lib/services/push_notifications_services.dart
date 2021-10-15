@@ -112,6 +112,9 @@ class PushNotificationsServices {
 
     if (type == 'interaction_received' || type == 'interaction_updated')
       _showInteractionsNotifications(payload: jsonEncode(data));
+    if (type == 'payment_approved') {
+      _showPaymentNotification(jsonEncode(data));
+    }
   }
 
   static Future<String> _downloadAndSaveFile(String url, String fileName) async {
@@ -123,27 +126,37 @@ class PushNotificationsServices {
     return filePath;
   }
 
+  static _showPaymentNotification(String payload) {
+    final json = jsonDecode(payload);
+    flutterLocalNotificationsPlugin.show(
+        122,
+        json['title'],
+        json['body'],
+        NotificationDetails(
+            android: AndroidNotificationDetails(PAYMENT_ANDROID_NOTIFICATION_ID,
+                PAYMENT_CHANNEL_NOTIFICATION_NAME, PAYMENT_CHANNEL_NOTIFICATION_DESCRIPTION)));
+  }
+
   static _showInteractionsNotifications({
     required String payload,
   }) async {
     final data = jsonDecode(payload);
-    final profileImage = await _downloadAndSaveFile(data['profile_image'], 'profileImage');
     final AndroidNotificationDetails androidSettings = AndroidNotificationDetails(
-      MESSAGE_ANDROID_NOTIFICATION_ID,
-      MESSAGE_CHANNEL_NOTIFICATION_NAME,
-      MESSAGE_CHANNEL_NOTIFICATION_DESCRIPTION,
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: true,
-      icon: '@drawable/ic_notification',
-      largeIcon: FilePathAndroidBitmap(profileImage),
-    );
+        MESSAGE_ANDROID_NOTIFICATION_ID,
+        MESSAGE_CHANNEL_NOTIFICATION_NAME,
+        MESSAGE_CHANNEL_NOTIFICATION_DESCRIPTION,
+        importance: Importance.max,
+        priority: Priority.high,
+        showWhen: true,
+        icon: '@drawable/ic_notification',
+        styleInformation: BigTextStyleInformation(data['body'],
+            contentTitle: data['title'], htmlFormatContent: true));
 
     final notificationDetails = NotificationDetails(
       android: androidSettings,
     );
-    await flutterLocalNotificationsPlugin
-        .show(data['id'], data['title'], data['body'], notificationDetails, payload: payload);
+    await flutterLocalNotificationsPlugin.show(data['id'], null, null, notificationDetails,
+        payload: payload);
     await Get.find<SesssionController>().getReceivedInteractions();
   }
 
@@ -195,3 +208,8 @@ const MESSAGE_ANDROID_NOTIFICATION_ID = '1';
 const MESSAGE_CHANNEL_NOTIFICATION_NAME = 'message';
 const MESSAGE_CHANNEL_NOTIFICATION_DESCRIPTION =
     'Usado para mostrar quando o usuário recebe uma mensagem';
+
+const PAYMENT_ANDROID_NOTIFICATION_ID = '2';
+const PAYMENT_CHANNEL_NOTIFICATION_NAME = 'pagamentos';
+const PAYMENT_CHANNEL_NOTIFICATION_DESCRIPTION =
+    'Usado para mostrar as interações de pagamentos com o usuário';

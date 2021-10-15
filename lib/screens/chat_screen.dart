@@ -21,7 +21,7 @@ class ChatScreen extends StatefulWidget {
     required this.currentUserId,
   }) : super(key: key);
   final List<MessageModel> chatList;
-  final ChatRoomModel room;
+  ChatRoomModel room;
   final String currentUserId;
 
   @override
@@ -48,6 +48,9 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return GetBuilder<ChatController>(
         dispose: (state) => state.controller?.disposeChatScreen(),
+        initState: (state) {
+          state.controller?.text.value = '';
+        },
         builder: (controller) {
           _chatController = controller;
           return Scaffold(
@@ -93,12 +96,15 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                       ),
                       Expanded(
-                          child: Obx(() => ListView.builder(
-                                controller: sController,
-                                reverse: true,
-                                itemCount: (controller.chatsMap[widget.room.id]?.length ?? 0) + 1,
-                                itemBuilder: _buildMessages,
-                              ))),
+                          child: widget.room.id == null
+                              ? SizedBox.shrink()
+                              : Obx(() => ListView.builder(
+                                    controller: sController,
+                                    reverse: true,
+                                    itemCount:
+                                        (controller.chatsMap[widget.room.id]?.length ?? 0) + 1,
+                                    itemBuilder: _buildMessages,
+                                  ))),
                       Card(
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
                         child: Padding(
@@ -109,7 +115,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                   ? SizedBox.shrink()
                                   : IconButton(
                                       onPressed: () => controller.sendMediaMessage(
-                                          otherUser.id!, widget.room.id),
+                                          otherUser.id!, widget.room.id,
+                                          chatScreen: widget),
                                       icon: Icon(
                                         Icons.attach_file,
                                         color: Get.theme.primaryColor,
@@ -120,6 +127,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                       ? RecorderTile(
                                           otherUserId: otherUser.id!,
                                           roomId: widget.room.id,
+                                          chatScreen: widget,
                                           controller: controller,
                                         )
                                       : TextFormField(
@@ -152,6 +160,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                           ? IconButton(
                                               onPressed: () => controller.sendTextMessage(
                                                   otherUser.id!,
+                                                  chatScreen: widget,
                                                   chatRoomID: widget.room.id),
                                               icon: Icon(
                                                 Icons.send,
@@ -201,7 +210,7 @@ class _ChatScreenState extends State<ChatScreen> {
     if (!controller.haveNoMoreMessages.value) {
       if (controller.chatsMap[widget.room.id]?.isNotEmpty ?? false)
         controller.getMessagesBefore(
-            widget.room.id, controller.chatsMap[widget.room.id]?.last.id ?? 0);
+            widget.room.id ?? -1, controller.chatsMap[widget.room.id]?.last.id ?? 0);
       else
         controller.haveNoMoreMessages.value = true;
     }

@@ -5,7 +5,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:flutter_sound/public/flutter_sound_player.dart';
+import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:record/record.dart';
 
 import 'package:knowme/controller/main_screen/session_controller.dart';
 import 'package:knowme/errors/requestError.dart';
@@ -13,11 +16,9 @@ import 'package:knowme/events/stream_event.dart';
 import 'package:knowme/interface/db_repository_interface.dart';
 import 'package:knowme/models/chat_room_model.dart';
 import 'package:knowme/models/message_model.dart';
+import 'package:knowme/screens/chat_screen.dart';
 import 'package:knowme/screens/video_screen.dart';
 import 'package:knowme/widgets/image_picker_bottom_sheet.dart';
-import 'package:get/route_manager.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:record/record.dart';
 
 class ChatController extends GetxController {
   final chatRooms = <ChatRoomModel>[].obs;
@@ -77,8 +78,8 @@ class ChatController extends GetxController {
 
   _getMessages() async {
     for (var i = 0; i < chatRooms.length; i++) {
-      final listChats = await repository.getMessages(chatRooms[i].id);
-      chatsMap[chatRooms[i].id] = listChats.obs;
+      final listChats = await repository.getMessages(chatRooms[i].id ?? -1);
+      chatsMap[chatRooms[i].id ?? -1] = listChats.obs;
     }
   }
 
@@ -91,8 +92,14 @@ class ChatController extends GetxController {
   }
 
   Future<MessageModel?> sendTextMessage(String userid,
-      {int? chatRoomID, String? messageTextInput}) async {
+      {int? chatRoomID, String? messageTextInput, required ChatScreen chatScreen}) async {
     try {
+      if (chatRoomID == null) {
+        final room = await repository.createRoom(userid);
+        chatScreen.room = room;
+
+        chatRoomID = room.id;
+      }
       sendingMessage.value = true;
       final messageText = messageTEC.text;
 
@@ -111,6 +118,7 @@ class ChatController extends GetxController {
       await onRefresh();
     }
     sendingMessage.value = false;
+    update();
   }
 
   void recAudio() async {
@@ -175,7 +183,7 @@ class ChatController extends GetxController {
 
   /// the return if not null contains type and src keys
   Future<Map?> _openSourcePicker(
-    int roomID,
+    RoomId roomId,
   ) async {
     final source = await ImagePickerBottomSheet.showImagePickerBottomSheet(
       Get.context!,
@@ -183,18 +191,23 @@ class ChatController extends GetxController {
     );
     String? src;
     int type = 0;
+    if (source != null && roomId.id == null) {
+      final room = await repository.createRoom(roomId.toUser);
+      roomId.id = room.id;
+      roomId.chatRoomModel = room;
+    }
     if (source is Uint8List) {
       type = 1;
       try {
         this.sendingMessage.value = true;
-        src = await repository.sendImage(roomID,
+        src = await repository.sendImage(roomId.id!,
             File(Directory.systemTemp.path + '/${DateTime.now()}.png')..writeAsBytesSync(source));
       } catch (e) {}
     }
     if (source is String) {
       try {
         type = 2;
-        src = await repository.sendVideo(roomID, File(source));
+        src = await repository.sendVideo(roomId.id!, File(source));
       } catch (e) {
         print(e.toString());
       }
@@ -206,14 +219,22 @@ class ChatController extends GetxController {
     }
   }
 
-  sendMediaMessage(String toUser, int roomId) async {
+  sendMediaMessage(String toUser, int? roomId, {required ChatScreen chatScreen}) async {
     this.sendingMessage.value = true;
     final message = messageTEC.text;
-    final picked = await _openSourcePicker(roomId);
-    if (picked == null) return;
-    messageTEC.clear();
-    await repository.sendMessage(toUser, message, picked['type'], src: picked['src']);
-    this.sendingMessage.value = false;
+    final roomclass = RoomId(id: roomId, toUser: toUser);
+    final picked = await _openSourcePicker(roomclass);
+    if (roomId == null) {
+      final room = roomclass.chatRoomModel!;
+      chatScreen.room = room;
+      roomId = room.id;
+    }
+    if (picked != null) {
+      messageTEC.clear();
+      await repository.sendMessage(toUser, message, picked['type'], src: picked['src']);
+      this.sendingMessage.value = false;
+    }
+    update();
   }
 
   openVideoScreen(String? src) {
@@ -229,15 +250,21 @@ class ChatController extends GetxController {
     }
   }
 
-  void sendAudio(String uid, int roomId) async {
+  void sendAudio(String uid, int? roomId, {required ChatScreen chatScreen}) async {
     isRecAudio.value = false;
     this.sendingMessage.value = true;
+    if (roomId == null) {
+      final room = await repository.createRoom(uid);
+      roomId = room.id;
+      chatScreen.room = room;
+    }
 
     if (recorderPath == null) return;
-    final src = await repository.sendAudio(roomId, File(recorderPath!));
+    final src = await repository.sendAudio(roomId!, File(recorderPath!));
 
     messageTEC.clear();
     await repository.sendMessage(uid, '', 3, src: src);
+    update();
     this.sendingMessage.value = false;
   }
 
@@ -253,4 +280,15 @@ class ChatController extends GetxController {
     recorderPath = await record.stop();
     return recorderPath;
   }
+}
+
+class RoomId {
+  int? id;
+  ChatRoomModel? chatRoomModel;
+  String toUser;
+  RoomId({
+    required this.id,
+    this.chatRoomModel,
+    required this.toUser,
+  });
 }

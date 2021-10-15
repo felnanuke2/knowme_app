@@ -32,7 +32,8 @@ class PlansController extends GetxController {
     loadPlan.value = true;
     final prefId = await repository.createPaymentSession(plan.id);
     final platform = await MercadoPagoMobileCheckout.platformVersion;
-    await MercadoPagoMobileCheckout.startCheckout(env.MERCADO_PAGO_PUBLIC_KEY, prefId);
+    final response =
+        await MercadoPagoMobileCheckout.startCheckout(env.MERCADO_PAGO_PUBLIC_KEY, prefId);
 
     loadPlan.value = false;
   }

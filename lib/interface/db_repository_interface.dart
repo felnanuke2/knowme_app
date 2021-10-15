@@ -5,7 +5,9 @@ import 'dart:typed_data';
 import 'package:knowme/events/stream_event.dart';
 import 'package:knowme/models/chat_room_model.dart';
 import 'package:knowme/models/entry_quiz_model.dart';
+import 'package:knowme/models/impression_model.dart';
 import 'package:knowme/models/interactions_model.dart';
+import 'package:knowme/models/lat_laong.dart';
 import 'package:knowme/models/message_model.dart';
 import 'package:knowme/models/plans_model.dart';
 import 'package:knowme/models/post_model.dart';
@@ -77,6 +79,8 @@ abstract class DbRepositoryInterface {
 
   StreamController<StreamEvent> chatRoomListen(String uid);
 
+  Future<ChatRoomModel> createRoom(String toUser);
+
   Future<void> readMessage(int messageId);
 
   Future<String> sendImage(int roomID, File file);
@@ -95,4 +99,8 @@ abstract class DbRepositoryInterface {
   Future<String> createPaymentSession(int planId);
 
   Future<List<PlansModel>> getPlans();
+
+  Future<List<ImpressionModel>> getIntmpressions(LatLng latlng);
+
+  Future<void> checkImpression(int impressionId);
 }

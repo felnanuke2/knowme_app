@@ -9,6 +9,7 @@ import 'package:knowme/controller/main_screen/exploring_controller.dart';
 import 'package:knowme/errors/requestError.dart';
 import 'package:knowme/interface/db_repository_interface.dart';
 import 'package:knowme/interface/user_auth_interface.dart';
+import 'package:knowme/models/chat_room_model.dart';
 import 'package:knowme/models/entry_quiz_model.dart';
 import 'package:knowme/models/interactions_model.dart';
 import 'package:knowme/models/post_model.dart';
@@ -49,6 +50,7 @@ class SesssionController extends GetxController {
     if (userAuthRepository.currentUserdataCompleter.isCompleted ||
         userAuthRepository.getCurrentUser?.profileComplet == true) {
       isLoadingCurrentUser = false;
+      chatController = Get.put(ChatController(sesssionController: this));
       Get.put(ExploringController(sessionController: this));
       update();
       await Future.delayed(Duration(milliseconds: 333));
@@ -64,7 +66,6 @@ class SesssionController extends GetxController {
 
     await getReceivedInteractions();
     await getPosts();
-    chatController = Get.put(ChatController(sesssionController: this));
 
     final latLng = await LocationServices.getLocation();
     if (userAuthRepository.getCurrentUser != null) {
@@ -187,27 +188,29 @@ class SesssionController extends GetxController {
     if (userModel == null) return;
     pageController.jumpToPage(3);
     Get.back();
-    try {
-      _openChatCreen(userModel);
-    } catch (e) {
-      final message = await chatController.sendTextMessage(
-        userModel.id!,
-        messageTextInput: '',
-      );
-
-      _openChatCreen(userModel);
-    }
+    _openChatCreen(userModel);
   }
 
   _openChatCreen(UserModel userModel) {
     print(chatController.chatRooms.length);
-    final room = chatController.chatRooms.firstWhere((element) =>
-        [userModel.id, userAuthRepository.getCurrentUser?.id].contains(element.user_a.id) &&
-        [userModel.id, userAuthRepository.getCurrentUser?.id].contains(element.user_b.id));
+    ChatRoomModel? room;
+    try {
+      room = chatController.chatRooms.firstWhere((element) =>
+          [userModel.id, userAuthRepository.getCurrentUser?.id].contains(element.user_a.id) &&
+          [userModel.id, userAuthRepository.getCurrentUser?.id].contains(element.user_b.id));
+    } catch (e) {
+      print(e);
+    }
 
     Get.to(() => ChatScreen(
-        chatList: chatController.chatsMap[room.id] ?? [],
-        room: room,
+        chatList: chatController.chatsMap[room?.id ?? -1] ?? [],
+        room: room ??
+            ChatRoomModel(
+                id: null,
+                created_at: DateTime.now(),
+                status: 1,
+                user_a: userAuthRepository.getCurrentUser!,
+                user_b: userModel),
         currentUserId: userAuthRepository.getCurrentUser!.id!));
   }
 }

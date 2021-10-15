@@ -6,6 +6,8 @@ import 'package:knowme/errors/requestError.dart';
 import 'package:knowme/events/stream_event.dart';
 import 'package:knowme/interface/db_repository_interface.dart';
 import 'package:knowme/models/chat_room_model.dart';
+import 'package:knowme/models/impression_model.dart';
+import 'package:knowme/models/lat_laong.dart';
 import 'package:knowme/models/message_model.dart';
 import 'package:knowme/models/plans_model.dart';
 import 'package:knowme/models/user_model.dart';
@@ -431,5 +433,34 @@ class SupabaseRepository implements DbRepositoryInterface {
     if (response.error != null) throw RequestError(message: response.error!.message);
     final plansList = List.from(response.data).map((e) => PlansModel.fromMap(e)).toList();
     return plansList;
+  }
+
+  @override
+  Future<List<ImpressionModel>> getIntmpressions(LatLng latlng) async {
+    final response = await client.rpc('get_impressions').execute();
+    if (response.error != null) throw RequestError(message: response.error!.message);
+    final list = List.from(response.data).map((e) => ImpressionModel.fromMap(e)).toList();
+    return list;
+  }
+
+  @override
+  Future<void> checkImpression(int impressionId) async {
+    final response = await client.rpc('check_impression', params: {
+      'impression_id': impressionId,
+    }).execute();
+    if (response.error != null) throw RequestError(message: response.error!.message);
+  }
+
+  @override
+  Future<ChatRoomModel> createRoom(String toUser) async {
+    final response = await client.rpc('sendmessage', params: {
+      'message': '',
+      'to_user': toUser,
+      'message_type': 0,
+      'src': null,
+    }).execute();
+    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
+    final chatRoom = ChatRoomModel.fromMap(response.data['room']);
+    return chatRoom;
   }
 }

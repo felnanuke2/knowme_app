@@ -11,6 +11,7 @@ import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:knowme/controller/chat_controler.dart';
+import 'package:knowme/screens/chat_screen.dart';
 
 class RecorderTile extends StatefulWidget {
   RecorderTile({
@@ -18,11 +19,13 @@ class RecorderTile extends StatefulWidget {
     required this.controller,
     required this.otherUserId,
     required this.roomId,
+    required this.chatScreen,
   }) : super(key: key);
 
   final ChatController controller;
   final String otherUserId;
-  final int roomId;
+  final int? roomId;
+  final ChatScreen chatScreen;
 
   @override
   State<RecorderTile> createState() => _RecorderTileState();
@@ -81,7 +84,8 @@ class _RecorderTileState extends State<RecorderTile> {
           Obx(() => !isPaused.value
               ? SizedBox.shrink()
               : IconButton(
-                  onPressed: () => widget.controller.sendAudio(widget.otherUserId, widget.roomId),
+                  onPressed: () => widget.controller
+                      .sendAudio(widget.otherUserId, widget.roomId, chatScreen: widget.chatScreen),
                   icon: Icon(
                     Icons.send,
                     color: Get.theme.primaryColor,

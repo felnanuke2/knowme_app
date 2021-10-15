@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:knowme/models/user_model.dart';
 
 class ChatRoomModel {
-  final int id;
+  int? id;
   final DateTime created_at;
   final int status;
   final UserModel user_a;
