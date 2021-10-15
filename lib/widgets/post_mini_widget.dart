@@ -1,7 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
+import 'package:get/route_manager.dart';
 
 import 'package:knowme/models/post_model.dart';
+import 'package:knowme/screens/image_screen.dart';
+import 'package:knowme/screens/video_screen.dart';
 
 class PostMiniWidget extends StatelessWidget {
   final PostModel post;
@@ -16,12 +20,28 @@ class PostMiniWidget extends StatelessWidget {
         child: Stack(
       fit: StackFit.expand,
       children: [
-        ClipRRect(
-            borderRadius: BorderRadius.circular(18),
-            child: CachedNetworkImage(
-              imageUrl: post.mediaType == 0 ? post.thumbnail ?? '' : post.src,
-              fit: BoxFit.cover,
-            )),
+        InkWell(
+          onTap: () => post.mediaType == 1
+              ? Get.to(() => ImageScreen(
+                    imageUrl: post.src,
+                    imageKey: Key(post.id),
+                    description: post.description,
+                    user: post.userModel!,
+                  ))
+              : Get.to(() => VideoScreen(
+                    src: post.src,
+                    controller: Get.find(),
+                    isPrivate: false,
+                    description: post.description,
+                    userModel: post.userModel,
+                  )),
+          child: ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: CachedNetworkImage(
+                imageUrl: post.mediaType == 0 ? post.thumbnail ?? '' : post.src,
+                fit: BoxFit.cover,
+              )),
+        ),
         if (post.mediaType == 0)
           Positioned(
               right: 8,

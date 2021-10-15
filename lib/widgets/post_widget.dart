@@ -5,6 +5,8 @@ import 'package:flutter/widgets.dart';
 import 'package:get/instance_manager.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
+import 'package:knowme/screens/image_screen.dart';
+import 'package:knowme/screens/video_screen.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -68,7 +70,23 @@ class _PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMi
               child: Column(
                 children: [
                   _buildHeaders(),
-                  if (widget.postModel.mediaType == 0) _buildVideo() else _buildImage(),
+                  InkWell(
+                    onTap: () => widget.postModel.mediaType == 1
+                        ? Get.to(() => ImageScreen(
+                              imageUrl: widget.postModel.src,
+                              imageKey: Key(widget.postModel.id),
+                              description: widget.postModel.description,
+                              user: widget.postModel.userModel!,
+                            ))
+                        : Get.to(() => VideoScreen(
+                              src: widget.postModel.src,
+                              controller: Get.find(),
+                              isPrivate: false,
+                              description: widget.postModel.description,
+                              userModel: widget.postModel.userModel,
+                            )),
+                    child: widget.postModel.mediaType == 0 ? _buildVideo() : _buildImage(),
+                  ),
                   _buildBottom(),
                 ],
               ),
