@@ -52,6 +52,7 @@ class _ChatScreenState extends State<ChatScreen> {
           state.controller?.text.value = '';
         },
         builder: (controller) {
+          print('rebuild');
           _chatController = controller;
           return Scaffold(
             body: SafeArea(
@@ -88,7 +89,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                 Text(
                                   otherUser.completName ?? '',
                                   style: GoogleFonts.montserrat(
-                                      fontWeight: FontWeight.bold, fontSize: 15),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15),
                                 ),
                               ],
                             ),
@@ -101,12 +103,16 @@ class _ChatScreenState extends State<ChatScreen> {
                               : Obx(() => ListView.builder(
                                     controller: sController,
                                     reverse: true,
-                                    itemCount:
-                                        (controller.chatsMap[widget.room.id]?.length ?? 0) + 1,
+                                    itemCount: (controller
+                                                .chatsMap[widget.room.id]
+                                                ?.length ??
+                                            0) +
+                                        1,
                                     itemBuilder: _buildMessages,
                                   ))),
                       Card(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(0)),
                         child: Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Row(
@@ -114,9 +120,10 @@ class _ChatScreenState extends State<ChatScreen> {
                               Obx(() => controller.isRecAudio.value
                                   ? SizedBox.shrink()
                                   : IconButton(
-                                      onPressed: () => controller.sendMediaMessage(
-                                          otherUser.id!, widget.room.id,
-                                          chatScreen: widget),
+                                      onPressed: () =>
+                                          controller.sendMediaMessage(
+                                              otherUser.id!, widget.room.id,
+                                              chatScreen: widget),
                                       icon: Icon(
                                         Icons.attach_file,
                                         color: Get.theme.primaryColor,
@@ -137,15 +144,20 @@ class _ChatScreenState extends State<ChatScreen> {
                                           maxLines: 3,
                                           decoration: InputDecoration(
                                               filled: true,
-                                              fillColor: Colors.grey.withOpacity(0.05),
+                                              fillColor:
+                                                  Colors.grey.withOpacity(0.05),
                                               enabledBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(22),
-                                                  borderSide:
-                                                      BorderSide(color: Colors.transparent)),
+                                                  borderRadius:
+                                                      BorderRadius.circular(22),
+                                                  borderSide: BorderSide(
+                                                      color:
+                                                          Colors.transparent)),
                                               focusedBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(22),
-                                                  borderSide:
-                                                      BorderSide(color: Colors.transparent))),
+                                                  borderRadius:
+                                                      BorderRadius.circular(22),
+                                                  borderSide: BorderSide(
+                                                      color:
+                                                          Colors.transparent))),
                                         ))),
                               Obx(() => controller.sendingMessage.value
                                   ? Center(
@@ -158,10 +170,12 @@ class _ChatScreenState extends State<ChatScreen> {
                                       ? SizedBox.shrink()
                                       : controller.text.value.isNotEmpty
                                           ? IconButton(
-                                              onPressed: () => controller.sendTextMessage(
-                                                  otherUser.id!,
-                                                  chatScreen: widget,
-                                                  chatRoomID: widget.room.id),
+                                              onPressed: () =>
+                                                  controller.sendTextMessage(
+                                                      otherUser.id!,
+                                                      chatScreen: widget,
+                                                      chatRoomID:
+                                                          widget.room.id),
                                               icon: Icon(
                                                 Icons.send,
                                                 color: Get.theme.primaryColor,
@@ -186,7 +200,8 @@ class _ChatScreenState extends State<ChatScreen> {
                           child: FloatingActionButton(
                             onPressed: () {
                               sController.animateTo(0,
-                                  duration: Duration(seconds: 2), curve: Curves.linearToEaseOut);
+                                  duration: Duration(seconds: 2),
+                                  curve: Curves.linearToEaseOut);
                             },
                             backgroundColor: Get.theme.primaryColor,
                             child: Icon(
@@ -202,15 +217,16 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   UserModel get otherUser {
-    if (widget.room.user_a.id == widget.currentUserId) return widget.room.user_b;
+    if (widget.room.user_a.id == widget.currentUserId)
+      return widget.room.user_b;
     return widget.room.user_a;
   }
 
   void _setHasReadMessages(ChatController controller) {
     if (!controller.haveNoMoreMessages.value) {
       if (controller.chatsMap[widget.room.id]?.isNotEmpty ?? false)
-        controller.getMessagesBefore(
-            widget.room.id ?? -1, controller.chatsMap[widget.room.id]?.last.id ?? 0);
+        controller.getMessagesBefore(widget.room.id ?? -1,
+            controller.chatsMap[widget.room.id]?.last.id ?? 0);
       else
         controller.haveNoMoreMessages.value = true;
     }
@@ -223,8 +239,12 @@ class _ChatScreenState extends State<ChatScreen> {
       return Center(
           child: Obx(() => controller.haveNoMoreMessages.value
               ? SizedBox.shrink()
-              : Container(margin: EdgeInsets.all(8), child: CircularProgressIndicator())));
+              : Container(
+                  margin: EdgeInsets.all(8),
+                  child: CircularProgressIndicator())));
     }
+    if (controller.chatsMap[widget.room.id]?.isEmpty ?? true)
+      return SizedBox.shrink();
     final itemChats = controller.chatsMap[widget.room.id]![index];
     if (itemChats.status != 2 && otherUser.id == itemChats.createdBy)
       controller.addMessagesForRead(itemChats.id);

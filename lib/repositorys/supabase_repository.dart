@@ -23,20 +23,24 @@ class SupabaseRepository implements DbRepositoryInterface {
   @override
   Future<UserModel> createUser(UserModel userModel) async {
     final privateData = {};
-    if (userModel.phoneNumber != null) privateData['phone_number'] = userModel.phoneNumber;
+    if (userModel.phoneNumber != null)
+      privateData['phone_number'] = userModel.phoneNumber;
     if (userModel.email != null) privateData['email'] = userModel.email;
     if (userModel.city != null) privateData['city'] = userModel.city;
     if (userModel.uf != null) privateData['uf'] = userModel.uf;
     privateData['uid'] = userModel.id;
-    final privateResponse = await client.from('private_infos').insert(privateData).execute();
-    if (privateResponse.error != null) throw RequestError(message: privateResponse.error!.message);
+    final privateResponse =
+        await client.from('private_infos').insert(privateData).execute();
+    if (privateResponse.error != null)
+      throw RequestError(message: privateResponse.error!.message);
     final response = await client
         .from('users')
         .insert(userModel.toMap()
           ..['private_infos'] = privateResponse.data[0]['id']
           ..removeWhere((key, value) => value == null))
         .execute();
-    if (response.error != null) throw RequestError(message: response.error!.message);
+    if (response.error != null)
+      throw RequestError(message: response.error!.message);
     final user = UserModel.fromMap(response.data[0]);
 
     return user..profileComplet = true;
@@ -45,7 +49,8 @@ class SupabaseRepository implements DbRepositoryInterface {
   @override
   Future<PostModel> createpost(PostModel post) async {
     final response = await client.from('posts').insert(post.toMap()).execute();
-    if (response.error != null) throw RequestError(message: response.error!.message);
+    if (response.error != null)
+      throw RequestError(message: response.error!.message);
 
     return PostModel.fromMap(response.data[0]);
   }
@@ -60,8 +65,10 @@ class SupabaseRepository implements DbRepositoryInterface {
 
   @override
   Future<UserModel> getCurrentUser(String id) async {
-    final response = await client.from('users').select().eq('uid', id).execute();
-    if (response.error != null) throw RequestError(message: response.error!.message);
+    final response =
+        await client.from('users').select().eq('uid', id).execute();
+    if (response.error != null)
+      throw RequestError(message: response.error!.message);
     if (response.data.isEmpty) throw RequestError();
     final user = UserModel.fromMap(response.data[0]);
     return user;
@@ -74,12 +81,16 @@ class SupabaseRepository implements DbRepositoryInterface {
   }
 
   @override
-  Future<List<InteractionsModel>> getInteractionsReceived(String currentUserId) async {
+  Future<List<InteractionsModel>> getInteractionsReceived(
+      String currentUserId) async {
     final response = await client.from('interactions').select('''
   *, users: from_user ( profileName, completName, profileImage, uid )
   ''').eq('to_user', currentUserId).order('created_at').limit(20).execute();
-    if (response.error != null) throw RequestError(message: response.error!.message);
-    final interactions = List.from(response.data).map((e) => InteractionsModel.fromMap(e)).toList();
+    if (response.error != null)
+      throw RequestError(message: response.error!.message);
+    final interactions = List.from(response.data)
+        .map((e) => InteractionsModel.fromMap(e))
+        .toList();
     return interactions;
   }
 
@@ -99,17 +110,21 @@ class SupabaseRepository implements DbRepositoryInterface {
         .order('created_at', ascending: false)
         .execute();
     if (result.error != null) throw RequestError();
-    final listPosts = List.from(result.data).map((e) => PostModel.fromMap(e)).toList();
+    final listPosts =
+        List.from(result.data).map((e) => PostModel.fromMap(e)).toList();
     final listofUsersId = listPosts.map((e) => e.postedBy).toList();
     final userResult = await client
         .from('users')
         .select('uid,profileImage,profileName,completName')
         .in_('uid', listofUsersId)
         .execute();
-    if (userResult.error != null) throw RequestError(message: userResult.error!.message);
-    final listofUsers = List.from(userResult.data).map((e) => UserModel.fromMap(e)).toList();
+    if (userResult.error != null)
+      throw RequestError(message: userResult.error!.message);
+    final listofUsers =
+        List.from(userResult.data).map((e) => UserModel.fromMap(e)).toList();
     listPosts.forEach((post) {
-      post.userModel = listofUsers.firstWhere((user) => user.id == post.postedBy);
+      post.userModel =
+          listofUsers.firstWhere((user) => user.id == post.postedBy);
     });
 
     return listPosts;
@@ -117,8 +132,13 @@ class SupabaseRepository implements DbRepositoryInterface {
 
   @override
   Future<EntryQuizModel> getQuiz(String quizId) async {
-    final response = await client.from('quizes').select().eq('id', int.parse(quizId)).execute();
-    if (response.error != null) throw RequestError(message: response.error!.message);
+    final response = await client
+        .from('quizes')
+        .select()
+        .eq('id', int.parse(quizId))
+        .execute();
+    if (response.error != null)
+      throw RequestError(message: response.error!.message);
     final quiz = EntryQuizModel.fromMap(response.data[0]);
     return quiz;
   }
@@ -127,7 +147,8 @@ class SupabaseRepository implements DbRepositoryInterface {
   Future<EntryQuizModel> createQuiz(
     EntryQuizModel entryQuizModel,
   ) async {
-    final response = await client.from('quizes').insert(entryQuizModel.toMap()).execute();
+    final response =
+        await client.from('quizes').insert(entryQuizModel.toMap()).execute();
     if (response.error != null) throw RequestError();
     final eQuiz = EntryQuizModel.fromMap(response.data[0]);
     return eQuiz;
@@ -146,14 +167,18 @@ class SupabaseRepository implements DbRepositoryInterface {
   }
 
   @override
-  Future<String> upLoadImage({required Uint8List imageByte, required String userID}) async {
+  Future<String> upLoadImage(
+      {required Uint8List imageByte, required String userID}) async {
     final name = '${DateTime.now().microsecondsSinceEpoch}.png';
     final file = File('${Directory.systemTemp.path}/' + name);
     await file.writeAsBytes(imageByte);
-    final response = await client.storage.from('public').upload('$userID/images/$name', file);
+    final response = await client.storage
+        .from('public')
+        .upload('$userID/images/$name', file);
     if (response.hasError) throw RequestError(message: response.error!.message);
     final imageUrl =
-        'https://vxtotlcitdlsfylnfyxs.supabase.in/storage/v1/object/public/' + response.data!;
+        'https://vxtotlcitdlsfylnfyxs.supabase.in/storage/v1/object/public/' +
+            response.data!;
     return imageUrl;
   }
 
@@ -192,14 +217,19 @@ class SupabaseRepository implements DbRepositoryInterface {
     if (lng != null) privateData['lng'] = lng;
     if (phoneNumber != null) privateData['phone_number'] = phoneNumber;
     if (privateData.isNotEmpty) {
-      final privateResponse =
-          await client.from('private_infos').update(privateData).eq('uid', id).execute();
+      final privateResponse = await client
+          .from('private_infos')
+          .update(privateData)
+          .eq('uid', id)
+          .execute();
       if (privateResponse.error != null)
         throw RequestError(message: privateResponse.error!.message);
     }
 
-    final response = await client.from('users').update(mapToUpdate).eq('uid', id).execute();
-    if (response.error != null) throw RequestError(message: response.error!.message);
+    final response =
+        await client.from('users').update(mapToUpdate).eq('uid', id).execute();
+    if (response.error != null)
+      throw RequestError(message: response.error!.message);
     final user = UserModel.fromMap(response.data[0]);
     return user;
   }
@@ -208,10 +238,13 @@ class SupabaseRepository implements DbRepositoryInterface {
   Future<String> uploadVideo(File file, String userID) async {
     final name = '${DateTime.now().microsecondsSinceEpoch}.mp4';
 
-    final response = await client.storage.from('public').upload('$userID/videos/$name', file);
+    final response = await client.storage
+        .from('public')
+        .upload('$userID/videos/$name', file);
     if (response.hasError) throw RequestError(message: response.error!.message);
     final imageUrl =
-        'https://vxtotlcitdlsfylnfyxs.supabase.in/storage/v1/object/public/' + response.data!;
+        'https://vxtotlcitdlsfylnfyxs.supabase.in/storage/v1/object/public/' +
+            response.data!;
     return imageUrl;
   }
 
@@ -224,19 +257,23 @@ class SupabaseRepository implements DbRepositoryInterface {
         // .textSearch('profileName', '$query', type: TextSearchType.websearch)
         .limit(40)
         .execute();
-    if (response.error != null) throw RequestError(message: response.error!.message);
-    final userList = List.from(response.data).map((e) => UserModel.fromMap(e)).toList();
+    if (response.error != null)
+      throw RequestError(message: response.error!.message);
+    final userList =
+        List.from(response.data).map((e) => UserModel.fromMap(e)).toList();
     return userList;
   }
 
   @override
-  Future<InteractionsModel> updateInteraction(String interactionId, int status) async {
+  Future<InteractionsModel> updateInteraction(
+      String interactionId, int status) async {
     final response = await client
         .from('interactions')
         .update({'status': status}, returning: ReturningOption.representation)
         .eq('id', int.parse(interactionId))
         .execute();
-    if (response.error != null) throw RequestError(message: response.error?.message);
+    if (response.error != null)
+      throw RequestError(message: response.error?.message);
     final interaction = InteractionsModel.fromMap(response.data[0]);
     return interaction;
   }
@@ -246,7 +283,8 @@ class SupabaseRepository implements DbRepositoryInterface {
     final response = await client.from('users').select(''' 
     profileName,profileImage,uid, quizes: entryQuizID (*)
     ''').not('entryQuizID', 'is', null).limit(30).execute();
-    if (response.error != null) throw RequestError(message: response.error?.message);
+    if (response.error != null)
+      throw RequestError(message: response.error?.message);
     final listQuizes = List.from(response.data).map((e) {
       final map = <String, dynamic>{};
       map['users'] = e;
@@ -258,30 +296,39 @@ class SupabaseRepository implements DbRepositoryInterface {
   }
 
   @override
-  Future<InteractionsModel> sendInteraction(InteractionsModel interactionsModel) async {
-    final response = await client.from('interactions').insert(interactionsModel.toMap()).execute();
-    if (response.error != null) throw RequestError(message: response.error?.message);
+  Future<InteractionsModel> sendInteraction(
+      InteractionsModel interactionsModel) async {
+    final response = await client
+        .from('interactions')
+        .insert(interactionsModel.toMap())
+        .execute();
+    if (response.error != null)
+      throw RequestError(message: response.error?.message);
     final iteraction = InteractionsModel.fromMap(response.data[0]);
     return iteraction;
   }
 
   @override
   Future<List<String>> getFriends(String id) async {
-    final response = await client.rpc('getfriends', params: {'uid': id}).execute();
-    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
+    final response =
+        await client.rpc('getfriends', params: {'uid': id}).execute();
+    if (response.error != null)
+      throw RequestError(message: response.error?.message ?? '');
     final list = List<String>.from(response.data[0]['frieds_list']);
     return list;
   }
 
   @override
-  Future<MessageModel> sendMessage(String userId, String message, int type, {String? src}) async {
+  Future<MessageModel> sendMessage(String userId, String message, int type,
+      {String? src}) async {
     final response = await client.rpc('sendmessage', params: {
       'message': message,
       'to_user': userId,
       'message_type': type,
       'src': src
     }).execute();
-    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
+    if (response.error != null)
+      throw RequestError(message: response.error?.message ?? '');
     final messageResponse = MessageModel.fromMap(response.data);
     return messageResponse;
   }
@@ -295,41 +342,55 @@ class SupabaseRepository implements DbRepositoryInterface {
         .or('user_a.eq.$userId,user_b.eq.$userId')
         .order('updated_at', ascending: false)
         .execute();
-    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
-    final listRooms = List.from(response.data).map((e) => ChatRoomModel.fromMap(e)).toList();
+    if (response.error != null)
+      throw RequestError(message: response.error?.message ?? '');
+    final listRooms =
+        List.from(response.data).map((e) => ChatRoomModel.fromMap(e)).toList();
     return listRooms;
   }
 
   @override
   Future<List<MessageModel>> getMessages(int roomId) async {
-    final response = await client.rpc('get_last_messages', params: {'room': roomId}).execute();
-    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
-    final listMessages = List.from(response.data).map((e) => MessageModel.fromMap(e)).toList();
+    final response = await client
+        .rpc('get_last_messages', params: {'room': roomId}).execute();
+    if (response.error != null)
+      throw RequestError(message: response.error?.message ?? '');
+    final listMessages =
+        List.from(response.data).map((e) => MessageModel.fromMap(e)).toList();
     return listMessages;
   }
 
   @override
-  Future<List<MessageModel>> getMessagesBefore(int roomId, int lastMessage) async {
-    final response = await client
-        .rpc('get_messages_before', params: {'room': roomId, 'messsage_id': lastMessage}).execute();
-    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
-    final listMessages = List.from(response.data).map((e) => MessageModel.fromMap(e)).toList();
+  Future<List<MessageModel>> getMessagesBefore(
+      int roomId, int lastMessage) async {
+    final response = await client.rpc('get_messages_before',
+        params: {'room': roomId, 'messsage_id': lastMessage}).execute();
+    if (response.error != null)
+      throw RequestError(message: response.error?.message ?? '');
+    final listMessages =
+        List.from(response.data).map((e) => MessageModel.fromMap(e)).toList();
     return listMessages;
   }
 
   @override
   Future<void> readMessage(int messageId) async {
-    final response = await client.rpc('read_message', params: {'message_id': messageId}).execute();
-    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
+    final response = await client
+        .rpc('read_message', params: {'message_id': messageId}).execute();
+    if (response.error != null)
+      throw RequestError(message: response.error?.message ?? '');
   }
 
   @override
   StreamController<StreamEvent> chatRoomListen(String uid) {
     final stream = StreamController<StreamEvent>.broadcast();
-    final responseA = client.from('chat_room:user_a=eq.$uid').on(SupabaseEventTypes.all, (payload) {
+    final responseA = client
+        .from('chat_room:user_a=eq.$uid')
+        .on(SupabaseEventTypes.all, (payload) {
       stream.add(StreamEventUpdate()..data = payload.newRecord);
     }).subscribe(_onSubscribe);
-    final responseB = client.from('chat_room:user_b=eq.$uid').on(SupabaseEventTypes.all, (payload) {
+    final responseB = client
+        .from('chat_room:user_b=eq.$uid')
+        .on(SupabaseEventTypes.all, (payload) {
       stream.add(StreamEventUpdate()..data = payload.newRecord);
     }).subscribe(_onSubscribe);
     stream.stream.listen((event) {
@@ -348,9 +409,11 @@ class SupabaseRepository implements DbRepositoryInterface {
   @override
   Future<String> sendImage(int roomID, File file) async {
     final fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    final response =
-        await client.storage.from('messages.files').upload('$roomID/images/$fileName', file);
-    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
+    final response = await client.storage
+        .from('messages.files')
+        .upload('$roomID/images/$fileName', file);
+    if (response.error != null)
+      throw RequestError(message: response.error?.message ?? '');
     return response.data!;
   }
 
@@ -359,7 +422,8 @@ class SupabaseRepository implements DbRepositoryInterface {
     final response = await client.storage
         .from('messages.files')
         .createSignedUrl(src.replaceAll('messages.files/', ''), 20);
-    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
+    if (response.error != null)
+      throw RequestError(message: response.error?.message ?? '');
 
     return response.data!;
   }
@@ -367,41 +431,57 @@ class SupabaseRepository implements DbRepositoryInterface {
   @override
   Future<String> sendVideo(int roomID, File file) async {
     final fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    final response =
-        await client.storage.from('messages.files').upload('$roomID/videos/$fileName', file);
-    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
+    final response = await client.storage
+        .from('messages.files')
+        .upload('$roomID/videos/$fileName', file);
+    if (response.error != null)
+      throw RequestError(message: response.error?.message ?? '');
     return response.data!;
   }
 
   @override
   Future<String> sendAudio(int roomId, File file) async {
     final fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    final response =
-        await client.storage.from('messages.files').upload('$roomId/audios/$fileName', file);
-    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
+    final response = await client.storage
+        .from('messages.files')
+        .upload('$roomId/audios/$fileName', file);
+    if (response.error != null)
+      throw RequestError(message: response.error?.message ?? '');
     return response.data!;
   }
 
   @override
   Future<List<EntryQuizModel>> getNearbyUsers(
-      {double maxDistance = 50, required double latitude, required double longitude}) async {
-    final response = await client.rpc('get_nearby_users',
-        params: {'lat': latitude, 'max_distance': maxDistance, 'lng': longitude}).execute();
-    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
-    final listQuiz = List.from(response.data).map((e) => EntryQuizModel.fromMap(e));
+      {double maxDistance = 50,
+      Sex? sex,
+      required double latitude,
+      required double longitude}) async {
+    final response = await client.rpc('get_nearby_users', params: {
+      'lat': latitude,
+      'max_distance': maxDistance,
+      'lng': longitude,
+      'sex': sex == Sex.NONE ? null : sex.toString()
+    }).execute();
+    if (response.error != null)
+      throw RequestError(message: response.error?.message ?? '');
+    final listQuiz =
+        List.from(response.data).map((e) => EntryQuizModel.fromMap(e));
     return listQuiz.toList();
   }
 
   @override
   Future<void> passQuiz(int quizId) async {
-    final response = await client.rpc('pass_quiz', params: {'quiz_id': quizId}).execute();
+    final response =
+        await client.rpc('pass_quiz', params: {'quiz_id': quizId}).execute();
 
-    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
+    if (response.error != null)
+      throw RequestError(message: response.error?.message ?? '');
   }
 
   @override
   Future<String> createPaymentSession(int plantId) async {
-    final response = await client.rpc('create_impression', params: {'plan_id': plantId}).execute();
+    final response = await client
+        .rpc('create_impression', params: {'plan_id': plantId}).execute();
     final preferenceId = await _paymentLoop(response.data);
     print(preferenceId);
     return preferenceId['id'];
@@ -413,7 +493,8 @@ class SupabaseRepository implements DbRepositoryInterface {
       final response = await client.rpc('get_payment_preferences', params: {
         'request_id': requestID,
       }).execute();
-      if (response.error != null) throw RequestError(message: response.error!.message);
+      if (response.error != null)
+        throw RequestError(message: response.error!.message);
       if (response.data[0]['status'] == 'PENDING') {
         await Future.delayed(Duration(seconds: 1));
       } else {
@@ -430,16 +511,21 @@ class SupabaseRepository implements DbRepositoryInterface {
           'get_plans',
         )
         .execute();
-    if (response.error != null) throw RequestError(message: response.error!.message);
-    final plansList = List.from(response.data).map((e) => PlansModel.fromMap(e)).toList();
+    if (response.error != null)
+      throw RequestError(message: response.error!.message);
+    final plansList =
+        List.from(response.data).map((e) => PlansModel.fromMap(e)).toList();
     return plansList;
   }
 
   @override
   Future<List<ImpressionModel>> getIntmpressions(LatLng latlng) async {
     final response = await client.rpc('get_impressions').execute();
-    if (response.error != null) throw RequestError(message: response.error!.message);
-    final list = List.from(response.data).map((e) => ImpressionModel.fromMap(e)).toList();
+    if (response.error != null)
+      throw RequestError(message: response.error!.message);
+    final list = List.from(response.data)
+        .map((e) => ImpressionModel.fromMap(e))
+        .toList();
     return list;
   }
 
@@ -448,7 +534,8 @@ class SupabaseRepository implements DbRepositoryInterface {
     final response = await client.rpc('check_impression', params: {
       'impression_id': impressionId,
     }).execute();
-    if (response.error != null) throw RequestError(message: response.error!.message);
+    if (response.error != null)
+      throw RequestError(message: response.error!.message);
   }
 
   @override
@@ -459,7 +546,8 @@ class SupabaseRepository implements DbRepositoryInterface {
       'message_type': 0,
       'src': null,
     }).execute();
-    if (response.error != null) throw RequestError(message: response.error?.message ?? '');
+    if (response.error != null)
+      throw RequestError(message: response.error?.message ?? '');
     final chatRoom = ChatRoomModel.fromMap(response.data['room']);
     return chatRoom;
   }

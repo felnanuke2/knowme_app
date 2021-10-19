@@ -21,7 +21,8 @@ class ExploringTab extends StatefulWidget {
   State<ExploringTab> createState() => _ExploringTabState();
 }
 
-class _ExploringTabState extends State<ExploringTab> with AutomaticKeepAliveClientMixin {
+class _ExploringTabState extends State<ExploringTab>
+    with AutomaticKeepAliveClientMixin {
   @override
   @override
   Widget build(BuildContext context) {
@@ -41,7 +42,8 @@ class _ExploringTabState extends State<ExploringTab> with AutomaticKeepAliveClie
                 decoration: BoxDecoration(
                     color: Get.theme.primaryColor,
                     borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(35), bottomRight: Radius.circular(35))),
+                        bottomLeft: Radius.circular(35),
+                        bottomRight: Radius.circular(35))),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -67,7 +69,9 @@ class _ExploringTabState extends State<ExploringTab> with AutomaticKeepAliveClie
                     children: [
                       Text('Perto de Você',
                           style: GoogleFonts.montserrat(
-                              color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20)),
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 20)),
                       Row(
                         children: [
                           ElevatedButton(
@@ -96,23 +100,30 @@ class _ExploringTabState extends State<ExploringTab> with AutomaticKeepAliveClie
                 ),
                 Expanded(
                   child: StreamBuilder<List<EntryQuizModel>>(
-                      stream: exploringController.sessionController.quizesToAnswer.stream,
+                      stream: exploringController
+                          .sessionController.quizesToAnswer.stream,
                       builder: (context, snapshot) {
                         return PageView.builder(
                           key: UniqueKey(),
                           physics: NeverScrollableScrollPhysics(),
                           controller: exploringController.pageController,
-                          itemCount:
-                              exploringController.sessionController.quizesToAnswer.length + 1,
+                          itemCount: exploringController
+                                  .sessionController.quizesToAnswer.length +
+                              1,
                           itemBuilder: (context, index) {
-                            if (exploringController.sessionController.quizesToAnswer.length ==
+                            if (exploringController
+                                    .sessionController.quizesToAnswer.length ==
                                 index) {
+                              exploringController.reFindUser();
                               return NoNearbyWidget(
-                                  imageUrl: exploringController.sessionController.userAuthRepository
-                                      .getCurrentUser!.profileImage!);
+                                  imageUrl: exploringController
+                                      .sessionController
+                                      .userAuthRepository
+                                      .getCurrentUser!
+                                      .profileImage!);
                             }
-                            final itemQuiz =
-                                exploringController.sessionController.quizesToAnswer[index];
+                            final itemQuiz = exploringController
+                                .sessionController.quizesToAnswer[index];
                             return QuizToAnswer(quiz: itemQuiz);
                           },
                         );

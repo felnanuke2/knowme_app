@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/route_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:knowme/controller/main_screen/exploring_controller.dart';
+import 'package:knowme/models/user_model.dart';
 
 class ExploringTabFilterDrawer extends StatelessWidget {
-  const ExploringTabFilterDrawer({
+  ExploringTabFilterDrawer({
     Key? key,
     required this.controller,
   }) : super(key: key);
@@ -23,7 +25,8 @@ class ExploringTabFilterDrawer extends StatelessWidget {
               decoration: BoxDecoration(
                   color: Get.theme.primaryColor,
                   borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(35), bottomRight: Radius.circular(35))),
+                      bottomLeft: Radius.circular(35),
+                      bottomRight: Radius.circular(35))),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -41,11 +44,14 @@ class ExploringTabFilterDrawer extends StatelessWidget {
                             Text(
                               'Filtros',
                               style: GoogleFonts.montserrat(
-                                  fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white),
                             ),
                             ElevatedButton.icon(
                                 style: ElevatedButton.styleFrom(
-                                    primary: Colors.white, padding: EdgeInsets.all(6)),
+                                    primary: Colors.white,
+                                    padding: EdgeInsets.all(6)),
                                 onPressed: controller.setNewFilters,
                                 icon: Icon(
                                   Icons.check,
@@ -90,9 +96,33 @@ class ExploringTabFilterDrawer extends StatelessWidget {
                     inputFormatters: [controller.distanceMask],
                     controller: controller.distanceTEC,
                     decoration: InputDecoration(
-                        labelText: 'Distância',
+                        labelText: 'Distância km',
                         icon: Icon(Icons.pin_drop_sharp),
                         helperText: 'ex: 25 km'),
+                  ),
+                  SizedBox(
+                    height: 12,
+                  ),
+                  PopupMenuButton<Sex>(
+                    onSelected: (value) {
+                      controller.selectedSex = value;
+                    },
+                    child: IgnorePointer(
+                        child: TextField(
+                      controller: controller.getSelectedSex,
+                      decoration: InputDecoration(
+                          labelText: 'Gênero',
+                          icon: Icon(Icons.person),
+                          suffixIcon: Icon(Icons.arrow_drop_down)),
+                      readOnly: true,
+                    )),
+                    itemBuilder: (context) => [
+                      ...Sex.values.map(
+                        (e) => PopupMenuItem(
+                            value: e,
+                            child: Text(controller.replaceSexForString(e))),
+                      )
+                    ],
                   )
                 ],
               ),

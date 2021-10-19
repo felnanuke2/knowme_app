@@ -20,7 +20,9 @@ class ExploringSearchDelegate extends SearchDelegate {
 
   @override
   List<Widget>? buildActions(BuildContext context) {
-    return [IconButton(onPressed: _filter, icon: Icon(Icons.filter_alt_outlined))];
+    return [
+      // IconButton(onPressed: _filter, icon: Icon(Icons.filter_alt_outlined))
+    ];
   }
 
   @override
@@ -56,7 +58,8 @@ class ExploringSearchDelegate extends SearchDelegate {
   Widget? buildLeading(BuildContext context) {
     return IconButton(
         onPressed: Get.back,
-        icon: RotationTransition(turns: transitionAnimation, child: Icon(Icons.close)));
+        icon: RotationTransition(
+            turns: transitionAnimation, child: Icon(Icons.close)));
   }
 
   @override
@@ -89,7 +92,8 @@ class ExploringSearchDelegate extends SearchDelegate {
                           return Row(
                             children: [
                               Expanded(
-                                child: ExploringSugestionTile(itemUser: itemUser),
+                                child:
+                                    ExploringSugestionTile(itemUser: itemUser),
                               ),
                             ],
                           );
@@ -137,7 +141,8 @@ class ExploringSearchDelegate extends SearchDelegate {
                           return Row(
                             children: [
                               Expanded(
-                                child: ExploringSugestionTile(itemUser: itemUser),
+                                child:
+                                    ExploringSugestionTile(itemUser: itemUser),
                               ),
                             ],
                           );

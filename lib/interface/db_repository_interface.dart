@@ -66,11 +66,13 @@ abstract class DbRepositoryInterface {
 
   Future<List<EntryQuizModel>> getLisOfQuizes(String userId);
 
-  Future<InteractionsModel> sendInteraction(InteractionsModel interactionsModel);
+  Future<InteractionsModel> sendInteraction(
+      InteractionsModel interactionsModel);
 
   Future<List<String>> getFriends(String id);
 
-  Future<MessageModel> sendMessage(String userId, String message, int type, {String? src});
+  Future<MessageModel> sendMessage(String userId, String message, int type,
+      {String? src});
 
   Future<List<ChatRoomModel>> getChatChannels(String userId);
 
@@ -91,7 +93,10 @@ abstract class DbRepositoryInterface {
   Future<String> getImageUrl(String src);
 
   Future<List<EntryQuizModel>> getNearbyUsers(
-      {double maxDistance = 50, required double latitude, required double longitude});
+      {double maxDistance = 50,
+      Sex? sex,
+      required double latitude,
+      required double longitude});
 
   Future<void> passQuiz(int quizId);
 

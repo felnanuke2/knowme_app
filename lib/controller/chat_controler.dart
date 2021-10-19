@@ -25,7 +25,8 @@ class ChatController extends GetxController {
   final chatsMap = <int, RxList<MessageModel>>{}.obs;
   final SesssionController sesssionController;
   late DbRepositoryInterface repository;
-  String get currentUserID => sesssionController.userAuthRepository.getCurrentUser!.id!;
+  String get currentUserID =>
+      sesssionController.userAuthRepository.getCurrentUser!.id!;
   final messageTEC = TextEditingController();
   final sendingMessage = false.obs;
   StreamController? roomStream;
@@ -69,8 +70,8 @@ class ChatController extends GetxController {
   }
 
   _getChatRooms() async {
-    final response =
-        await repository.getChatChannels(sesssionController.userAuthRepository.getCurrentUser!.id!);
+    final response = await repository.getChatChannels(
+        sesssionController.userAuthRepository.getCurrentUser!.id!);
     chatRooms.clear();
     chatRooms.addAll(response);
     onRegisterListen();
@@ -84,7 +85,8 @@ class ChatController extends GetxController {
   }
 
   getMessagesBefore(int roomId, int lastMessageid) async {
-    final listMessagesBefore = await repository.getMessagesBefore(roomId, lastMessageid);
+    final listMessagesBefore =
+        await repository.getMessagesBefore(roomId, lastMessageid);
     if (listMessagesBefore.isEmpty) {
       haveNoMoreMessages.value = true;
     }
@@ -92,22 +94,30 @@ class ChatController extends GetxController {
   }
 
   Future<MessageModel?> sendTextMessage(String userid,
-      {int? chatRoomID, String? messageTextInput, required ChatScreen chatScreen}) async {
+      {int? chatRoomID,
+      String? messageTextInput,
+      required ChatScreen chatScreen}) async {
     try {
       if (chatRoomID == null) {
         final room = await repository.createRoom(userid);
         chatScreen.room = room;
 
         chatRoomID = room.id;
+        update();
       }
       sendingMessage.value = true;
       final messageText = messageTEC.text;
 
       messageTEC.clear();
 
-      final message = await repository.sendMessage(userid, messageTextInput ?? messageText, 0);
+      final message = await repository.sendMessage(
+          userid, messageTextInput ?? messageText, 0);
       if (chatRoomID != null) {
-        chatsMap[chatRoomID]?.insert(0, message);
+        if (chatsMap[chatRoomID]?.isEmpty ?? true) {
+          chatsMap[chatRoomID] = [message].obs;
+        } else {
+          chatsMap[chatRoomID]?.add(message);
+        }
       }
       sendingMessage.value = false;
       return message;
@@ -118,7 +128,6 @@ class ChatController extends GetxController {
       await onRefresh();
     }
     sendingMessage.value = false;
-    update();
   }
 
   void recAudio() async {
@@ -135,8 +144,8 @@ class ChatController extends GetxController {
 
   void onRegisterListen() {
     if (roomStream != null) return;
-    this.roomStream =
-        repository.chatRoomListen(sesssionController.userAuthRepository.getCurrentUser!.id!);
+    this.roomStream = repository.chatRoomListen(
+        sesssionController.userAuthRepository.getCurrentUser!.id!);
     roomStream?.stream.listen((event) async {
       if (event is StreamEventUpdate) {
         final data = event.data;
@@ -200,8 +209,10 @@ class ChatController extends GetxController {
       type = 1;
       try {
         this.sendingMessage.value = true;
-        src = await repository.sendImage(roomId.id!,
-            File(Directory.systemTemp.path + '/${DateTime.now()}.png')..writeAsBytesSync(source));
+        src = await repository.sendImage(
+            roomId.id!,
+            File(Directory.systemTemp.path + '/${DateTime.now()}.png')
+              ..writeAsBytesSync(source));
       } catch (e) {}
     }
     if (source is String) {
@@ -219,7 +230,8 @@ class ChatController extends GetxController {
     }
   }
 
-  sendMediaMessage(String toUser, int? roomId, {required ChatScreen chatScreen}) async {
+  sendMediaMessage(String toUser, int? roomId,
+      {required ChatScreen chatScreen}) async {
     this.sendingMessage.value = true;
     final message = messageTEC.text;
     final roomclass = RoomId(id: roomId, toUser: toUser);
@@ -231,7 +243,8 @@ class ChatController extends GetxController {
     }
     if (picked != null) {
       messageTEC.clear();
-      await repository.sendMessage(toUser, message, picked['type'], src: picked['src']);
+      await repository.sendMessage(toUser, message, picked['type'],
+          src: picked['src']);
       this.sendingMessage.value = false;
     }
     update();
@@ -250,7 +263,8 @@ class ChatController extends GetxController {
     }
   }
 
-  void sendAudio(String uid, int? roomId, {required ChatScreen chatScreen}) async {
+  void sendAudio(String uid, int? roomId,
+      {required ChatScreen chatScreen}) async {
     isRecAudio.value = false;
     this.sendingMessage.value = true;
     if (roomId == null) {

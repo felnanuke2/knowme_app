@@ -62,7 +62,8 @@ class SesssionController extends GetxController {
       isLoadingCurrentUser = false;
       update();
     }
-    if (userAuthRepository.getCurrentUser?.entryQuizID == null) _requestQuizCompletationDialog();
+    if (userAuthRepository.getCurrentUser?.entryQuizID == null)
+      _requestQuizCompletationDialog();
 
     await getReceivedInteractions();
     await getPosts();
@@ -106,7 +107,8 @@ class SesssionController extends GetxController {
     Get.dialog(SingleChildScrollView(
       child: AlertDialog(
         title: Text('Parece que você ainda não criou seu quiz de entrada.'),
-        content: Text('Para que os outros usuários possam te encontrar é necessário completa-lo.'),
+        content: Text(
+            'Para que os outros usuários possam te encontrar é necessário completa-lo.'),
         actions: [
           TextButton(
               onPressed: () {
@@ -120,8 +122,9 @@ class SesssionController extends GetxController {
   }
 
   void createPost() async {
-    final image =
-        await ImagePickerBottomSheet.showImagePickerBottomSheet(Get.context!, video: true);
+    final image = await ImagePickerBottomSheet.showImagePickerBottomSheet(
+        Get.context!,
+        video: true);
     if (image == null) return;
     Get.to(() => CreatePostScreen(
           src: image,
@@ -131,8 +134,8 @@ class SesssionController extends GetxController {
   Future<void> getPosts() async {
     await getFriends();
 
-    final result =
-        await repository.getPosts(friends..add(this.userAuthRepository.getCurrentUser?.id ?? ''));
+    final result = await repository.getPosts(
+        friends..add(this.userAuthRepository.getCurrentUser?.id ?? ''));
     posts.clear();
     posts.addAll(result);
     return;
@@ -140,19 +143,21 @@ class SesssionController extends GetxController {
 
   Future<void> getReceivedInteractions() async {
     try {
-      final receivedInteractions =
-          await repository.getInteractionsReceived(userAuthRepository.getCurrentUser!.id!);
+      final receivedInteractions = await repository
+          .getInteractionsReceived(userAuthRepository.getCurrentUser!.id!);
       this.interactionsReceived.value = receivedInteractions;
     } on RequestError catch (e) {
       print(e.message);
     }
   }
 
-  Future<void> updateInteraction(InteractionsModel interaction, int status) async {
+  Future<void> updateInteraction(
+      InteractionsModel interaction, int status) async {
     final index = interactionsReceived.indexOf(interaction);
     final user = interactionsReceived[index].user;
     try {
-      final response = await repository.updateInteraction(interaction.id, status);
+      final response =
+          await repository.updateInteraction(interaction.id, status);
       interactionsReceived[index] = response..user = user;
       return;
     } on RequestError catch (e) {
@@ -160,14 +165,17 @@ class SesssionController extends GetxController {
     }
   }
 
-  Future<void> getListOfQuizes({double maxDistance = 50}) async {
+  Future<void> getListOfQuizes({double maxDistance = 50, Sex? sex}) async {
     print('callGetQuizes');
     try {
       final latLng = await LocationServices.getLocation();
       if (latLng == null) return;
 
       final list = await repository.getNearbyUsers(
-          latitude: latLng.lat, longitude: latLng.lng, maxDistance: maxDistance);
+          latitude: latLng.lat,
+          longitude: latLng.lng,
+          sex: sex,
+          maxDistance: maxDistance);
       quizesToAnswer.clear();
       quizesToAnswer.addAll(list);
     } on RequestError catch (e) {
@@ -176,7 +184,8 @@ class SesssionController extends GetxController {
   }
 
   getFriends() async {
-    final list = await repository.getFriends(userAuthRepository.getCurrentUser?.id ?? '');
+    final list = await repository
+        .getFriends(userAuthRepository.getCurrentUser?.id ?? '');
     friends.clear();
     friends.addAll(list);
   }
@@ -196,8 +205,10 @@ class SesssionController extends GetxController {
     ChatRoomModel? room;
     try {
       room = chatController.chatRooms.firstWhere((element) =>
-          [userModel.id, userAuthRepository.getCurrentUser?.id].contains(element.user_a.id) &&
-          [userModel.id, userAuthRepository.getCurrentUser?.id].contains(element.user_b.id));
+          [userModel.id, userAuthRepository.getCurrentUser?.id]
+              .contains(element.user_a.id) &&
+          [userModel.id, userAuthRepository.getCurrentUser?.id]
+              .contains(element.user_b.id));
     } catch (e) {
       print(e);
     }

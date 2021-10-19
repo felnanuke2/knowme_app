@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/route_manager.dart';
 
@@ -20,15 +21,26 @@ class ExploringController extends GetxController {
   }
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final pageController = PageController();
+  var _selectedSex = Sex.NONE;
+  final _sexTEC = TextEditingController(text: 'Todos');
+  set selectedSex(Sex sex) {
+    _selectedSex = sex;
+    _sexTEC.text = replaceSexForString(sex);
+  }
+
+  TextEditingController get getSelectedSex => _sexTEC;
 
   final distanceTEC = TextEditingController(text: '50');
-  final distanceMask = MaskTextInputFormatter(mask: '######', filter: {'#': RegExp('[0-9]')});
+  final distanceMask =
+      MaskTextInputFormatter(mask: '######', filter: {'#': RegExp('[0-9]')});
   void openSearch() async {
     final result = await showSearch(
-        context: Get.context!, delegate: ExploringSearchDelegate(controller: this));
+        context: Get.context!,
+        delegate: ExploringSearchDelegate(controller: this));
     if (result == null) return;
     if (result is UserModel) {
-      if (result.id != sessionController.userAuthRepository.getCurrentUser?.id) {
+      if (result.id !=
+          sessionController.userAuthRepository.getCurrentUser?.id) {
         await Future.delayed(Duration(seconds: 1));
         Get.to(() => UsersProfileScreen(userModel: result));
       } else {
@@ -43,8 +55,10 @@ class ExploringController extends GetxController {
   }
 
   void passQuiz() {
-    pageController.nextPage(duration: Duration(milliseconds: 350), curve: Curves.easeInExpo);
-    final quiz = sessionController.quizesToAnswer.removeAt(pageController.page!.round());
+    pageController.nextPage(
+        duration: Duration(milliseconds: 350), curve: Curves.easeInExpo);
+    final quiz =
+        sessionController.quizesToAnswer.removeAt(pageController.page!.round());
     sessionController.repository.passQuiz(int.parse(quiz.id!));
   }
 
@@ -60,7 +74,24 @@ class ExploringController extends GetxController {
   }
 
   void setNewFilters() {
-    sessionController.getListOfQuizes(maxDistance: double.parse(distanceTEC.text));
+    sessionController.getListOfQuizes(
+        maxDistance: double.parse(distanceTEC.text), sex: _selectedSex);
     Get.back();
+  }
+
+  DateTime? lastSearch;
+  reFindUser() {
+    if (lastSearch != null &&
+        lastSearch!.difference(DateTime.now()).inSeconds > -30) return;
+    print('timmer = ');
+    print(lastSearch?.difference(DateTime.now()).inSeconds);
+    lastSearch = DateTime.now();
+
+    setNewFilters();
+  }
+
+  var sexMap = {Sex.NONE: 'Todos', Sex.MALE: 'Homens', Sex.FEMALE: 'Mulheres'};
+  String replaceSexForString(Sex sex) {
+    return sexMap[sex]!;
   }
 }
