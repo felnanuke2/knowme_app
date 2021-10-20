@@ -19,12 +19,14 @@ class LoginScreen extends StatefulWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen>
+    with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<LoginController>(
       init: LoginController(
-          tickerProvider: this, userAuthRepo: instance.Get.find<UserAuthInterface>()),
+          tickerProvider: this,
+          userAuthRepo: instance.Get.find<UserAuthInterface>()),
       builder: (controller) => Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(
@@ -113,7 +115,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
               Buttons.GoogleDark,
               onPressed: controller.sigInWithGoogle,
               text: 'Continuar com Google',
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(22)),
             ),
           ),
           Container(
@@ -122,9 +125,10 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             width: 380,
             child: SignInButton(
               Buttons.FacebookNew,
-              onPressed: () {},
+              onPressed: controller.signInWithFacebook,
               text: 'Continuar com Facebook',
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(22)),
             ),
           ),
           if (Platform.isIOS)
@@ -136,7 +140,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                 Buttons.AppleDark,
                 onPressed: () {},
                 text: 'Continuar com a Apple',
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(22)),
               ),
             ),
           Container(
@@ -147,7 +152,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
               Buttons.Email,
               onPressed: controller.goToLoginWithEmailTab,
               text: 'Entrar com email e senha',
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(22)),
             ),
           ),
           SizedBox(

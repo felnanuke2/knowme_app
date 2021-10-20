@@ -55,6 +55,10 @@ abstract class DbRepositoryInterface {
 
   Future<List<InteractionsModel>> getInteractionsReceived(String currentYserId);
 
+  Future<bool> checkIfExistInterationBtween(String userdUid);
+
+  Future<Map> countInteractions();
+
   Future<PostModel> createpost(PostModel post);
 
   Future<List<PostModel>> getPosts(List<String> usersList);

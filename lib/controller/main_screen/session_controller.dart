@@ -17,6 +17,7 @@ import 'package:knowme/models/user_model.dart';
 import 'package:knowme/screens/chat_screen.dart';
 import 'package:knowme/screens/complet_register_screen.dart';
 import 'package:knowme/screens/create_post_screen.dart';
+import 'package:knowme/screens/login_screen.dart';
 import 'package:knowme/screens/settings/quiz/quiz_settings_screen.dart';
 import 'package:knowme/screens/settings/settings_screen.dart';
 import 'package:knowme/services/location_services.dart';
@@ -31,6 +32,7 @@ class SesssionController extends GetxController {
   final UserAuthInterface userAuthRepository;
   final interactionsSend = <InteractionsModel>[].obs;
   final interactionsReceived = <InteractionsModel>[].obs;
+
   final friends = <String>[].obs;
   final quizesToAnswer = <EntryQuizModel>[].obs;
   final posts = <PostModel>[].obs;
@@ -223,5 +225,10 @@ class SesssionController extends GetxController {
                 user_a: userAuthRepository.getCurrentUser!,
                 user_b: userModel),
         currentUserId: userAuthRepository.getCurrentUser!.id!));
+  }
+
+  singOut() async {
+    await userAuthRepository.singOut();
+    Get.offAll(LoginScreen());
   }
 }

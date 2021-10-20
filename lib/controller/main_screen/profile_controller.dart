@@ -13,15 +13,17 @@ class ProfileController extends GetxController {
   final loadingProfileImage = false.obs;
   final loadingPosts = false.obs;
   final SesssionController sesssionController;
+  final interactionSendCounter = 0.obs;
+  final interactionReceivedCounter = 0.obs;
   ProfileController({
     required this.sesssionController,
   }) {
-    getMyPosts();
+    refresh();
     getFriendsList();
   }
   getFriendsList() async {
-    await sesssionController.repository
-        .getFriends(sesssionController.userAuthRepository.getCurrentUser?.id ?? '');
+    await sesssionController.repository.getFriends(
+        sesssionController.userAuthRepository.getCurrentUser?.id ?? '');
   }
 
   void changeProfileImage() async {
@@ -34,13 +36,15 @@ class ProfileController extends GetxController {
     try {
       final user = sesssionController.userAuthRepository.getCurrentUser!;
       loadingProfileImage.value = true;
-      final imageUrl =
-          await sesssionController.repository.upLoadImage(imageByte: pickedImage, userID: user.id!);
+      final imageUrl = await sesssionController.repository
+          .upLoadImage(imageByte: pickedImage, userID: user.id!);
 
-      await sesssionController.repository.updateUser(user.id!, profileImage: imageUrl);
+      await sesssionController.repository
+          .updateUser(user.id!, profileImage: imageUrl);
       final lastImageProfile = user.profileImage;
-      sesssionController.userAuthRepository.setCurrentUser =
-          sesssionController.userAuthRepository.getCurrentUser!..profileImage = imageUrl;
+      sesssionController.userAuthRepository.setCurrentUser = sesssionController
+          .userAuthRepository.getCurrentUser!
+        ..profileImage = imageUrl;
       sesssionController.repository.deletImage(lastImageProfile!);
     } catch (e) {
       print(e);
@@ -48,7 +52,8 @@ class ProfileController extends GetxController {
     loadingProfileImage.value = false;
   }
 
-  Future<void> getMyPosts() async {
+  Future<void> refresh() async {
+    countInteractios();
     loadingPosts.value = true;
     final post = await sesssionController.repository
         .getPosts([sesssionController.userAuthRepository.getCurrentUser!.id!]);
@@ -67,4 +72,14 @@ class ProfileController extends GetxController {
   }
 
   void updateUserProfile() {}
+
+  countInteractios() async {
+    try {
+      final response = await sesssionController.repository.countInteractions();
+      interactionSendCounter.value = response['send'];
+      interactionReceivedCounter.value = response['received'];
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 }

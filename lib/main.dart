@@ -29,10 +29,12 @@ class MyApp extends StatelessWidget {
       title: 'ConePlay',
       theme: ThemeData(
         accentColor: ACCET_COLOR,
-        dialogTheme:
-            DialogTheme(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18))),
-        cardTheme:
-            CardTheme(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18))),
+        dialogTheme: DialogTheme(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18))),
+        cardTheme: CardTheme(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18))),
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
         ),

@@ -11,8 +11,8 @@ import 'package:knowme/models/user_model.dart';
 import 'package:knowme/widgets/chat/message_tile.dart';
 import 'package:get/instance_manager.dart';
 import 'package:knowme/widgets/chat/recorder_tile.dart';
-import 'package:get/state_manager.dart';
 
+// ignore: must_be_immutable
 class ChatScreen extends StatefulWidget {
   ChatScreen({
     Key? key,

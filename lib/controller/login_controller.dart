@@ -32,12 +32,13 @@ class LoginController extends GetxController {
   late AnimationController _animationController;
   late Animation<double> animation;
   _initState() {
-    _animationController =
-        AnimationController(vsync: tickerProvider, duration: Duration(milliseconds: 450));
+    _animationController = AnimationController(
+        vsync: tickerProvider, duration: Duration(milliseconds: 450));
     animation = Tween<double>(
       begin: 45,
       end: 280,
-    ).animate(CurvedAnimation(parent: _animationController, curve: Curves.linearToEaseOut));
+    ).animate(CurvedAnimation(
+        parent: _animationController, curve: Curves.linearToEaseOut));
     _animationController.forward();
   }
 
@@ -60,7 +61,8 @@ class LoginController extends GetxController {
 
     _animationController.reverse();
     try {
-      await userAuthRepo.sigInWithEmail(email: emailTEC.text, password: passworTEC.text);
+      await userAuthRepo.sigInWithEmail(
+          email: emailTEC.text, password: passworTEC.text);
     } on RequestError catch (e) {
       errorMessage.value = e.message ?? '';
       hasError = true;
@@ -93,28 +95,16 @@ class LoginController extends GetxController {
   }
 
   sigInWithGoogle() async {
-//     final result = await userAuthRepo.sigInWithGoogle();
-//     if (result is UserModel) {
-// //need CompletProfile
-//       if (result.profileComplet) {
-//         if (result.entryQuizID == null)
-//           router.Get.off(() => QuizSettingsScren());
-//         else
-//           router.Get.off(() => MainScreen());
-//       } else {
-//         router.Get.snackbar(
-//           'Carregando Dados do Usuário',
-//           '',
-//           showProgressIndicator: true,
-//           backgroundColor: Colors.white,
-//           barBlur: 0,
-//         );
-//         var data = await userAuthRepo.getUserDataFromGoogle();
-//         router.Get.off(() => CompletRegisterScreen(
-//               dataModel: data,
-//               userModel: result,
-//             ));
-//       }
-//     }
+    try {
+      final result = await userAuthRepo.sigInWithGoogle();
+      Get.offAll(() => MainScreen());
+    } catch (e) {}
+  }
+
+  signInWithFacebook() async {
+    try {
+      final result = await userAuthRepo.sigInWithFacebook();
+      Get.offAll(() => MainScreen());
+    } catch (e) {}
   }
 }

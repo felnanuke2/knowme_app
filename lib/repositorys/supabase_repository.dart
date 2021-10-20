@@ -551,4 +551,25 @@ class SupabaseRepository implements DbRepositoryInterface {
     final chatRoom = ChatRoomModel.fromMap(response.data['room']);
     return chatRoom;
   }
+
+  @override
+  Future<bool> checkIfExistInterationBtween(String userdUid) async {
+    final response = await client.rpc('check_exist_intercation',
+        params: {'other_user': userdUid}).execute();
+    if (response.error != null)
+      throw RequestError(message: response.error?.message ?? '');
+    return response.data;
+  }
+
+  @override
+  Future<Map> countInteractions() async {
+    final response = await client
+        .rpc(
+          'count_interaction',
+        )
+        .execute();
+    if (response.error != null)
+      throw RequestError(message: response.error?.message ?? '');
+    return response.data;
+  }
 }

@@ -69,6 +69,9 @@ dependencies:
   geolocator: ^7.7.0
   mercado_pago_mobile_checkout: ^0.1.1
   animate_do: ^2.0.0
+  url_launcher: ^6.0.12
+  supabase_flutter: ^0.2.8
+  flutter_web_auth: ^0.3.1
   
   
  

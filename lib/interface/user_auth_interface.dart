@@ -18,11 +18,14 @@ abstract class UserAuthInterface {
   });
 
   Future<LoginSucessInterface> sigInWithGoogle();
-  Future<LoginSucessInterface> sigInWithEmail({required String email, required String password});
+  Future<LoginSucessInterface> sigInWithEmail(
+      {required String email, required String password});
   Future<LoginSucessInterface> sigInWithFacebook();
   Future<LoginSucessInterface> sigInWithApple();
   Future<LoginSucessInterface> completProfile(UserModel userModel);
-  Future<LoginSucessInterface> signUp({required String email, required String password});
+  Future<LoginSucessInterface> signUp(
+      {required String email, required String password});
   Future<LoginSucessInterface> sendResetPasswordEmail({required String email});
   Future<ThirdPartUserDataModel> getUserDataFromGoogle();
+  Future<void> singOut();
 }

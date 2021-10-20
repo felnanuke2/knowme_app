@@ -22,7 +22,8 @@ class CompletProfileController extends GetxController {
       {required this.repository,
       required this.userAuthrepository,
       ThirdPartUserDataModel? dataModel}) {
-    profileIsComplet = userAuthrepository.getCurrentUser?.profileComplet ?? false;
+    profileIsComplet =
+        userAuthrepository.getCurrentUser?.profileComplet ?? false;
     if (!profileIsComplet) {
       userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
         ?..birthDay = dataModel?.birthDay == null
@@ -50,8 +51,8 @@ class CompletProfileController extends GetxController {
         ufTEC.text = user.uf ?? '';
         bioTEC.text = user.bio ?? '';
         if (user.uf != null) {
-          selectedUfModel =
-              BRAZILIAN_CITYS_JSON.firstWhere((element) => element?.sigla.toUpperCase() == user.uf);
+          selectedUfModel = BRAZILIAN_CITYS_JSON
+              .firstWhere((element) => element?.sigla.toUpperCase() == user.uf);
         }
         cityTEC.text = user.city ?? '';
         sexType = user.sex;
@@ -76,8 +77,8 @@ class CompletProfileController extends GetxController {
   UfModel? selectedUfModel;
   Uint8List? imageProfile;
 
-  var phoneMask =
-      new MaskTextInputFormatter(mask: '(##) #####-####', filter: {"#": RegExp(r'[0-9]')});
+  var phoneMask = new MaskTextInputFormatter(
+      mask: '(##) #####-####', filter: {"#": RegExp(r'[0-9]')});
 
   @override
   void dispose() {
@@ -108,8 +109,9 @@ class CompletProfileController extends GetxController {
   }
 
   onImagePfofilePressed() async {
-    var image =
-        await ImagePickerBottomSheet.showImagePickerBottomSheet(Get.context!, circular: true);
+    var image = await ImagePickerBottomSheet.showImagePickerBottomSheet(
+        Get.context!,
+        circular: true);
     if (image == null) return;
     imageProfile = image;
 
@@ -119,7 +121,7 @@ class CompletProfileController extends GetxController {
   onPickerDate() async {
     var pickedDate = await showDatePicker(
         initialDatePickerMode: DatePickerMode.year,
-        initialEntryMode: DatePickerEntryMode.input,
+        initialEntryMode: DatePickerEntryMode.calendar,
         context: Get.context!,
         initialDate: DateTime.now(),
         firstDate: DateTime(1920),
@@ -139,30 +141,38 @@ class CompletProfileController extends GetxController {
       _callErrorSnackBar(title: 'Validando Dados', message: '', failure: false);
       userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
         ?..birthDay = birthDayTEC.text;
-      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser?..city = cityTEC.text;
-      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser?..uf = ufTEC.text;
-      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser?..uf = ufTEC.text;
+      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
+        ?..city = cityTEC.text;
+      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
+        ?..uf = ufTEC.text;
+      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
+        ?..uf = ufTEC.text;
       userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
         ?..completName = nameTEC.text;
-      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser?..bio = '';
+      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
+        ?..bio = '';
 
       userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
         ?..phoneNumber = phoneTEC.text;
 
       userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
         ?..profileName = profileNameTEC.text;
-      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser?..profileComplet = true;
-      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser?..sex = sexType;
+      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
+        ?..profileComplet = true;
+      userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
+        ?..sex = sexType;
 
       try {
         if (imageProfile != null) {
           final imagURl = await repository.upLoadImage(
-              imageByte: imageProfile!, userID: userAuthrepository.getCurrentUser!.id!);
+              imageByte: imageProfile!,
+              userID: userAuthrepository.getCurrentUser!.id!);
           userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
             ?..profileImage = imagURl;
         }
 
-        final user = await repository.createUser(userAuthrepository.getCurrentUser!);
+        final user =
+            await repository.createUser(userAuthrepository.getCurrentUser!);
         userAuthrepository.setCurrentUser = user;
         await Future.delayed(Duration(seconds: 2));
         if (!userAuthrepository.currentUserdataCompleter.isCompleted) {
@@ -172,11 +182,13 @@ class CompletProfileController extends GetxController {
         Get.offAll(() => MainScreen());
       } on RequestError catch (e) {
         print(e.message);
-        _callErrorSnackBar(title: 'Erro ao Completar o Perfil', message: e.message ?? '');
+        _callErrorSnackBar(
+            title: 'Erro ao Completar o Perfil', message: e.message ?? '');
       }
     } else {
       try {
-        final responseUser = await repository.updateUser(userAuthrepository.getCurrentUser!.id!,
+        final responseUser = await repository.updateUser(
+            userAuthrepository.getCurrentUser!.id!,
             birthDay: birthDayTEC.text,
             city: cityTEC.text,
             completName: nameTEC.text,
@@ -188,7 +200,8 @@ class CompletProfileController extends GetxController {
         userAuthrepository.setCurrentUser = responseUser..profileComplet = true;
         Get.back(result: responseUser);
       } on RequestError catch (e) {
-        _callErrorSnackBar(title: 'Erro ao Completar o Perfil', message: e.message ?? '');
+        _callErrorSnackBar(
+            title: 'Erro ao Completar o Perfil', message: e.message ?? '');
       }
     }
   }
@@ -208,7 +221,8 @@ class CompletProfileController extends GetxController {
 
   String? validatePhone(String? value) {
     if (value!.isNotEmpty) {
-      if (value.length < phoneMask.getMask()!.length) return 'Telefone Inválido';
+      if (value.length < phoneMask.getMask()!.length)
+        return 'Telefone Inválido';
     }
 
     return null;
@@ -232,7 +246,8 @@ class CompletProfileController extends GetxController {
     update();
   }
 
-  _callErrorSnackBar({required String title, required String message, bool failure = true}) {
+  _callErrorSnackBar(
+      {required String title, required String message, bool failure = true}) {
     Get.snackbar(title, message,
         margin: EdgeInsets.all(0),
         padding: EdgeInsets.all(8),
