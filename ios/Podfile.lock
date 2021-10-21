@@ -1,0 +1,413 @@
+PODS:
+  - camerawesome (0.0.1):
+    - Flutter
+  - device_info (0.0.1):
+    - Flutter
+  - Firebase/CoreOnly (8.7.0):
+    - FirebaseCore (= 8.7.0)
+  - Firebase/Messaging (8.7.0):
+    - Firebase/CoreOnly
+    - FirebaseMessaging (~> 8.7.0)
+  - firebase_core (1.7.0):
+    - Firebase/CoreOnly (= 8.7.0)
+    - Flutter
+  - firebase_messaging (10.0.8):
+    - Firebase/Messaging (= 8.7.0)
+    - firebase_core
+    - Flutter
+  - FirebaseCore (8.7.0):
+    - FirebaseCoreDiagnostics (~> 8.0)
+    - GoogleUtilities/Environment (~> 7.4)
+    - GoogleUtilities/Logger (~> 7.4)
+  - FirebaseCoreDiagnostics (8.8.0):
+    - GoogleDataTransport (~> 9.0)
+    - GoogleUtilities/Environment (~> 7.4)
+    - GoogleUtilities/Logger (~> 7.4)
+    - nanopb (~> 2.30908.0)
+  - FirebaseInstallations (8.8.0):
+    - FirebaseCore (~> 8.0)
+    - GoogleUtilities/Environment (~> 7.4)
+    - GoogleUtilities/UserDefaults (~> 7.4)
+    - PromisesObjC (< 3.0, >= 1.2)
+  - FirebaseMessaging (8.7.0):
+    - FirebaseCore (~> 8.0)
+    - FirebaseInstallations (~> 8.0)
+    - GoogleDataTransport (~> 9.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
+    - GoogleUtilities/Environment (~> 7.4)
+    - GoogleUtilities/Reachability (~> 7.4)
+    - GoogleUtilities/UserDefaults (~> 7.4)
+    - nanopb (~> 2.30908.0)
+  - Flutter (1.0.0)
+  - flutter_local_notifications (0.0.1):
+    - Flutter
+  - flutter_sound (8.3.9):
+    - Flutter
+    - mobile-ffmpeg-audio (= 4.4.LTS)
+    - tau_core (= 8.3.9)
+  - flutter_web_auth (0.3.1):
+    - Flutter
+  - FMDB (2.7.5):
+    - FMDB/standard (= 2.7.5)
+  - FMDB/standard (2.7.5)
+  - FXBlurView (1.6.4)
+  - gallery_saver (0.0.1):
+    - Flutter
+  - geolocator_apple (1.2.0):
+    - Flutter
+  - GoogleDataTransport (9.1.0):
+    - GoogleUtilities/Environment (~> 7.2)
+    - nanopb (~> 2.30908.0)
+    - PromisesObjC (< 3.0, >= 1.2)
+  - GoogleUtilities/AppDelegateSwizzler (7.5.2):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+  - GoogleUtilities/Environment (7.5.2):
+    - PromisesObjC (< 3.0, >= 1.2)
+  - GoogleUtilities/Logger (7.5.2):
+    - GoogleUtilities/Environment
+  - GoogleUtilities/Network (7.5.2):
+    - GoogleUtilities/Logger
+    - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Reachability
+  - "GoogleUtilities/NSData+zlib (7.5.2)"
+  - GoogleUtilities/Reachability (7.5.2):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/UserDefaults (7.5.2):
+    - GoogleUtilities/Logger
+  - image_cropper (0.0.4):
+    - Flutter
+    - TOCropViewController (~> 2.6.0)
+  - image_picker (0.0.1):
+    - Flutter
+  - JRSwizzle (1.0)
+  - libwebp (1.2.1):
+    - libwebp/demux (= 1.2.1)
+    - libwebp/mux (= 1.2.1)
+    - libwebp/webp (= 1.2.1)
+  - libwebp/demux (1.2.1):
+    - libwebp/webp
+  - libwebp/mux (1.2.1):
+    - libwebp/demux
+  - libwebp/webp (1.2.1)
+  - mercado_pago_mobile_checkout (0.0.1):
+    - Flutter
+    - MercadoPagoSDK (~> 4.32.4)
+    - MLCardDrawer (= 1.5.1)
+    - MLCardForm (= 0.9.1)
+  - MercadoPagoSDK (4.32.4):
+    - MercadoPagoSDK/Default (= 4.32.4)
+    - MLBusinessComponents (~> 1.0)
+    - MLCardForm (~> 0.1)
+  - MercadoPagoSDK/Default (4.32.4):
+    - MLBusinessComponents (~> 1.0)
+    - MLCardDrawer (~> 1.0)
+    - MLCardForm (~> 0.1)
+    - MLUI (~> 5.0)
+  - MLBusinessComponents (1.32.0):
+    - MLBusinessComponents/Default (= 1.32.0)
+    - MLUI (~> 5.0)
+  - MLBusinessComponents/Default (1.32.0):
+    - MLUI (~> 5.0)
+  - MLCardDrawer (1.5.1):
+    - MLCardDrawer/Default (= 1.5.1)
+  - MLCardDrawer/Default (1.5.1)
+  - MLCardForm (0.9.1):
+    - MLCardDrawer (~> 1.0)
+    - MLCardForm/Default (= 0.9.1)
+    - MLUI (~> 5.0)
+  - MLCardForm/Default (0.9.1):
+    - MLCardDrawer (~> 1.0)
+    - MLUI (~> 5.0)
+  - MLUI (5.25.0):
+    - MLUI/ActionButton (= 5.25.0)
+    - MLUI/Core (= 5.25.0)
+    - MLUI/Helpers (= 5.25.0)
+    - MLUI/MLButton (= 5.25.0)
+    - MLUI/MLCheckBox (= 5.25.0)
+    - MLUI/MLColorPalette (= 5.25.0)
+    - MLUI/MLContextualMenu (= 5.25.0)
+    - MLUI/MLFonts (= 5.25.0)
+    - MLUI/MLFullscreenModal (= 5.25.0)
+    - MLUI/MLGenericErrorView (= 5.25.0)
+    - MLUI/MLHeader (= 5.25.0)
+    - MLUI/MLHtml (= 5.25.0)
+    - MLUI/MLModal (= 5.25.0)
+    - MLUI/MLRadioButton (= 5.25.0)
+    - MLUI/MLSnackBar (= 5.25.0)
+    - MLUI/MLSpacing (= 5.25.0)
+    - MLUI/MLSpinner (= 5.25.0)
+    - MLUI/MLSwitch (= 5.25.0)
+    - MLUI/MLTextView (= 5.25.0)
+    - MLUI/MLTitledMultiLineTextField (= 5.25.0)
+    - MLUI/MLTitledSingleLineTextField (= 5.25.0)
+    - MLUI/PriceView (= 5.25.0)
+    - MLUI/SnackBarView (= 5.25.0)
+    - MLUI/StyleSheet (= 5.25.0)
+  - MLUI/ActionButton (5.25.0):
+    - MLUI/Core
+  - MLUI/Core (5.25.0):
+    - MLUI/MLFonts
+  - MLUI/Helpers (5.25.0)
+  - MLUI/MLButton (5.25.0):
+    - MLUI/Core
+    - MLUI/MLColorPalette
+    - MLUI/MLFonts
+    - MLUI/MLSpinner
+    - MLUI/StyleSheet
+  - MLUI/MLCheckBox (5.25.0):
+    - MLUI/MLColorPalette
+    - MLUI/StyleSheet
+  - MLUI/MLColorPalette (5.25.0)
+  - MLUI/MLContextualMenu (5.25.0):
+    - MLUI/MLColorPalette
+    - MLUI/MLFonts
+  - MLUI/MLFonts (5.25.0):
+    - JRSwizzle (= 1.0)
+    - MLUI/Helpers
+    - MLUI/StyleSheet
+  - MLUI/MLFullscreenModal (5.25.0):
+    - FXBlurView (~> 1.6)
+    - MLUI/Core
+    - MLUI/MLButton
+    - MLUI/MLColorPalette
+    - MLUI/MLFonts
+    - MLUI/MLHeader
+    - MLUI/StyleSheet
+  - MLUI/MLGenericErrorView (5.25.0):
+    - MLUI/MLButton
+    - MLUI/MLColorPalette
+    - MLUI/MLSpacing
+  - MLUI/MLHeader (5.25.0):
+    - MLUI/MLColorPalette
+    - MLUI/StyleSheet
+  - MLUI/MLHtml (5.25.0):
+    - MLUI/MLFonts
+  - MLUI/MLModal (5.25.0):
+    - FXBlurView (~> 1.6)
+    - MLUI/Core
+    - MLUI/MLButton
+    - MLUI/MLColorPalette
+    - MLUI/MLFonts
+    - MLUI/StyleSheet
+  - MLUI/MLRadioButton (5.25.0):
+    - MLUI/StyleSheet
+  - MLUI/MLSnackBar (5.25.0):
+    - MLUI/Helpers
+    - MLUI/MLButton
+    - MLUI/MLColorPalette
+    - MLUI/MLFonts
+  - MLUI/MLSpacing (5.25.0):
+    - JRSwizzle (= 1.0)
+    - MLUI/MLFonts
+  - MLUI/MLSpinner (5.25.0):
+    - MLUI/MLColorPalette
+    - MLUI/MLFonts
+    - MLUI/StyleSheet
+  - MLUI/MLSwitch (5.25.0):
+    - MLUI/Helpers
+    - MLUI/MLColorPalette
+  - MLUI/MLTextView (5.25.0):
+    - MLUI/MLColorPalette
+    - MLUI/MLFonts
+  - MLUI/MLTitledMultiLineTextField (5.25.0):
+    - MLUI/MLColorPalette
+    - MLUI/MLFonts
+    - MLUI/MLTitledSingleLineTextField
+    - MLUI/StyleSheet
+  - MLUI/MLTitledSingleLineTextField (5.25.0):
+    - MLUI/MLColorPalette
+    - MLUI/MLFonts
+    - MLUI/StyleSheet
+  - MLUI/PriceView (5.25.0):
+    - MLUI/Core
+    - MLUI/MLFonts
+  - MLUI/SnackBarView (5.25.0):
+    - MLUI/Helpers
+    - MLUI/MLFonts
+  - MLUI/StyleSheet (5.25.0)
+  - mobile-ffmpeg-audio (4.4.LTS)
+  - nanopb (2.30908.0):
+    - nanopb/decode (= 2.30908.0)
+    - nanopb/encode (= 2.30908.0)
+  - nanopb/decode (2.30908.0)
+  - nanopb/encode (2.30908.0)
+  - native_pdf_renderer (1.2.0):
+    - Flutter
+  - open_file (0.0.1):
+    - Flutter
+  - path_provider (0.0.1):
+    - Flutter
+  - "permission_handler (5.1.0+2)":
+    - Flutter
+  - PromisesObjC (2.0.0)
+  - record (0.0.1):
+    - Flutter
+  - sqflite (0.0.2):
+    - Flutter
+    - FMDB (>= 2.7.5)
+  - tau_core (8.3.9)
+  - TOCropViewController (2.6.0)
+  - uni_links (0.0.1):
+    - Flutter
+  - url_launcher (0.0.1):
+    - Flutter
+  - video_player (0.0.1):
+    - Flutter
+  - video_thumbnail (0.0.1):
+    - Flutter
+    - libwebp
+  - wakelock (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - camerawesome (from `.symlinks/plugins/camerawesome/ios`)
+  - device_info (from `.symlinks/plugins/device_info/ios`)
+  - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
+  - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
+  - Flutter (from `Flutter`)
+  - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
+  - flutter_sound (from `.symlinks/plugins/flutter_sound/ios`)
+  - flutter_web_auth (from `.symlinks/plugins/flutter_web_auth/ios`)
+  - gallery_saver (from `.symlinks/plugins/gallery_saver/ios`)
+  - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
+  - image_cropper (from `.symlinks/plugins/image_cropper/ios`)
+  - image_picker (from `.symlinks/plugins/image_picker/ios`)
+  - mercado_pago_mobile_checkout (from `.symlinks/plugins/mercado_pago_mobile_checkout/ios`)
+  - native_pdf_renderer (from `.symlinks/plugins/native_pdf_renderer/ios`)
+  - open_file (from `.symlinks/plugins/open_file/ios`)
+  - path_provider (from `.symlinks/plugins/path_provider/ios`)
+  - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
+  - record (from `.symlinks/plugins/record/ios`)
+  - sqflite (from `.symlinks/plugins/sqflite/ios`)
+  - uni_links (from `.symlinks/plugins/uni_links/ios`)
+  - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
+  - video_player (from `.symlinks/plugins/video_player/ios`)
+  - video_thumbnail (from `.symlinks/plugins/video_thumbnail/ios`)
+  - wakelock (from `.symlinks/plugins/wakelock/ios`)
+
+SPEC REPOS:
+  trunk:
+    - Firebase
+    - FirebaseCore
+    - FirebaseCoreDiagnostics
+    - FirebaseInstallations
+    - FirebaseMessaging
+    - FMDB
+    - FXBlurView
+    - GoogleDataTransport
+    - GoogleUtilities
+    - JRSwizzle
+    - libwebp
+    - MercadoPagoSDK
+    - MLBusinessComponents
+    - MLCardDrawer
+    - MLCardForm
+    - MLUI
+    - mobile-ffmpeg-audio
+    - nanopb
+    - PromisesObjC
+    - tau_core
+    - TOCropViewController
+
+EXTERNAL SOURCES:
+  camerawesome:
+    :path: ".symlinks/plugins/camerawesome/ios"
+  device_info:
+    :path: ".symlinks/plugins/device_info/ios"
+  firebase_core:
+    :path: ".symlinks/plugins/firebase_core/ios"
+  firebase_messaging:
+    :path: ".symlinks/plugins/firebase_messaging/ios"
+  Flutter:
+    :path: Flutter
+  flutter_local_notifications:
+    :path: ".symlinks/plugins/flutter_local_notifications/ios"
+  flutter_sound:
+    :path: ".symlinks/plugins/flutter_sound/ios"
+  flutter_web_auth:
+    :path: ".symlinks/plugins/flutter_web_auth/ios"
+  gallery_saver:
+    :path: ".symlinks/plugins/gallery_saver/ios"
+  geolocator_apple:
+    :path: ".symlinks/plugins/geolocator_apple/ios"
+  image_cropper:
+    :path: ".symlinks/plugins/image_cropper/ios"
+  image_picker:
+    :path: ".symlinks/plugins/image_picker/ios"
+  mercado_pago_mobile_checkout:
+    :path: ".symlinks/plugins/mercado_pago_mobile_checkout/ios"
+  native_pdf_renderer:
+    :path: ".symlinks/plugins/native_pdf_renderer/ios"
+  open_file:
+    :path: ".symlinks/plugins/open_file/ios"
+  path_provider:
+    :path: ".symlinks/plugins/path_provider/ios"
+  permission_handler:
+    :path: ".symlinks/plugins/permission_handler/ios"
+  record:
+    :path: ".symlinks/plugins/record/ios"
+  sqflite:
+    :path: ".symlinks/plugins/sqflite/ios"
+  uni_links:
+    :path: ".symlinks/plugins/uni_links/ios"
+  url_launcher:
+    :path: ".symlinks/plugins/url_launcher/ios"
+  video_player:
+    :path: ".symlinks/plugins/video_player/ios"
+  video_thumbnail:
+    :path: ".symlinks/plugins/video_thumbnail/ios"
+  wakelock:
+    :path: ".symlinks/plugins/wakelock/ios"
+
+SPEC CHECKSUMS:
+  camerawesome: 0f8628efae993cb064ec4f36322e89c237e1064f
+  device_info: d7d233b645a32c40dfdc212de5cf646ca482f175
+  Firebase: bc9325d5ee2041524bac78a5213d0e530c651309
+  firebase_core: f5ac1f2726a2bd0468cea0161eddeea3d83d7e3e
+  firebase_messaging: cfee8830477d2f1875e027a65cce7f6239ebf583
+  FirebaseCore: f4804c1d3f4bbbefc88904d15653038f2c99ddf7
+  FirebaseCoreDiagnostics: fe77f42da6329d6d83d21fd9d621a6b704413bfc
+  FirebaseInstallations: 2563cb18a723ef9c6ef18318a49519b75dce613c
+  FirebaseMessaging: 93227dd71d7888e200baef65043f81acb2b6596e
+  Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
+  flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
+  flutter_sound: 91c069f33d811a4c98b9aa7cec9cd1dbfd1786d9
+  flutter_web_auth: eae2fc62b97d9a44c5c2a1ed0404a6ce396e3d7f
+  FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
+  FXBlurView: db786c2561cb49a09ae98407f52460096ab8a44f
+  gallery_saver: 9fc173c9f4fcc48af53b2a9ebea1b643255be542
+  geolocator_apple: b741765c55dc21950e3e106e8b3584e55cf81ce5
+  GoogleDataTransport: 85fd18ff3019bb85d3f2c551d04c481dedf71fc9
+  GoogleUtilities: 8de2a97a17e15b6b98e38e8770e2d129a57c0040
+  image_cropper: f1668dd8d2cad2d357955caad15a40547856edcb
+  image_picker: 9aa50e1d8cdacdbed739e925b7eea16d014367e6
+  JRSwizzle: dd5ead5d913a0f29e7f558200165849f006bb1e3
+  libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
+  mercado_pago_mobile_checkout: 3d11d35a55b87bbc6ccc2c240b7d98344a6b73e2
+  MercadoPagoSDK: 634fc8a9fe7f99f4d73506659c68cdbb885407fc
+  MLBusinessComponents: 8f34eb0b3f7eac427fc142d85a8b6262c5f821cf
+  MLCardDrawer: 2ae367238699c790a143b14c8280ad75495f6fee
+  MLCardForm: 150fe3caf0f986340431f3e8d863b771ee2dfab1
+  MLUI: db4e5bb3aae6884212dcf1213d76b65c5cd26464
+  mobile-ffmpeg-audio: 1e0a053f8a6de57114e50ff48b3a85ff1c60f902
+  nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
+  native_pdf_renderer: 0e545bf94fb341e0fe7508bf72d4c1c42c30aa02
+  open_file: 02eb5cb6b21264bd3a696876f5afbfb7ca4f4b7d
+  path_provider: d1e9807085df1f9cc9318206cd649dc0b76be3de
+  permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
+  PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
+  record: 7ee2393532f8553bbb09fa19e95478323b7c0a99
+  sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
+  tau_core: f7bbd1c6a632f52c2fa7c14feea385ab966b1e45
+  TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
+  uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
+  url_launcher: b6e016d912f04be9f5bf6e8e82dc599b7ba59649
+  video_player: ecd305f42e9044793efd34846e1ce64c31ea6fcb
+  video_thumbnail: c4e2a3c539e247d4de13cd545344fd2d26ffafd1
+  wakelock: d0fc7c864128eac40eba1617cb5264d9c940b46f
+
+PODFILE CHECKSUM: 173c2452d4c4a4f40a657fff7f377dab3f31eef3
+
+COCOAPODS: 1.11.2
