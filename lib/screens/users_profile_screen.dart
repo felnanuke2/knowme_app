@@ -34,13 +34,13 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
   @override
   void initState() {
     sesssionController = Get.find<SesssionController>();
-    isFriends = sesssionController.friends.contains(widget.userModel.id);
+
     repo = Get.find<DbRepositoryInterface>();
     _checkIfExistInteraction();
     super.initState();
   }
 
-  _getFirends() {
+  getPosts() {
     if (isFriends)
       repo.getPosts([widget.userModel.id ?? '']).then((value) {
         poststList.addAll(value);
@@ -55,12 +55,16 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
 
   _checkIfExistInteraction() async {
     loading.value = true;
+    await sesssionController.getFriends();
+    isFriends = sesssionController.friends.contains(widget.userModel.id);
     await _getUserDetails();
     final result = await sesssionController.repository
         .checkIfExistInterationBtween(widget.userModel.id!);
     answered.value = result;
-    _getFirends();
+    getPosts();
+
     loading.value = false;
+    setState(() {});
   }
 
   @override

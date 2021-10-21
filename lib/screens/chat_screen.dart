@@ -34,6 +34,8 @@ class _ChatScreenState extends State<ChatScreen> {
   late ChatController _chatController;
   @override
   void initState() {
+    Get.find<ChatController>().text.value = '';
+    ;
     sController.addListener(() {
       if (sController.position.pixels > 250) {
         showDropButton.value = true;
@@ -48,9 +50,6 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return GetBuilder<ChatController>(
         dispose: (state) => state.controller?.disposeChatScreen(),
-        initState: (state) {
-          state.controller?.text.value = '';
-        },
         builder: (controller) {
           print('rebuild');
           _chatController = controller;

@@ -83,9 +83,7 @@ class SupabaseRepository implements DbRepositoryInterface {
   @override
   Future<List<InteractionsModel>> getInteractionsReceived(
       String currentUserId) async {
-    final response = await client.from('interactions').select('''
-  *, users: from_user ( profileName, completName, profileImage, uid )
-  ''').eq('to_user', currentUserId).order('created_at').limit(20).execute();
+    final response = await client.rpc('get_interactions_received').execute();
     if (response.error != null)
       throw RequestError(message: response.error!.message);
     final interactions = List.from(response.data)
@@ -335,13 +333,7 @@ class SupabaseRepository implements DbRepositoryInterface {
 
   @override
   Future<List<ChatRoomModel>> getChatChannels(String userId) async {
-    final response = await client
-        .from('chat_room')
-        .select(
-            'id,user_a (profileName, completName, profileImage, uid ),user_b (profileName, completName, profileImage, uid ),created_at,status')
-        .or('user_a.eq.$userId,user_b.eq.$userId')
-        .order('updated_at', ascending: false)
-        .execute();
+    final response = await client.rpc('get_chats_rooms').execute();
     if (response.error != null)
       throw RequestError(message: response.error?.message ?? '');
     final listRooms =

@@ -43,7 +43,8 @@ class QuizToAnswer extends StatelessWidget {
                             children: [
                               CachedNetworkImage(
                                 imageUrl: quiz.presentImagesList[index],
-                                progressIndicatorBuilder: (context, url, progress) =>
+                                progressIndicatorBuilder: (context, url,
+                                        progress) =>
                                     Center(child: LinearProgressIndicator()),
                                 fit: BoxFit.cover,
                               ),
@@ -54,24 +55,32 @@ class QuizToAnswer extends StatelessWidget {
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(18),
                                     child: BackdropFilter(
-                                        filter: ImageFilter.blur(sigmaX: 0.5, sigmaY: 0.5),
+                                        filter: ImageFilter.blur(
+                                            sigmaX: 0.5, sigmaY: 0.5),
                                         child: Container(
                                             color: Colors.black12,
-                                            padding: EdgeInsets.symmetric(horizontal: 12),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 12),
                                             height: 80,
                                             child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  (quiz.user?.profileName ?? '') + '#',
+                                                  (quiz.user?.profileName ??
+                                                          '') +
+                                                      '#',
                                                   style: GoogleFonts.openSans(
                                                       color: Colors.white,
                                                       fontSize: 18,
-                                                      fontWeight: FontWeight.w600),
+                                                      fontWeight:
+                                                          FontWeight.w600),
                                                 ),
                                                 Row(
-                                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.end,
                                                   children: [
                                                     Icon(
                                                       Icons.pin_drop,
@@ -79,7 +88,8 @@ class QuizToAnswer extends StatelessWidget {
                                                     ),
                                                     Text(
                                                       '${quiz.user?.city ?? ''} - ${quiz.user?.uf ?? ''} • ${quiz.user?.distance ?? '?'} km',
-                                                      style: GoogleFonts.openSans(
+                                                      style:
+                                                          GoogleFonts.openSans(
                                                         color: Colors.white,
                                                         fontSize: 14,
                                                       ),
@@ -97,12 +107,13 @@ class QuizToAnswer extends StatelessWidget {
               ),
             )),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
-                      style: ElevatedButton.styleFrom(primary: Colors.white, shape: CircleBorder()),
+                      style: ElevatedButton.styleFrom(
+                          primary: Colors.white, shape: CircleBorder()),
                       onPressed: controller.passQuiz,
                       child: CircleAvatar(
                           backgroundColor: Colors.transparent,
@@ -113,7 +124,8 @@ class QuizToAnswer extends StatelessWidget {
                             size: 25,
                           ))),
                   ElevatedButton(
-                      style: ElevatedButton.styleFrom(shape: CircleBorder(), primary: Colors.green),
+                      style: ElevatedButton.styleFrom(
+                          shape: CircleBorder(), primary: Colors.green),
                       onPressed: () => controller.answerQuiz(quiz),
                       child: CircleAvatar(
                           backgroundColor: Colors.transparent,

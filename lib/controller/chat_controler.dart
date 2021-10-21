@@ -108,7 +108,8 @@ class ChatController extends GetxController {
       sendingMessage.value = true;
       final messageText = messageTEC.text;
 
-      messageTEC.clear();
+      messageTEC.text = '';
+      text.value = '';
 
       final message = await repository.sendMessage(
           userid, messageTextInput ?? messageText, 0);
@@ -243,6 +244,7 @@ class ChatController extends GetxController {
     }
     if (picked != null) {
       messageTEC.clear();
+      text.value = '';
       await repository.sendMessage(toUser, message, picked['type'],
           src: picked['src']);
       this.sendingMessage.value = false;
@@ -277,6 +279,7 @@ class ChatController extends GetxController {
     final src = await repository.sendAudio(roomId!, File(recorderPath!));
 
     messageTEC.clear();
+    text.value = '';
     await repository.sendMessage(uid, '', 3, src: src);
     update();
     this.sendingMessage.value = false;

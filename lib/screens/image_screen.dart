@@ -36,21 +36,24 @@ class _ImageScreenState extends State<ImageScreen> {
   final isUIVisible = true.obs;
   @override
   void initState() {
-    image = CachedNetworkImageProvider(widget.imageUrl, cacheKey: widget.cacheKey);
+    image =
+        CachedNetworkImageProvider(widget.imageUrl, cacheKey: widget.cacheKey);
 
     super.initState();
   }
 
   @override
   void dispose() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values)
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+            overlays: SystemUiOverlay.values)
         .then((value) {});
     super.dispose();
   }
 
   _hiddeUi() async {
     if (isUIVisible.value) {
-      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+          overlays: []);
     } else {
       await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
           overlays: SystemUiOverlay.values);
@@ -68,12 +71,12 @@ class _ImageScreenState extends State<ImageScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
-                child: Hero(
-                  tag: widget.imageUrl,
-                  child: InkWell(
-                    onTap: () {
-                      _hiddeUi();
-                    },
+                child: InkWell(
+                  onTap: () {
+                    _hiddeUi();
+                  },
+                  child: Hero(
+                    tag: widget.imageUrl,
                     child: ExtendedImage(
                       image: image,
                       mode: ExtendedImageMode.gesture,
@@ -94,7 +97,8 @@ class _ImageScreenState extends State<ImageScreen> {
                     child: AnimatedSwitcher(
                         duration: Duration(milliseconds: 1600),
                         child: AppBar(
-                          iconTheme: IconThemeData(color: Get.theme.primaryColor),
+                          iconTheme:
+                              IconThemeData(color: Get.theme.primaryColor),
                           elevation: 0,
                           backgroundColor: Colors.transparent,
                         ))),
@@ -127,11 +131,13 @@ class _ImageScreenState extends State<ImageScreen> {
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
                                       Get.back();
-                                      Get.to(() => UsersProfileScreen(userModel: widget.user!));
+                                      Get.to(() => UsersProfileScreen(
+                                          userModel: widget.user!));
                                     }),
                               TextSpan(
                                 text: widget.description!,
-                                style: GoogleFonts.openSans(color: Colors.white, fontSize: 14),
+                                style: GoogleFonts.openSans(
+                                    color: Colors.white, fontSize: 14),
                               )
                             ]))
                           ],
