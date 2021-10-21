@@ -20,24 +20,27 @@ class LoginScreen extends StatefulWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-final imageBanner = Column(
-  children: [
-    Container(
-      width: 340,
-      height: 220,
-      child: Image.asset(
-        'assets/knowme_logo-removebg.png',
-        fit: BoxFit.fitWidth,
+final _imageBanner = Container(
+  margin: EdgeInsets.only(bottom: 12),
+  child: Column(
+    children: [
+      Container(
+        width: 340,
+        height: 220,
+        child: Image.asset(
+          'assets/knowme_logo-removebg.png',
+          fit: BoxFit.fitWidth,
+        ),
       ),
-    ),
-    Container(
-      padding: EdgeInsets.symmetric(horizontal: 35),
-      child: Text(
-        'Olá, seja bem vindo ao ConePlay!',
-        style: route.Get.textTheme.headline5,
+      Container(
+        padding: EdgeInsets.symmetric(horizontal: 35),
+        child: Text(
+          'Olá, seja bem vindo ao ConePlay!',
+          style: route.Get.textTheme.headline5,
+        ),
       ),
-    ),
-  ],
+    ],
+  ),
 );
 
 class _LoginScreenState extends State<LoginScreen>
@@ -70,45 +73,48 @@ class _LoginScreenState extends State<LoginScreen>
       padding: EdgeInsets.symmetric(horizontal: 15),
       child: Form(
         key: controller.emailRecoveryFormKey,
-        child: Column(
-          children: [
-            TextFormField(
-              controller: controller.emailTEC,
-              validator: controller.validateEmail,
-              decoration: InputDecoration(
-                hintText: 'Digite seu email',
-                prefixIcon: Icon(Icons.email),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _imageBanner,
+              TextFormField(
+                controller: controller.emailTEC,
+                validator: controller.validateEmail,
+                decoration: InputDecoration(
+                  hintText: 'Digite seu email',
+                  prefixIcon: Icon(Icons.email),
+                ),
+                style: TextStyle(decoration: TextDecoration.none),
               ),
-              style: TextStyle(decoration: TextDecoration.none),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Obx(
-              () => Text(
-                controller.recoveryPasswordErrorText.value,
-                style: GoogleFonts.openSans(
-                    color: controller.recoveryPasswordErrorText.value
-                            .contains('sucesso')
-                        ? Colors.green
-                        : Colors.red),
+              SizedBox(
+                height: 20,
               ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            AnimatedLoadingButton(
-                child: Text('Enviar email de troca de senha'),
-                heigth: 45,
-                animation: controller.animation,
-                onTap: controller.onTapRecoveryPasswordButton),
-            SizedBox(
-              height: 25,
-            ),
-            TextButton(
-                onPressed: controller.goToLoginWithEmailTab,
-                child: Text('Voltar para a tela de login'))
-          ],
+              Obx(
+                () => Text(
+                  controller.recoveryPasswordErrorText.value,
+                  style: GoogleFonts.openSans(
+                      color: controller.recoveryPasswordErrorText.value
+                              .contains('sucesso')
+                          ? Colors.green
+                          : Colors.red),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              AnimatedLoadingButton(
+                  child: Text('Enviar email de troca de senha'),
+                  heigth: 45,
+                  animation: controller.animation,
+                  onTap: controller.onTapRecoveryPasswordButton),
+              SizedBox(
+                height: 25,
+              ),
+              TextButton(
+                  onPressed: controller.goToLoginWithEmailTab,
+                  child: Text('Voltar para a tela de login'))
+            ],
+          ),
         ),
       ),
     );
@@ -123,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen>
         padding: EdgeInsets.symmetric(vertical: 20),
         child: Column(
           children: [
-            imageBanner,
+            _imageBanner,
             Container(
               margin: EdgeInsets.only(bottom: 20),
               height: 45,
@@ -188,84 +194,87 @@ class _LoginScreenState extends State<LoginScreen>
       padding: EdgeInsets.symmetric(horizontal: 15),
       child: Form(
         key: controller.formKey,
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
-              child: TextFormField(
-                validator: controller.validateEmail,
-                controller: controller.emailTEC,
-                decoration: InputDecoration(
-                  labelText: 'Digite seu email',
-                  prefixIcon: Icon(Icons.email),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _imageBanner,
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: TextFormField(
+                  validator: controller.validateEmail,
+                  controller: controller.emailTEC,
+                  decoration: InputDecoration(
+                    labelText: 'Digite seu email',
+                    prefixIcon: Icon(Icons.email),
+                  ),
+                  style: TextStyle(decoration: TextDecoration.none),
                 ),
-                style: TextStyle(decoration: TextDecoration.none),
               ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
-              child: TextFormField(
-                validator: controller.validatePassword,
-                controller: controller.passworTEC,
-                obscureText: controller.passwordObscured,
-                decoration: InputDecoration(
-                    labelText: 'Senha',
-                    prefixIcon: Icon(Icons.lock),
-                    suffixIcon: IconButton(
-                        onPressed: controller.onpasswordObscuredToggle,
-                        icon: Icon(controller.passwordObscured
-                            ? Icons.visibility
-                            : Icons.visibility_off))),
+              SizedBox(
+                height: 20,
               ),
-            ),
-            Obx(() => controller.errorMessage.isNotEmpty
-                ? Text(
-                    controller.errorMessage.value,
-                    style: TextStyle(color: Colors.red),
-                  )
-                : SizedBox.shrink()),
-            SizedBox(
-              height: 20,
-            ),
-            AnimatedLoadingButton(
-              onTap: controller.onTapLoginButton,
-              heigth: 45,
-              animation: controller.animation,
-              child: Text(
-                'Continuar',
-                style: TextStyle(fontSize: 18),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: TextFormField(
+                  validator: controller.validatePassword,
+                  controller: controller.passworTEC,
+                  obscureText: controller.passwordObscured,
+                  decoration: InputDecoration(
+                      labelText: 'Senha',
+                      prefixIcon: Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                          onPressed: controller.onpasswordObscuredToggle,
+                          icon: Icon(controller.passwordObscured
+                              ? Icons.visibility
+                              : Icons.visibility_off))),
+                ),
               ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                    onPressed: controller.goToRecoveryPasswordTab,
-                    child: Text('Esqueceu sua senha?')),
-                TextButton(
-                    onPressed: () {
-                      route.Get.to(() => RegisterScreen());
-                    },
-                    child: Text('Registre-se')),
-              ],
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            TextButton(
-                onPressed: controller.goToLoginWithSocialMediaTab,
-                child: Text('Outras opções de login')),
-            SizedBox(
-              height: 25,
-            ),
-            PrivacyPolicyButton()
-          ],
+              Obx(() => controller.errorMessage.isNotEmpty
+                  ? Text(
+                      controller.errorMessage.value,
+                      style: TextStyle(color: Colors.red),
+                    )
+                  : SizedBox.shrink()),
+              SizedBox(
+                height: 20,
+              ),
+              AnimatedLoadingButton(
+                onTap: controller.onTapLoginButton,
+                heigth: 45,
+                animation: controller.animation,
+                child: Text(
+                  'Continuar',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                      onPressed: controller.goToRecoveryPasswordTab,
+                      child: Text('Esqueceu sua senha?')),
+                  TextButton(
+                      onPressed: () {
+                        route.Get.to(() => RegisterScreen());
+                      },
+                      child: Text('Registre-se')),
+                ],
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              TextButton(
+                  onPressed: controller.goToLoginWithSocialMediaTab,
+                  child: Text('Outras opções de login')),
+              SizedBox(
+                height: 25,
+              ),
+              PrivacyPolicyButton()
+            ],
+          ),
         ),
       ),
     );

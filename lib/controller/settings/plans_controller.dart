@@ -7,6 +7,7 @@ import 'package:knowme/errors/requestError.dart';
 import 'package:knowme/interface/db_repository_interface.dart';
 import 'package:knowme/models/plans_model.dart';
 import 'package:knowme/platform_channel/deep_link_channel.dart';
+import 'package:knowme/services/analitcs_services.dart';
 import 'package:mercado_pago_mobile_checkout/mercado_pago_mobile_checkout.dart';
 import 'package:knowme/constants/.env.dart' as env;
 import 'package:url_launcher/url_launcher.dart' as launch;
@@ -22,6 +23,8 @@ class PlansController extends GetxController {
 
   final loadPlan = false.obs;
   getPlans() async {
+    AnalitcsServices.instance
+        .logEvent(analitcsEnum: AnalitcsEnum.OpenImpressions, data: {});
     loadPlan.value = true;
     try {
       final plans = await repository.getPlans();
@@ -36,6 +39,8 @@ class PlansController extends GetxController {
   selectPlan(PlansModel plan) async {
     loadPlan.value = true;
     final result = await repository.createPaymentSession(plan.id);
+    AnalitcsServices.instance.logEvent(
+        analitcsEnum: AnalitcsEnum.StartPayment, data: {'plan': plan.id});
     if (Platform.isIOS) {
       _startIosPaymentSession(result['init_point'].toString());
       loadPlan.value = false;

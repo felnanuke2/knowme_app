@@ -20,6 +20,7 @@ import 'package:knowme/screens/create_post_screen.dart';
 import 'package:knowme/screens/login_screen.dart';
 import 'package:knowme/screens/settings/quiz/quiz_settings_screen.dart';
 import 'package:knowme/screens/settings/settings_screen.dart';
+import 'package:knowme/services/analitcs_services.dart';
 import 'package:knowme/services/location_services.dart';
 import 'package:knowme/services/push_notifications_services.dart';
 import 'package:knowme/widgets/image_picker_bottom_sheet.dart';
@@ -172,6 +173,9 @@ class SesssionController extends GetxController {
     try {
       final latLng = await LocationServices.getLocation();
       if (latLng == null) return;
+      AnalitcsServices.instance.logEvent(
+          analitcsEnum: AnalitcsEnum.UserLocation,
+          data: {'latitude': latLng.lat, 'longitude': latLng.lng});
 
       final list = await repository.getNearbyUsers(
           latitude: latLng.lat,

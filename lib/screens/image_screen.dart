@@ -9,7 +9,6 @@ import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:knowme/models/user_model.dart';
 import 'package:knowme/screens/users_profile_screen.dart';
-import 'package:palette_generator/palette_generator.dart';
 
 class ImageScreen extends StatefulWidget {
   ImageScreen(
