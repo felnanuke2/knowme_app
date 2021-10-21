@@ -38,9 +38,7 @@ dependencies:
   date_format: ^2.0.4
   mask_text_input_formatter: ^2.0.0
   string_validator: ^0.3.0
-  google_sign_in: ^5.0.7
   firebase_core: ^1.6.0 
-  sign_in_with_apple: ^3.0.0
   http: ^0.13.3
   cached_network_image: ^3.1.0
   camerawesome: ^0.3.0+1  

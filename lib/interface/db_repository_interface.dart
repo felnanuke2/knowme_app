@@ -105,7 +105,7 @@ abstract class DbRepositoryInterface {
   Future<void> passQuiz(int quizId);
 
   /// return somthing to start checkout
-  Future<String> createPaymentSession(int planId);
+  Future<Map<String, dynamic>> createPaymentSession(int planId);
 
   Future<List<PlansModel>> getPlans();
 

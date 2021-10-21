@@ -177,7 +177,7 @@ class SupabaseRepository implements DbRepositoryInterface {
         .upload('$userID/images/$name', file);
     if (response.hasError) throw RequestError(message: response.error!.message);
     final imageUrl =
-        'https://vxtotlcitdlsfylnfyxs.supabase.in/storage/v1/object/public/' +
+        'https://exnanxgdrezylebvvgcp.supabase.in/storage/v1/object/public/' +
             response.data!;
     return imageUrl;
   }
@@ -243,7 +243,7 @@ class SupabaseRepository implements DbRepositoryInterface {
         .upload('$userID/videos/$name', file);
     if (response.hasError) throw RequestError(message: response.error!.message);
     final imageUrl =
-        'https://vxtotlcitdlsfylnfyxs.supabase.in/storage/v1/object/public/' +
+        'https://exnanxgdrezylebvvgcp.supabase.in/storage/v1/object/public/' +
             response.data!;
     return imageUrl;
   }
@@ -479,12 +479,12 @@ class SupabaseRepository implements DbRepositoryInterface {
   }
 
   @override
-  Future<String> createPaymentSession(int plantId) async {
+  Future<Map<String, dynamic>> createPaymentSession(int plantId) async {
     final response = await client
         .rpc('create_impression', params: {'plan_id': plantId}).execute();
     final preferenceId = await _paymentLoop(response.data);
     print(preferenceId);
-    return preferenceId['id'];
+    return Map.from(preferenceId);
   }
 
   Future _paymentLoop(int requestID) async {

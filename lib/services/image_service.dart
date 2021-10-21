@@ -13,7 +13,8 @@ class ImageServices {
     if (picked == null) return null;
 
     var byteImage = await picked.readAsBytes();
-    var cropedImage = cropImage(byteImage, ratioX: ratioX, ratioY: ratioY, circular: circular);
+    var cropedImage = cropImage(byteImage,
+        ratioX: ratioX, ratioY: ratioY, circular: circular);
     return cropedImage;
   }
 
@@ -24,8 +25,8 @@ class ImageServices {
 
     for (var image in picked) {
       var imageByte = await image.readAsBytes();
-      var cropedImage =
-          await cropImage(imageByte, ratioX: ratioX, ratioY: ratioY, circular: circular);
+      var cropedImage = await cropImage(imageByte,
+          ratioX: ratioX, ratioY: ratioY, circular: circular);
       if (cropedImage == null) return;
       imageList.add(ImageUploadModel(byteImage: cropedImage));
     }
@@ -34,7 +35,8 @@ class ImageServices {
 
   static Future<Uint8List?> cropImage(Uint8List imageByte,
       {double? ratioX, double? ratioY, bool circular = false}) async {
-    var file = File(Directory.systemTemp.path + '/' + DateTime.now().toString());
+    var file =
+        File(Directory.systemTemp.path + '/' + DateTime.now().toString());
     await file.writeAsBytes(imageByte);
     await file.create();
     var cropedImage = await ImageCropper.cropImage(
@@ -44,6 +46,7 @@ class ImageServices {
         sourcePath: file.path,
         cropStyle: circular ? CropStyle.circle : CropStyle.rectangle,
         androidUiSettings: AndroidUiSettings(toolbarTitle: 'Cortar imagem'),
+        compressQuality: 40,
         iosUiSettings: IOSUiSettings(title: 'Cortar Image'));
     var byte = cropedImage?.readAsBytes();
     await cropedImage?.delete();
@@ -52,8 +55,8 @@ class ImageServices {
   }
 
   static Future<dynamic> pickVideo(ImageSource source) async {
-    final pickedVideo =
-        await _imagePicker.pickVideo(source: source, preferredCameraDevice: CameraDevice.front);
+    final pickedVideo = await _imagePicker.pickVideo(
+        source: source, preferredCameraDevice: CameraDevice.front);
     if (pickedVideo == null) return;
 
     return pickedVideo.path;

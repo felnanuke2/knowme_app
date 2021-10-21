@@ -17,7 +17,6 @@ import 'package:knowme/widgets/image_picker_bottom_sheet.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class CompletProfileController extends GetxController {
-  bool profileIsComplet = false;
   CompletProfileController(
       {required this.repository,
       required this.userAuthrepository,
@@ -76,6 +75,8 @@ class CompletProfileController extends GetxController {
   final loadingProfileImage = false.obs;
   UfModel? selectedUfModel;
   Uint8List? imageProfile;
+  bool profileIsComplet = false;
+  final sendFormLoadingState = false.obs;
 
   var phoneMask = new MaskTextInputFormatter(
       mask: '(##) #####-####', filter: {"#": RegExp(r'[0-9]')});
@@ -137,8 +138,9 @@ class CompletProfileController extends GetxController {
 
       return;
     }
+
+    sendFormLoadingState.value = true;
     if (!profileIsComplet) {
-      _callErrorSnackBar(title: 'Validando Dados', message: '', failure: false);
       userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
         ?..birthDay = birthDayTEC.text;
       userAuthrepository.setCurrentUser = userAuthrepository.getCurrentUser
@@ -181,6 +183,7 @@ class CompletProfileController extends GetxController {
 
         Get.offAll(() => MainScreen());
       } on RequestError catch (e) {
+        sendFormLoadingState.value = false;
         print(e.message);
         _callErrorSnackBar(
             title: 'Erro ao Completar o Perfil', message: e.message ?? '');
@@ -200,6 +203,7 @@ class CompletProfileController extends GetxController {
         userAuthrepository.setCurrentUser = responseUser..profileComplet = true;
         Get.back(result: responseUser);
       } on RequestError catch (e) {
+        sendFormLoadingState.value = false;
         _callErrorSnackBar(
             title: 'Erro ao Completar o Perfil', message: e.message ?? '');
       }

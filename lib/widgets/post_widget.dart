@@ -31,7 +31,8 @@ class PostWidget extends StatefulWidget {
   _PostWidgetState createState() => _PostWidgetState();
 }
 
-class _PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMixin {
+class _PostWidgetState extends State<PostWidget>
+    with AutomaticKeepAliveClientMixin {
   VideoPlayerController? videoController;
   UserModel? user;
   bool videoDone = false;
@@ -58,50 +59,53 @@ class _PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMi
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return VisibilityDetector(
-      key: UniqueKey(),
-      child: GetBuilder<SesssionController>(
-        builder: (controller) => Container(
-          child: Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-            elevation: 3,
-            child: Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: Column(
-                children: [
-                  _buildHeaders(),
-                  InkWell(
-                    onTap: () => widget.postModel.mediaType == 1
-                        ? Get.to(() => ImageScreen(
-                              imageUrl: widget.postModel.src,
-                              imageKey: Key(widget.postModel.id),
-                              description: widget.postModel.description,
-                              user: widget.postModel.userModel!,
-                            ))
-                        : Get.to(() => VideoScreen(
-                              src: widget.postModel.src,
-                              controller: Get.find(),
-                              isPrivate: false,
-                              description: widget.postModel.description,
-                              userModel: widget.postModel.userModel,
-                            )),
-                    child: widget.postModel.mediaType == 0 ? _buildVideo() : _buildImage(),
-                  ),
-                  _buildBottom(),
-                ],
-              ),
+    return GetBuilder<SesssionController>(
+      builder: (controller) => Container(
+        child: Card(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          elevation: 3,
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Column(
+              children: [
+                _buildHeaders(),
+                InkWell(
+                  onTap: () => widget.postModel.mediaType == 1
+                      ? Get.to(() => ImageScreen(
+                            imageUrl: widget.postModel.src,
+                            imageKey: Key(widget.postModel.id),
+                            description: widget.postModel.description,
+                            user: widget.postModel.userModel!,
+                          ))
+                      : Get.to(() => VideoScreen(
+                            videoController: videoController,
+                            src: widget.postModel.src,
+                            controller: Get.find(),
+                            isPrivate: false,
+                            description: widget.postModel.description,
+                            userModel: widget.postModel.userModel,
+                          )),
+                  child: widget.postModel.mediaType == 0
+                      ? _buildVideo()
+                      : _buildImage(),
+                ),
+                _buildBottom(),
+              ],
             ),
           ),
         ),
       ),
-      onVisibilityChanged: (info) {
-        if (info.visibleFraction <= 0.5) {
-          videoController?.pause();
-        } else if (info.visibleFraction > 0.88) {
-          videoController?.play();
-        }
-      },
     );
+  }
+
+  _onvisibiltyChnage(info) {
+    print(info.visibleFraction);
+    if (info.visibleFraction <= 0.5) {
+      videoController?.pause();
+    } else if (info.visibleFraction > 0.92) {
+      videoController?.play();
+    }
   }
 
   Widget _buildBottom() {
@@ -116,7 +120,8 @@ class _PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMi
                 textAlign: TextAlign.left,
                 maxLines: 4,
                 overflow: TextOverflow.ellipsis,
-                text: TextSpan(style: TextStyle(color: Colors.black), children: [
+                text:
+                    TextSpan(style: TextStyle(color: Colors.black), children: [
                   TextSpan(
                       text: (user?.profileName ?? '') + '#',
                       style: TextStyle(fontWeight: FontWeight.w600)),
@@ -167,7 +172,10 @@ class _PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMi
                 ? SizedBox.shrink()
                 : AspectRatio(
                     aspectRatio: videoController!.value.aspectRatio,
-                    child: VideoPlayer(videoController!)),
+                    child: VisibilityDetector(
+                        onVisibilityChanged: _onvisibiltyChnage,
+                        key: UniqueKey(),
+                        child: VideoPlayer(videoController!))),
       ),
     );
   }
@@ -203,7 +211,9 @@ class _PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMi
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                 ),
                 Text(user?.completName ?? '',
-                    maxLines: 1, style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12)),
+                    maxLines: 1,
+                    style:
+                        TextStyle(fontWeight: FontWeight.w500, fontSize: 12)),
               ],
             ),
           ),
@@ -215,7 +225,10 @@ class _PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMi
             itemBuilder: (context) => [
               PopupMenuItem(
                   child: TextButton.icon(
-                onPressed: () => this.widget.controller.openChat(this.widget.postModel.userModel),
+                onPressed: () => this
+                    .widget
+                    .controller
+                    .openChat(this.widget.postModel.userModel),
                 icon: Text('Enviar mensagem'),
                 label: Icon(Icons.send),
               ))
@@ -227,7 +240,8 @@ class _PostWidgetState extends State<PostWidget> with AutomaticKeepAliveClientMi
   }
 
   _setUserProfile(SesssionController controller) async {
-    final currentUser = await controller.repository.getCurrentUser(widget.postModel.postedBy);
+    final currentUser =
+        await controller.repository.getCurrentUser(widget.postModel.postedBy);
     this.user = currentUser;
     setState(() {});
   }

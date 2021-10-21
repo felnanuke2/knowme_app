@@ -1,15 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/state_manager.dart';
-import 'package:knowme/controller/complet_profile_controller.dart';
 import 'package:knowme/errors/requestError.dart';
-import 'package:knowme/models/user_model.dart';
-import 'package:knowme/screens/complet_register_screen.dart';
 import 'package:knowme/screens/main_screen/main_screen.dart';
-import 'package:knowme/screens/settings/quiz/quiz_settings_screen.dart';
 import 'package:string_validator/string_validator.dart';
 
-import 'package:knowme/auth/google_sign_in.dart';
 import 'package:knowme/interface/user_auth_interface.dart';
 import 'package:get/route_manager.dart' as router;
 
@@ -22,6 +17,10 @@ class LoginController extends GetxController {
   var formKey = GlobalKey<FormState>();
   final errorMessage = ''.obs;
   bool passwordObscured = true;
+
+  final emailRecoveryFormKey = GlobalKey<FormState>();
+
+  final recoveryPasswordErrorText = ''.obs;
 
   @override
   void dispose() {
@@ -72,7 +71,20 @@ class LoginController extends GetxController {
     if (!hasError) Get.offAll(() => MainScreen());
   }
 
-  onTapRecoveryPasswordButton() {}
+  onTapRecoveryPasswordButton() async {
+    recoveryPasswordErrorText.value = '';
+    if (!emailRecoveryFormKey.currentState!.validate()) return;
+
+    try {
+      _animationController.reverse();
+
+      await this.userAuthRepo.sendResetPasswordEmail(email: emailTEC.text);
+      recoveryPasswordErrorText.value = 'Email enviado com sucesso';
+    } on RequestError catch (e) {
+      recoveryPasswordErrorText.value = e.message ?? '';
+    }
+    _animationController.forward();
+  }
 
   goToLoginWithEmailTab() => pageController.animateToPage(1,
       duration: Duration(milliseconds: 500), curve: Curves.linearToEaseOut);
@@ -98,7 +110,9 @@ class LoginController extends GetxController {
     try {
       final result = await userAuthRepo.sigInWithGoogle();
       Get.offAll(() => MainScreen());
-    } catch (e) {}
+    } catch (e) {
+      print(e);
+    }
   }
 
   signInWithFacebook() async {

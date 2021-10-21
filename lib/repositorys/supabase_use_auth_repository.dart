@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:get/state_manager.dart';
-import 'package:knowme/auth/google_sign_in.dart';
 import 'package:knowme/deep_link_services/supabase_deep_link_services.dart';
 import 'package:knowme/errors/requestError.dart';
 import 'package:knowme/interface/db_repository_interface.dart';
@@ -14,6 +13,7 @@ import 'package:knowme/models/third_part_user_data_model.dart';
 import 'package:knowme/models/user_model.dart';
 import 'package:knowme/repositorys/supabase_repository.dart';
 import 'package:knowme/sucess/login_sucess_interface.dart';
+import 'package:knowme/sucess/password_recovery_sucess.dart';
 import 'package:knowme/sucess/supabase_login_sucess.dart';
 import 'package:supabase/supabase.dart';
 import 'package:get/instance_manager.dart';
@@ -129,9 +129,13 @@ class SupabaseUserAuthRepository implements UserAuthInterface {
   final DbRepositoryInterface repositoryInterface;
 
   @override
-  Future<LoginSucessInterface> sendResetPasswordEmail({required String email}) {
-    // TODO: implement sendResetPasswordEmail
-    throw UnimplementedError();
+  Future<LoginSucessInterface> sendResetPasswordEmail(
+      {required String email}) async {
+    final repo = (repositoryInterface as SupabaseRepository);
+    final response = await repo.client.auth.api.resetPasswordForEmail(email);
+    if (response.error != null)
+      throw RequestError(message: 'email não encontrado');
+    return RecoveryPasswordSucess();
   }
 
   @override
@@ -160,7 +164,9 @@ class SupabaseUserAuthRepository implements UserAuthInterface {
     final repo = (repositoryInterface as SupabaseRepository);
     final url = await repo.client.auth.signIn(provider: Provider.google);
     final authUrl = await FlutterWebAuth.authenticate(
-        url: url.url!, callbackUrlScheme: 'my-app-coneplay');
+      url: url.url!,
+      callbackUrlScheme: 'my-app-coneplay',
+    );
 
     final result = await repo.client.auth.getSessionFromUrl(Uri.parse(authUrl));
     if (result.error != null)
