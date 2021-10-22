@@ -7,6 +7,7 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:flutter_sound/public/flutter_sound_player.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
 
@@ -134,8 +135,10 @@ class ChatController extends GetxController {
   void recAudio() async {
     final permissionStatus = await requestMicPermissions();
     if (!permissionStatus) return;
-    recorderPath = DateTime.now().millisecondsSinceEpoch.toString();
-    await record.start();
+    final dir = await getTemporaryDirectory();
+    recorderPath =
+        dir.path + DateTime.now().millisecondsSinceEpoch.toString() + '.aac';
+    await record.start(path: recorderPath);
     isRecAudio.value = true;
   }
 
@@ -258,6 +261,9 @@ class ChatController extends GetxController {
 
   Future<bool> requestMicPermissions() async {
     final status = await Permission.microphone.request();
+    if (Platform.isIOS) {
+      return true;
+    }
     if (status.isGranted) {
       return true;
     } else {
@@ -275,13 +281,15 @@ class ChatController extends GetxController {
       chatScreen.room = room;
     }
 
-    if (recorderPath == null) return;
-    final src = await repository.sendAudio(roomId!, File(recorderPath!));
+    try {
+      if (recorderPath == null) return;
+      final src = await repository.sendAudio(roomId!, File(recorderPath!));
 
-    messageTEC.clear();
-    text.value = '';
-    await repository.sendMessage(uid, '', 3, src: src);
-    update();
+      messageTEC.clear();
+      text.value = '';
+      await repository.sendMessage(uid, '', 3, src: src);
+      update();
+    } catch (e) {}
     this.sendingMessage.value = false;
   }
 
