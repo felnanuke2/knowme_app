@@ -78,9 +78,11 @@ class _SecundarySplashScreenState extends State<SecundarySplashScreen> {
     await localDb.initializeDatabase();
     Get.put<DbRepositoryInterface>(SupabaseRepository(), permanent: true);
     Get.put<UserAuthInterface>(
-        SupabaseUserAuthRepository(repositoryInterface: Get.find<DbRepositoryInterface>()),
+        SupabaseUserAuthRepository(
+            repositoryInterface: Get.find<DbRepositoryInterface>()),
         permanent: true);
     timeago.setLocaleMessages('pt', timeago.PtBrMessages());
+
     await Firebase.initializeApp();
   }
 }

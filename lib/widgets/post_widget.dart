@@ -71,7 +71,7 @@ class _PostWidgetState extends State<PostWidget>
               children: [
                 _buildHeaders(),
                 InkWell(
-                  onTap: () => widget.postModel.mediaType == 1
+                  onDoubleTap: () => widget.postModel.mediaType == 1
                       ? Get.to(() => ImageScreen(
                             imageUrl: widget.postModel.src,
                             imageKey: Key(widget.postModel.id),
@@ -175,7 +175,20 @@ class _PostWidgetState extends State<PostWidget>
                     child: VisibilityDetector(
                         onVisibilityChanged: _onvisibiltyChnage,
                         key: UniqueKey(),
-                        child: VideoPlayer(videoController!))),
+                        child: InkWell(
+                            onTap: _onvideoTap,
+                            child: Stack(
+                              children: [
+                                VideoPlayer(videoController!),
+                                Obx(() => Visibility(
+                                    visible: volume.value == 0,
+                                    child: Positioned(
+                                        right: 8,
+                                        bottom: 8,
+                                        child: Icon(Icons.volume_off,
+                                            color: Colors.white))))
+                              ],
+                            )))),
       ),
     );
   }
@@ -249,4 +262,14 @@ class _PostWidgetState extends State<PostWidget>
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
+  final volume = 1.0.obs;
+  void _onvideoTap() {
+    if (volume.value == 0) {
+      videoController?.setVolume(1);
+    } else {
+      videoController?.setVolume(0);
+    }
+
+    volume.value = videoController?.value.volume ?? 0;
+  }
 }

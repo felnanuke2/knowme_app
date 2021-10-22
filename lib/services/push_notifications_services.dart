@@ -13,7 +13,8 @@ import 'package:knowme/screens/received_interactions_screen.dart';
 import 'package:knowme/screens/users_profile_screen.dart';
 import '../main.dart';
 
-FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 class PushNotificationsServices {
   PushNotificationsServices._();
@@ -21,13 +22,16 @@ class PushNotificationsServices {
 
   static Future<void> init() async {
     await _messaging.requestPermission();
+
     FirebaseMessaging.onBackgroundMessage(_onMessagingReceivedInBackground);
     FirebaseMessaging.onMessage.listen(_onMessageReceived);
     FirebaseMessaging.onMessageOpenedApp.listen(_onMessagingOpenApp);
     // final token = await _messaging.getToken();
     // print(token);
-    final details = await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
-    debugPrint('called debug  ${details?.payload} ${details?.didNotificationLaunchApp}');
+    final details =
+        await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+    debugPrint(
+        'called debug  ${details?.payload} ${details?.didNotificationLaunchApp}');
     if ((details?.didNotificationLaunchApp ?? false)) {
       selectNotification(details?.payload);
     }
@@ -42,7 +46,8 @@ class PushNotificationsServices {
     selectNotification(jsonEncode(json['payload']));
   }
 
-  static void _onMessageReceived(RemoteMessage message, {bool inBackground = false}) {
+  static void _onMessageReceived(RemoteMessage message,
+      {bool inBackground = false}) {
     print('receive message');
     showNotification(message);
   }
@@ -57,14 +62,16 @@ class PushNotificationsServices {
         AndroidInitializationSettings(
       '@mipmap/ic_launcher',
     );
-    final IOSInitializationSettings initializationSettingsIOS = IOSInitializationSettings(
+    final IOSInitializationSettings initializationSettingsIOS =
+        IOSInitializationSettings(
       onDidReceiveLocalNotification: onDidReceiveLocalNotification,
       requestSoundPermission: true,
       requestAlertPermission: true,
       defaultPresentSound: true,
     );
 
-    final InitializationSettings initializationSettings = InitializationSettings(
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
     );
@@ -73,9 +80,11 @@ class PushNotificationsServices {
       onSelectNotification: selectNotification,
     );
     flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(
           alert: true,
+          sound: true,
         );
   }
 
@@ -87,7 +96,10 @@ class PushNotificationsServices {
     if (type == 'message') {
       final userMap = data['user'];
       await MyApp.initializationComplete.future;
-      await Get.find<SesssionController>().chatController.getRoomsCompleter.future;
+      await Get.find<SesssionController>()
+          .chatController
+          .getRoomsCompleter
+          .future;
       Get.find<SesssionController>().openChat(UserModel(
         id: userMap['uid'],
       ));
@@ -117,7 +129,8 @@ class PushNotificationsServices {
     }
   }
 
-  static Future<String> _downloadAndSaveFile(String url, String fileName) async {
+  static Future<String> _downloadAndSaveFile(
+      String url, String fileName) async {
     final Directory directory = Directory.systemTemp;
     final String filePath = '${directory.path}/$fileName';
     final response = await get(Uri.parse(url));
@@ -133,30 +146,35 @@ class PushNotificationsServices {
         json['title'],
         json['body'],
         NotificationDetails(
-            android: AndroidNotificationDetails(PAYMENT_ANDROID_NOTIFICATION_ID,
-                PAYMENT_CHANNEL_NOTIFICATION_NAME, PAYMENT_CHANNEL_NOTIFICATION_DESCRIPTION)));
+            android: AndroidNotificationDetails(
+                PAYMENT_ANDROID_NOTIFICATION_ID,
+                PAYMENT_CHANNEL_NOTIFICATION_NAME,
+                PAYMENT_CHANNEL_NOTIFICATION_DESCRIPTION,
+                icon: '@drawable/ic_notification',
+                styleInformation: BigTextStyleInformation(json['body']))));
   }
 
   static _showInteractionsNotifications({
     required String payload,
   }) async {
     final data = jsonDecode(payload);
-    final AndroidNotificationDetails androidSettings = AndroidNotificationDetails(
-        MESSAGE_ANDROID_NOTIFICATION_ID,
-        MESSAGE_CHANNEL_NOTIFICATION_NAME,
-        MESSAGE_CHANNEL_NOTIFICATION_DESCRIPTION,
-        importance: Importance.max,
-        priority: Priority.high,
-        showWhen: true,
-        icon: '@drawable/ic_notification',
-        styleInformation: BigTextStyleInformation(data['body'],
-            contentTitle: data['title'], htmlFormatContent: true));
+    final AndroidNotificationDetails androidSettings =
+        AndroidNotificationDetails(
+            MESSAGE_ANDROID_NOTIFICATION_ID,
+            MESSAGE_CHANNEL_NOTIFICATION_NAME,
+            MESSAGE_CHANNEL_NOTIFICATION_DESCRIPTION,
+            importance: Importance.max,
+            priority: Priority.high,
+            showWhen: true,
+            icon: '@drawable/ic_notification',
+            styleInformation: BigTextStyleInformation(data['body'],
+                contentTitle: data['title'], htmlFormatContent: true));
 
     final notificationDetails = NotificationDetails(
       android: androidSettings,
     );
-    await flutterLocalNotificationsPlugin.show(data['id'], null, null, notificationDetails,
-        payload: payload);
+    await flutterLocalNotificationsPlugin
+        .show(data['id'], null, null, notificationDetails, payload: payload);
     await Get.find<SesssionController>().getReceivedInteractions();
   }
 
@@ -167,7 +185,8 @@ class PushNotificationsServices {
     if (Get.currentRoute == '/ChatScreen') return;
     final title = data['title'];
     final userMap = data['user'];
-    final profileImage = await _downloadAndSaveFile(userMap['profile_image'], 'profileImage');
+    final profileImage =
+        await _downloadAndSaveFile(userMap['profile_image'], 'profileImage');
     final id = int.parse(data['room']);
     final person = Person(
       key: userMap['uid'],
@@ -178,9 +197,11 @@ class PushNotificationsServices {
         .map((e) => Message(e['text'], DateTime.parse(e['date_time']), person))
         .toList();
 
-    final messaginInformation = MessagingStyleInformation(person, messages: messages);
+    final messaginInformation =
+        MessagingStyleInformation(person, messages: messages);
 
-    final AndroidNotificationDetails androidSettings = AndroidNotificationDetails(
+    final AndroidNotificationDetails androidSettings =
+        AndroidNotificationDetails(
       MESSAGE_ANDROID_NOTIFICATION_ID,
       MESSAGE_CHANNEL_NOTIFICATION_NAME,
       MESSAGE_CHANNEL_NOTIFICATION_DESCRIPTION,
@@ -193,9 +214,14 @@ class PushNotificationsServices {
     );
 
     final notificationDetails = NotificationDetails(
-      android: androidSettings,
-    );
-    await flutterLocalNotificationsPlugin.show(id, title, '', notificationDetails,
+        android: androidSettings, iOS: IOSNotificationDetails());
+    final messageTextIOs = StringBuffer();
+    messages.forEach((element) {
+      final item = (element.person?.name ?? '') + ': ' + element.text + '\n';
+      messageTextIOs.write(item);
+    });
+    await flutterLocalNotificationsPlugin.show(
+        id, title, messageTextIOs.toString(), notificationDetails,
         payload: payload);
   }
 }
