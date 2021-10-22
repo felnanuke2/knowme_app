@@ -60,7 +60,7 @@ class _ExploringTabState extends State<ExploringTab>
             Column(
               children: [
                 SizedBox(
-                  height: 65,
+                  height: 35,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -96,7 +96,7 @@ class _ExploringTabState extends State<ExploringTab>
                   ),
                 ),
                 SizedBox(
-                  height: 35,
+                  height: 12,
                 ),
                 Expanded(
                   child: StreamBuilder<List<EntryQuizModel>>(

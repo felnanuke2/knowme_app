@@ -161,7 +161,7 @@ class _LoginScreenState extends State<LoginScreen>
                 width: 380,
                 child: SignInButton(
                   Buttons.AppleDark,
-                  onPressed: () {},
+                  onPressed: controller.siginWithApple,
                   text: 'Continuar com a Apple',
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(22)),

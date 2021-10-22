@@ -139,8 +139,21 @@ class SupabaseUserAuthRepository implements UserAuthInterface {
   }
 
   @override
-  Future<LoginSucessInterface> sigInWithApple() {
-    throw UnimplementedError();
+  Future<LoginSucessInterface> sigInWithApple() async {
+    final repo = (repositoryInterface as SupabaseRepository);
+    final url = await repo.client.auth.signIn(provider: Provider.apple);
+    final authUrl = await FlutterWebAuth.authenticate(
+      url: url.url!,
+      callbackUrlScheme: 'my-app-coneplay',
+    );
+
+    final result = await repo.client.auth.getSessionFromUrl(Uri.parse(authUrl));
+    if (result.error != null)
+      throw RequestError(message: result.error?.message ?? '');
+
+    await _setuserData(result.user!);
+
+    return SupabaseLoginSucess(user: getCurrentUser!);
   }
 
   @override

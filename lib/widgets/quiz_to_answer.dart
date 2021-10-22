@@ -28,7 +28,7 @@ class QuizToAnswer extends StatelessWidget {
           children: [
             Expanded(
                 child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 4),
               child: Align(
                 alignment: Alignment.topCenter,
                 child: AspectRatio(
@@ -86,12 +86,16 @@ class QuizToAnswer extends StatelessWidget {
                                                       Icons.pin_drop,
                                                       color: Colors.white,
                                                     ),
-                                                    Text(
-                                                      '${quiz.user?.city ?? ''} - ${quiz.user?.uf ?? ''} • ${quiz.user?.distance ?? '?'} km',
-                                                      style:
-                                                          GoogleFonts.openSans(
-                                                        color: Colors.white,
-                                                        fontSize: 14,
+                                                    Expanded(
+                                                      child: Text(
+                                                        '${quiz.user?.city ?? ''} - ${quiz.user?.uf ?? ''} • ${quiz.user?.distance ?? '?'} km',
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: GoogleFonts
+                                                            .openSans(
+                                                          color: Colors.white,
+                                                          fontSize: 14,
+                                                        ),
                                                       ),
                                                     ),
                                                   ],

@@ -121,4 +121,11 @@ class LoginController extends GetxController {
       Get.offAll(() => MainScreen());
     } catch (e) {}
   }
+
+  siginWithApple() async {
+    try {
+      final result = await userAuthRepo.sigInWithApple();
+      Get.offAll(() => MainScreen());
+    } catch (e) {}
+  }
 }
