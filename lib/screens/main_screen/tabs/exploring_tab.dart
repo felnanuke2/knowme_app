@@ -60,7 +60,7 @@ class _ExploringTabState extends State<ExploringTab>
             Column(
               children: [
                 SizedBox(
-                  height: 35,
+                  height: 65,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
