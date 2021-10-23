@@ -146,7 +146,6 @@ class SesssionController extends GetxController {
 
   Stream<StreamEvent> getPostsBefore() async* {
     yield LoadingPosts();
-
     final result = await repository.getPostsBefore(int.parse(posts.last.id));
     if (result.isEmpty) {
       yield NoMorePosts();
