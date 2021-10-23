@@ -61,7 +61,9 @@ abstract class DbRepositoryInterface {
 
   Future<PostModel> createpost(PostModel post);
 
-  Future<List<PostModel>> getPosts(List<String> usersList);
+  Future<List<PostModel>> getPosts();
+
+  Future<List<PostModel>> getPostsBefore(int lastPostId);
 
   Future<List<UserModel>> searchUsers(String query);
 

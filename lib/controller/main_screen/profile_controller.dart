@@ -55,8 +55,7 @@ class ProfileController extends GetxController {
   Future<void> refresh() async {
     countInteractios();
     loadingPosts.value = true;
-    final post = await sesssionController.repository
-        .getPosts([sesssionController.userAuthRepository.getCurrentUser!.id!]);
+    final post = await sesssionController.repository.getPosts();
     poststList.clear();
     poststList.addAll(post);
     loadingPosts.value = false;

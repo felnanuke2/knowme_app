@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/state_manager.dart';
 import 'package:knowme/controller/main_screen/session_controller.dart';
+import 'package:knowme/widgets/loading_more_post_widget.dart';
 import 'package:knowme/widgets/post_widget.dart';
-import 'package:get/state_manager.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:get/route_manager.dart';
 
 class FeedTab extends StatefulWidget {
   FeedTab({Key? key}) : super(key: key);
@@ -18,8 +16,8 @@ class _FeedTabState extends State<FeedTab> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<SesssionController>(
-      builder: (controller) =>
-          Container(color: Color(0xffEBEAEB), child: _scolableListCount(controller)),
+      builder: (controller) => Container(
+          color: Color(0xffEBEAEB), child: _scolableListCount(controller)),
     );
   }
 
@@ -27,8 +25,14 @@ class _FeedTabState extends State<FeedTab> {
     return RefreshIndicator(
         triggerMode: RefreshIndicatorTriggerMode.anywhere,
         child: Obx(() => ListView.builder(
-            itemCount: controller.posts.length,
+            itemCount: controller.posts.length + 1,
             itemBuilder: (context, index) {
+              if (index == controller.posts.length) {
+                return LoadingMorePostsWidget(
+                  sesssionController: controller,
+                  key: UniqueKey(),
+                );
+              }
               final itemPost = controller.posts[index];
               return PostWidget(
                 controller: controller,

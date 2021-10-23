@@ -99,32 +99,27 @@ class SupabaseRepository implements DbRepositoryInterface {
   }
 
   @override
-  Future<List<PostModel>> getPosts(List<String> usersList) async {
-    final result = await client
-        .from('posts')
-        .select()
-        .in_('posted_by', usersList)
-        .limit(80)
-        .order('created_at', ascending: false)
-        .execute();
-    if (result.error != null) throw RequestError();
-    final listPosts =
-        List.from(result.data).map((e) => PostModel.fromMap(e)).toList();
-    final listofUsersId = listPosts.map((e) => e.postedBy).toList();
-    final userResult = await client
-        .from('users')
-        .select('uid,profileImage,profileName,completName')
-        .in_('uid', listofUsersId)
-        .execute();
-    if (userResult.error != null)
-      throw RequestError(message: userResult.error!.message);
-    final listofUsers =
-        List.from(userResult.data).map((e) => UserModel.fromMap(e)).toList();
-    listPosts.forEach((post) {
-      post.userModel =
-          listofUsers.firstWhere((user) => user.id == post.postedBy);
-    });
+  Future<List<PostModel>> getPosts() async {
+    final result = await client.rpc('get_latest_posts').execute();
+    if (result.error != null)
+      throw RequestError(message: result.error?.message);
+    final listPosts = List.from(result.data)
+        .map((e) =>
+            PostModel.fromMap(e)..userModel = UserModel.fromMap(e['user']))
+        .toList();
+    return listPosts;
+  }
 
+  @override
+  Future<List<PostModel>> getPostsBefore(int lastPostId) async {
+    final result = await client
+        .rpc('get_posts_before', params: {'post_id': lastPostId}).execute();
+    if (result.error != null)
+      throw RequestError(message: result.error?.message);
+    final listPosts = List.from(result.data)
+        .map((e) =>
+            PostModel.fromMap(e)..userModel = UserModel.fromMap(e['user']))
+        .toList();
     return listPosts;
   }
 

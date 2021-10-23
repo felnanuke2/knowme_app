@@ -42,7 +42,7 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
 
   getPosts() {
     if (isFriends)
-      repo.getPosts([widget.userModel.id ?? '']).then((value) {
+      repo.getPosts().then((value) {
         poststList.addAll(value);
         setState(() {});
       });

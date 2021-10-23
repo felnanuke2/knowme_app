@@ -7,6 +7,8 @@ import 'package:get/state_manager.dart';
 import 'package:knowme/controller/chat_controler.dart';
 import 'package:knowme/controller/main_screen/exploring_controller.dart';
 import 'package:knowme/errors/requestError.dart';
+import 'package:knowme/events/posts_events.dart';
+import 'package:knowme/events/stream_event.dart';
 import 'package:knowme/interface/db_repository_interface.dart';
 import 'package:knowme/interface/user_auth_interface.dart';
 import 'package:knowme/models/chat_room_model.dart';
@@ -135,13 +137,23 @@ class SesssionController extends GetxController {
   }
 
   Future<void> getPosts() async {
-    await getFriends();
-
-    final result = await repository.getPosts(
-        friends..add(this.userAuthRepository.getCurrentUser?.id ?? ''));
+    getFriends();
+    final result = await repository.getPosts();
     posts.clear();
     posts.addAll(result);
     return;
+  }
+
+  Stream<StreamEvent> getPostsBefore() async* {
+    yield LoadingPosts();
+
+    final result = await repository.getPostsBefore(int.parse(posts.last.id));
+    if (result.isEmpty) {
+      yield NoMorePosts();
+    } else {
+      posts.addAll(result);
+      yield SuccessGetingPosts();
+    }
   }
 
   Future<void> getReceivedInteractions() async {
