@@ -184,8 +184,13 @@ class _ProfileTabState extends State<ProfileTab>
                                             crossAxisCount: 3,
                                             childAspectRatio: 1),
                                     itemCount:
-                                        profileController.poststList.length,
+                                        profileController.poststList.length + 1,
                                     itemBuilder: (context, index) {
+                                      if (profileController.poststList.length ==
+                                          index) {
+                                        profileController.getPostBefore();
+                                        return Container();
+                                      }
                                       var postItem =
                                           profileController.poststList[index];
                                       return PostMiniWidget(post: postItem);

@@ -1,4 +1,4 @@
-package com.knowme.app.knowme_app
+package com.coneplay.app_app
 
 import io.flutter.embedding.android.FlutterActivity
 

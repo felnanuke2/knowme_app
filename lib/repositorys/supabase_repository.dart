@@ -99,8 +99,29 @@ class SupabaseRepository implements DbRepositoryInterface {
   }
 
   @override
-  Future<List<PostModel>> getPosts() async {
-    final result = await client.rpc('get_latest_posts').execute();
+  Future<List<PostModel>> getPosts({String? userId}) async {
+    if (userId == null)
+      return await _getPostFromFriends();
+    else
+      return await _getPostFromUser(userId);
+  }
+
+  _getPostFromUser(String userId) async {
+    final result = await client.rpc('get_post_from_user', params: {
+      'user_id': userId,
+      'last_post_id': null,
+    }).execute();
+    if (result.error != null)
+      throw RequestError(message: result.error?.message);
+    final listPosts = List.from(result.data)
+        .map((e) =>
+            PostModel.fromMap(e)..userModel = UserModel.fromMap(e['user']))
+        .toList();
+    return listPosts;
+  }
+
+  _getPostFromFriends() async {
+    var result = await client.rpc('get_latest_posts').execute();
     if (result.error != null)
       throw RequestError(message: result.error?.message);
     final listPosts = List.from(result.data)
@@ -111,16 +132,12 @@ class SupabaseRepository implements DbRepositoryInterface {
   }
 
   @override
-  Future<List<PostModel>> getPostsBefore(int lastPostId) async {
-    final result = await client
-        .rpc('get_posts_before', params: {'post_id': lastPostId}).execute();
-    if (result.error != null)
-      throw RequestError(message: result.error?.message);
-    final listPosts = List.from(result.data)
-        .map((e) =>
-            PostModel.fromMap(e)..userModel = UserModel.fromMap(e['user']))
-        .toList();
-    return listPosts;
+  Future<List<PostModel>> getPostsBefore(int lastPostId,
+      {String? userId}) async {
+    if (userId == null)
+      return await _getPostBefore(lastPostId);
+    else
+      return await _getPostBEforeEspecificUser(lastPostId, userId);
   }
 
   @override
@@ -558,5 +575,31 @@ class SupabaseRepository implements DbRepositoryInterface {
     if (response.error != null)
       throw RequestError(message: response.error?.message ?? '');
     return response.data;
+  }
+
+  _getPostBefore(int lastPostId) async {
+    final result = await client
+        .rpc('get_posts_before', params: {'post_id': lastPostId}).execute();
+    if (result.error != null)
+      throw RequestError(message: result.error?.message);
+    final listPosts = List.from(result.data)
+        .map((e) =>
+            PostModel.fromMap(e)..userModel = UserModel.fromMap(e['user']))
+        .toList();
+    return listPosts;
+  }
+
+  _getPostBEforeEspecificUser(int lastPostId, String userId) async {
+    final result = await client.rpc('get_post_from_user', params: {
+      'user_id': userId,
+      'last_post_id': lastPostId,
+    }).execute();
+    if (result.error != null)
+      throw RequestError(message: result.error?.message);
+    final listPosts = List.from(result.data)
+        .map((e) =>
+            PostModel.fromMap(e)..userModel = UserModel.fromMap(e['user']))
+        .toList();
+    return listPosts;
   }
 }

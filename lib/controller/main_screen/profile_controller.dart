@@ -4,6 +4,7 @@ import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
 import 'package:knowme/controller/main_screen/session_controller.dart';
+import 'package:knowme/errors/requestError.dart';
 import 'package:knowme/models/post_model.dart';
 import 'package:knowme/screens/complet_register_screen.dart';
 import 'package:knowme/widgets/image_picker_bottom_sheet.dart';
@@ -15,6 +16,7 @@ class ProfileController extends GetxController {
   final SesssionController sesssionController;
   final interactionSendCounter = 0.obs;
   final interactionReceivedCounter = 0.obs;
+  bool noMorePostToload = false;
   ProfileController({
     required this.sesssionController,
   }) {
@@ -55,7 +57,8 @@ class ProfileController extends GetxController {
   Future<void> refresh() async {
     countInteractios();
     loadingPosts.value = true;
-    final post = await sesssionController.repository.getPosts();
+    final post = await sesssionController.repository.getPosts(
+        userId: sesssionController.userAuthRepository.getCurrentUser!.id!);
     poststList.clear();
     poststList.addAll(post);
     loadingPosts.value = false;
@@ -79,6 +82,21 @@ class ProfileController extends GetxController {
       interactionReceivedCounter.value = response['received'];
     } catch (e) {
       print(e.toString());
+    }
+  }
+
+  void getPostBefore() async {
+    try {
+      if (noMorePostToload || poststList.isNotEmpty) return;
+      final post = await sesssionController.repository.getPostsBefore(
+          int.parse(poststList.last.id),
+          userId: sesssionController.userAuthRepository.getCurrentUser!.id!);
+      if (post.isEmpty) {
+        noMorePostToload = true;
+      }
+      poststList.addAll(post);
+    } on RequestError catch (e) {
+      print(e.message);
     }
   }
 }

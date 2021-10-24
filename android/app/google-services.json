@@ -1,47 +1,90 @@
 {
-    "project_info": {
-      "project_number": "1066980961978",
-      "project_id": "know-me-19f70",
-      "storage_bucket": "know-me-19f70.appspot.com"
-    },
-    "client": [
-      {
-        "client_info": {
-          "mobilesdk_app_id": "1:1066980961978:android:c0505c35936057e7495c83",
-          "android_client_info": {
-            "package_name": "com.knowme.app.knowme"
-          }
-        },
-        "oauth_client": [
-          {
-            "client_id": "1066980961978-mf53elrtvul1a1teo4fldd1l4vdc8f42.apps.googleusercontent.com",
-            "client_type": 1,
-            "android_info": {
-              "package_name": "com.knowme.app.knowme",
-              "certificate_hash": "0fc52580ae73061e03e29d35b940a48c078adab9"
-            }
-          },
-          {
-            "client_id": "1066980961978-8rk3d82eo5t682llk47pn97pqku3ki4u.apps.googleusercontent.com",
-            "client_type": 3
-          }
-        ],
-        "api_key": [
-          {
-            "current_key": "AIzaSyAgAoDHTvXs_KIsDLpAvStxfwcOOZP-OlY"
-          }
-        ],
-        "services": {
-          "appinvite_service": {
-            "other_platform_oauth_client": [
-              {
-                "client_id": "1066980961978-8rk3d82eo5t682llk47pn97pqku3ki4u.apps.googleusercontent.com",
-                "client_type": 3
+  "project_info": {
+    "project_number": "1066980961978",
+    "project_id": "know-me-19f70",
+    "storage_bucket": "know-me-19f70.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1066980961978:android:24d7ac880857fc6c495c83",
+        "android_client_info": {
+          "package_name": "com.coneplay.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1066980961978-8rk3d82eo5t682llk47pn97pqku3ki4u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgAoDHTvXs_KIsDLpAvStxfwcOOZP-OlY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1066980961978-8rk3d82eo5t682llk47pn97pqku3ki4u.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1066980961978-4n64b5s382g5almiv8gkk390ruf760dr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.coneplay.app"
               }
-            ]
-          }
+            }
+          ]
         }
       }
-    ],
-    "configuration_version": "1"
-  }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1066980961978:android:c0505c35936057e7495c83",
+        "android_client_info": {
+          "package_name": "com.knowme.app.knowme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1066980961978-mf53elrtvul1a1teo4fldd1l4vdc8f42.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.knowme.app.knowme",
+            "certificate_hash": "0fc52580ae73061e03e29d35b940a48c078adab9"
+          }
+        },
+        {
+          "client_id": "1066980961978-8rk3d82eo5t682llk47pn97pqku3ki4u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgAoDHTvXs_KIsDLpAvStxfwcOOZP-OlY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1066980961978-8rk3d82eo5t682llk47pn97pqku3ki4u.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1066980961978-4n64b5s382g5almiv8gkk390ruf760dr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.coneplay.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

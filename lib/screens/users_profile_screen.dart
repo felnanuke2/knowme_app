@@ -26,6 +26,7 @@ class UsersProfileScreen extends StatefulWidget {
 
 class _UsersProfileScreenState extends State<UsersProfileScreen> {
   final poststList = <PostModel>[];
+  bool noMoreToLoad = false;
   bool isFriends = false;
   final answered = false.obs;
   final loading = false.obs;
@@ -42,7 +43,24 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
 
   getPosts() {
     if (isFriends)
-      repo.getPosts().then((value) {
+      repo.getPosts(userId: widget.userModel.id!).then((value) {
+        poststList.addAll(value);
+        if (value.isEmpty) {
+          noMoreToLoad = true;
+        }
+        setState(() {});
+      });
+  }
+
+  getPostsBefore() {
+    if (isFriends)
+      repo
+          .getPostsBefore(int.parse(poststList.last.id),
+              userId: widget.userModel.id!)
+          .then((value) {
+        if (value.isEmpty) {
+          noMoreToLoad = true;
+        }
         poststList.addAll(value);
         setState(() {});
       });
@@ -140,9 +158,15 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                             crossAxisSpacing: 4,
                             crossAxisCount: 3,
                             childAspectRatio: 1),
-                        itemCount: poststList.length,
+                        itemCount: poststList.length + 1,
                         itemBuilder: (context, index) {
+                          if (index == poststList.length) {
+                            if (poststList.isNotEmpty && !noMoreToLoad)
+                              getPostsBefore();
+                            return Container();
+                          }
                           var postItem = poststList[index];
+
                           return PostMiniWidget(post: postItem);
                         },
                       ),
