@@ -3,9 +3,8 @@ import 'dart:async';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sound/public/flutter_sound_player.dart';
-import 'package:flutter_sound/public/flutter_sound_recorder.dart';
-import 'package:flutter_sound/public/ui/sound_player_ui.dart';
+
+import 'package:flutter_sound_lite/flutter_sound.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -36,7 +35,8 @@ class _RecorderTileState extends State<RecorderTile> {
   void initState() {
     Timer.periodic(Duration(seconds: 1), (timer) {
       duration.value = DateTime.fromMillisecondsSinceEpoch(
-          duration.value.millisecondsSinceEpoch + Duration(seconds: 1).inMilliseconds);
+          duration.value.millisecondsSinceEpoch +
+              Duration(seconds: 1).inMilliseconds);
     });
     super.initState();
   }
@@ -63,29 +63,34 @@ class _RecorderTileState extends State<RecorderTile> {
                     color: Colors.red,
                   ))),
           Expanded(
-              child:
-                  Obx(() => isPaused.value ? SoundPlayerUI.fromLoader(_load) : SizedBox.shrink())),
+              child: Obx(() => isPaused.value
+                  ? SoundPlayerUI.fromLoader(_load)
+                  : SizedBox.shrink())),
           Obx(() => isPaused.value
               ? SizedBox.shrink()
               : Container(
                   height: 35,
                   child: ColorFiltered(
-                      colorFilter: ColorFilter.mode(Get.theme.primaryColor, BlendMode.srcIn),
+                      colorFilter: ColorFilter.mode(
+                          Get.theme.primaryColor, BlendMode.srcIn),
                       child: Image(
                         image: image,
                       )))),
           Obx(() => isPaused.value
               ? SizedBox.shrink()
               : Text(formatDate(duration.value, [nn, ':', ss]),
-                  style: GoogleFonts.openSans(fontSize: 16, fontWeight: FontWeight.w600))),
+                  style: GoogleFonts.openSans(
+                      fontSize: 16, fontWeight: FontWeight.w600))),
           Obx(() => isPaused.value
               ? SizedBox.shrink()
-              : IconButton(onPressed: _stopRecoreder, icon: Icon(Icons.stop_rounded))),
+              : IconButton(
+                  onPressed: _stopRecoreder, icon: Icon(Icons.stop_rounded))),
           Obx(() => !isPaused.value
               ? SizedBox.shrink()
               : IconButton(
-                  onPressed: () => widget.controller
-                      .sendAudio(widget.otherUserId, widget.roomId, chatScreen: widget.chatScreen),
+                  onPressed: () => widget.controller.sendAudio(
+                      widget.otherUserId, widget.roomId,
+                      chatScreen: widget.chatScreen),
                   icon: Icon(
                     Icons.send,
                     color: Get.theme.primaryColor,

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_sound/flutter_sound.dart';
-import 'package:flutter_sound/public/flutter_sound_player.dart';
+import 'package:flutter_sound_lite/flutter_sound.dart';
+import 'package:flutter_sound_lite/public/flutter_sound_player.dart';
+import 'package:flutter_sound_lite/public/ui/sound_player_ui.dart';
+
 import 'package:get/route_manager.dart';
 
 import 'package:knowme/controller/main_screen/session_controller.dart';
@@ -18,7 +20,8 @@ class AudioMessageTile extends StatefulWidget {
   State<AudioMessageTile> createState() => _AudioMessageTileState();
 }
 
-class _AudioMessageTileState extends State<AudioMessageTile> with AutomaticKeepAliveClientMixin {
+class _AudioMessageTileState extends State<AudioMessageTile>
+    with AutomaticKeepAliveClientMixin {
   var _future;
 
   @override
@@ -46,8 +49,9 @@ class _AudioMessageTileState extends State<AudioMessageTile> with AutomaticKeepA
   }
 
   Future<Track> _loader(BuildContext context) async {
-    final track =
-        Track(trackPath: await widget.controller.repository.getImageUrl(widget.audioPath));
+    final track = Track(
+        trackPath:
+            await widget.controller.repository.getImageUrl(widget.audioPath));
     return track;
   }
 

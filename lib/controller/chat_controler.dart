@@ -3,8 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_sound/flutter_sound.dart';
-import 'package:flutter_sound/public/flutter_sound_player.dart';
+
 import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
 import 'package:path_provider/path_provider.dart';
