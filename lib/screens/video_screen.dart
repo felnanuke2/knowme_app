@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:knowme/widgets/report_dialog.dart';
 import 'package:video_player/video_player.dart';
 
 import 'package:knowme/controller/main_screen/session_controller.dart';
@@ -59,6 +60,9 @@ class _VideoScreenState extends State<VideoScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: BackButton(),
+        actions: [
+          IconButton(onPressed: ReportDialog.show, icon: Icon(Icons.report))
+        ],
       ),
       endDrawer: widget.isPrivate
           ? null

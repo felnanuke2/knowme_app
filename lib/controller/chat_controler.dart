@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
+import 'package:knowme/main.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
@@ -64,6 +65,7 @@ class ChatController extends GetxController {
   }
 
   Future<void> onRefresh() async {
+    await MyApp.initializationComplete.future;
     await _getChatRooms();
     await _getMessages();
     if (!getRoomsCompleter.isCompleted) getRoomsCompleter.complete();

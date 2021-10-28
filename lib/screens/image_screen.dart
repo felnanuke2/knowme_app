@@ -9,6 +9,7 @@ import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:knowme/models/user_model.dart';
 import 'package:knowme/screens/users_profile_screen.dart';
+import 'package:knowme/widgets/report_dialog.dart';
 
 class ImageScreen extends StatefulWidget {
   ImageScreen(
@@ -99,6 +100,11 @@ class _ImageScreenState extends State<ImageScreen> {
                           iconTheme:
                               IconThemeData(color: Get.theme.primaryColor),
                           elevation: 0,
+                          actions: [
+                            IconButton(
+                                onPressed: ReportDialog.show,
+                                icon: Icon(Icons.report))
+                          ],
                           backgroundColor: Colors.transparent,
                         ))),
               )),

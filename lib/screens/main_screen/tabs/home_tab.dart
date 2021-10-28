@@ -28,8 +28,9 @@ class HomeTab extends StatelessWidget {
                     onPressed: controller.openPlansScreen,
                     icon: Icon(Icons.star, color: Colors.amberAccent),
                     label: Text(
-                      'Consiga agora a versão Premium',
-                      style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.w600),
+                      'Turbine seu Perfil',
+                      style: GoogleFonts.montserrat(
+                          fontSize: 18, fontWeight: FontWeight.w600),
                     )),
                 SizedBox(
                   height: 15,
@@ -66,14 +67,20 @@ class HomeTab extends StatelessWidget {
                                               child: Container(
                                                 padding: EdgeInsets.all(8),
                                                 child: InkWell(
-                                                  onTap: controller.loadingMoreImpressions,
+                                                  onTap: controller
+                                                      .loadingMoreImpressions,
                                                   child: Column(
-                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
                                                     children: [
                                                       Text('Mostrar Mais',
-                                                          textAlign: TextAlign.center,
-                                                          style:
-                                                              GoogleFonts.openSans(fontSize: 16)),
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                          style: GoogleFonts
+                                                              .openSans(
+                                                                  fontSize:
+                                                                      16)),
                                                       SizedBox(
                                                         height: 15,
                                                       ),
@@ -90,14 +97,16 @@ class HomeTab extends StatelessWidget {
                                   return ImpressionWidget(
                                     controller: controller,
                                     impression: impression,
-                                    key: Key(impression.impressions_id.toString()),
+                                    key: Key(
+                                        impression.impressions_id.toString()),
                                   );
                                 },
                               ),
                             )),
                         Obx(() => Visibility(
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 12),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 12),
                                 child: Text(
                                   'Nenhuma recomendação aqui por enquanto',
                                   textAlign: TextAlign.center,
@@ -136,14 +145,20 @@ class HomeTab extends StatelessWidget {
                                               child: Container(
                                                 padding: EdgeInsets.all(8),
                                                 child: InkWell(
-                                                  onTap: controller.loadingMoreImpressions,
+                                                  onTap: controller
+                                                      .loadingMoreImpressions,
                                                   child: Column(
-                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
                                                     children: [
                                                       Text('Mostrar Mais',
-                                                          textAlign: TextAlign.center,
-                                                          style:
-                                                              GoogleFonts.openSans(fontSize: 16)),
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                          style: GoogleFonts
+                                                              .openSans(
+                                                                  fontSize:
+                                                                      16)),
                                                       SizedBox(
                                                         height: 15,
                                                       ),
@@ -160,7 +175,8 @@ class HomeTab extends StatelessWidget {
                                   return ImpressionWidget(
                                     impression: impression,
                                     controller: controller,
-                                    key: Key(impression.impressions_id.toString()),
+                                    key: Key(
+                                        impression.impressions_id.toString()),
                                   );
                                 },
                               ),

@@ -80,7 +80,7 @@ class ExploringTabFilterDrawer extends StatelessWidget {
               child: Column(
                 children: [
                   SizedBox(
-                    height: 145,
+                    height: 165,
                   ),
                   SizedBox(
                     height: 15,

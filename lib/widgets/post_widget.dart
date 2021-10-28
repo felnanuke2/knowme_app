@@ -5,8 +5,11 @@ import 'package:flutter/widgets.dart';
 import 'package:get/instance_manager.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:knowme/screens/image_screen.dart';
+import 'package:knowme/screens/users_profile_screen.dart';
 import 'package:knowme/screens/video_screen.dart';
+import 'package:knowme/widgets/report_dialog.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -230,25 +233,47 @@ class _PostWidgetState extends State<PostWidget>
               ],
             ),
           ),
-          PopupMenuButton(
-            icon: Icon(
-              Icons.adaptive.more,
-              color: Get.theme.primaryColor,
-            ),
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                  child: TextButton.icon(
-                onPressed: () => this
-                    .widget
-                    .controller
-                    .openChat(this.widget.postModel.userModel),
-                icon: Text('Enviar mensagem'),
-                label: Icon(Icons.send),
-              ))
-            ],
-          )
+          _buildPopUpMenu()
         ],
       ),
+    );
+  }
+
+  PopupMenuButton<dynamic> _buildPopUpMenu() {
+    return PopupMenuButton<int>(
+      padding: EdgeInsets.all(2),
+      onSelected: _onselectPopUpMenu,
+      icon: Icon(
+        Icons.adaptive.more,
+        color: Get.theme.primaryColor,
+      ),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+            value: 0,
+            child: ListTile(
+              title: Text(
+                'Enviar mensagem',
+                style: GoogleFonts.openSans(fontSize: 14),
+              ),
+              trailing: Icon(Icons.send),
+            )),
+        PopupMenuItem(
+            value: 1,
+            child: ListTile(
+                title: Text(
+                  'Perfil',
+                  style: GoogleFonts.openSans(fontSize: 14),
+                ),
+                trailing: Icon(Icons.person))),
+        PopupMenuItem(
+            value: 2,
+            child: ListTile(
+                title: Text(
+                  'Denunciar',
+                  style: GoogleFonts.openSans(fontSize: 14),
+                ),
+                trailing: Icon(Icons.report))),
+      ],
     );
   }
 
@@ -271,5 +296,29 @@ class _PostWidgetState extends State<PostWidget>
     }
 
     volume.value = videoController?.value.volume ?? 0;
+  }
+
+  /// 0 open chat, 1 open user profile,3 is report,
+  void _onselectPopUpMenu(value) {
+    switch (value) {
+      case 0:
+        this.widget.controller.openChat(this.widget.postModel.userModel);
+
+        break;
+      case 1:
+        if ((widget.postModel.userModel?.id ?? '') ==
+            widget.controller.userAuthRepository.getCurrentUser?.id)
+          widget.controller.pageController.jumpToPage(4);
+        else
+          Get.to(
+              () => UsersProfileScreen(userModel: widget.postModel.userModel!));
+
+        break;
+      case 2:
+        ReportDialog.show();
+
+        break;
+      default:
+    }
   }
 }
