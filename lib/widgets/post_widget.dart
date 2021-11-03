@@ -39,6 +39,7 @@ class _PostWidgetState extends State<PostWidget>
   VideoPlayerController? videoController;
   UserModel? user;
   bool videoDone = false;
+  final sessionController = Get.find<SesssionController>();
 
   @override
   void initState() {
@@ -196,45 +197,50 @@ class _PostWidgetState extends State<PostWidget>
     );
   }
 
-  Container _buildHeaders() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Container(
-            width: 45,
-            height: 45,
-            child: ClipOval(
-              child: user == null
-                  ? Icon(Icons.person)
-                  : Image.network(
-                      user!.profileImage!,
-                      fit: BoxFit.cover,
-                    ),
+  Widget _buildHeaders() {
+    return InkWell(
+      onTap: _openUserProfile,
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              width: 45,
+              height: 45,
+              child: ClipOval(
+                child: user == null
+                    ? Icon(Icons.person)
+                    : Image.network(
+                        user!.profileImage!,
+                        fit: BoxFit.cover,
+                      ),
+              ),
             ),
-          ),
-          SizedBox(
-            width: 20,
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  user?.profileName ?? '',
-                  maxLines: 1,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                ),
-                Text(user?.completName ?? '',
+            SizedBox(
+              width: 20,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    user?.profileName ?? '',
                     maxLines: 1,
-                    style:
-                        TextStyle(fontWeight: FontWeight.w500, fontSize: 12)),
-              ],
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                  Text(user?.completName ?? '',
+                      maxLines: 1,
+                      style:
+                          TextStyle(fontWeight: FontWeight.w500, fontSize: 12)),
+                ],
+              ),
             ),
-          ),
-          _buildPopUpMenu()
-        ],
+            if (user!.id! !=
+                sessionController.userAuthRepository.getCurrentUser!.id)
+              _buildPopUpMenu()
+          ],
+        ),
       ),
     );
   }
@@ -273,6 +279,14 @@ class _PostWidgetState extends State<PostWidget>
                   style: GoogleFonts.openSans(fontSize: 14),
                 ),
                 trailing: Icon(Icons.report))),
+        PopupMenuItem(
+            value: 3,
+            child: ListTile(
+                title: Text(
+                  'Bloquear Usuário',
+                  style: GoogleFonts.openSans(fontSize: 14),
+                ),
+                trailing: Icon(Icons.block, color: Colors.red)))
       ],
     );
   }
@@ -285,8 +299,8 @@ class _PostWidgetState extends State<PostWidget>
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
+
   final volume = 1.0.obs;
   void _onvideoTap() {
     if (volume.value == 0) {
@@ -310,15 +324,25 @@ class _PostWidgetState extends State<PostWidget>
             widget.controller.userAuthRepository.getCurrentUser?.id)
           widget.controller.pageController.jumpToPage(4);
         else
-          Get.to(
-              () => UsersProfileScreen(userModel: widget.postModel.userModel!));
-
+          _openUserProfile();
         break;
       case 2:
-        ReportDialog.show();
-
+        ReportDialog.show(widget.postModel);
+        break;
+      case 3:
+        sessionController.blockUser(widget.postModel.userModel!.id!);
         break;
       default:
     }
+  }
+
+  void _openUserProfile() {
+    final session = Get.find<SesssionController>();
+    if (widget.postModel.userModel!.id! ==
+        session.userAuthRepository.getCurrentUser!.id!) {
+      session.pageController.jumpToPage(4);
+      return;
+    }
+    Get.to(() => UsersProfileScreen(userModel: widget.postModel.userModel!));
   }
 }

@@ -2,16 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/instance_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import 'package:knowme/controller/main_screen/session_controller.dart';
+import 'package:knowme/models/post_model.dart';
 
 class ReportDialog extends StatefulWidget {
-  ReportDialog({Key? key}) : super(key: key);
+  final PostModel post;
+  const ReportDialog({
+    Key? key,
+    required this.post,
+  }) : super(key: key);
 
   @override
   State<ReportDialog> createState() => _ReportDialogState();
 
-  static show() {
-    Get.dialog(ReportDialog());
+  static show(PostModel postModel) {
+    Get.dialog(ReportDialog(
+      post: postModel,
+    ));
   }
 }
 
@@ -213,7 +221,7 @@ class _ReportDialogState extends State<ReportDialog> {
   void _sendReport() async {
     sendReport = true;
     setState(() {});
-    await Future.delayed(Duration(seconds: 2));
+    await sessionController.sendReport(widget.post, selectedMotivos);
     sendReport = false;
 
     Get.back();

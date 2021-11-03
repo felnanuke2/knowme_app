@@ -602,4 +602,43 @@ class SupabaseRepository implements DbRepositoryInterface {
         .toList();
     return listPosts;
   }
+
+  @override
+  Future<String> blockUser(String userId) async {
+    final result = await client.rpc('block_user', params: {
+      'user_uid': userId,
+    }).execute();
+    if (result.error != null)
+      throw RequestError(message: result.error?.message ?? '');
+    return result.data;
+  }
+
+  @override
+  Future<List<String>> getBlockedUsers() async {
+    final result = await client.rpc('get_blocked_users').execute();
+    if (result.error != null)
+      throw RequestError(message: result.error?.message ?? '');
+    return List<String>.from(result.data);
+  }
+
+  @override
+  Future<String> unblockUser(String userId) async {
+    final result = await client.rpc('unblock_user', params: {
+      'user_uid': userId,
+    }).execute();
+    if (result.error != null)
+      throw RequestError(message: result.error?.message ?? '');
+    return result.data;
+  }
+
+  @override
+  Future<int> sendReport(int postId, List<String> reasons) async {
+    final result = await client.rpc('create_report', params: {
+      'post_id': postId,
+      'reasons': reasons,
+    }).execute();
+    if (result.error != null)
+      throw RequestError(message: result.error?.message ?? '');
+    return result.data;
+  }
 }

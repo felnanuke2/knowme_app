@@ -7,6 +7,7 @@ import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:knowme/models/post_model.dart';
 import 'package:knowme/models/user_model.dart';
 import 'package:knowme/screens/users_profile_screen.dart';
 import 'package:knowme/widgets/report_dialog.dart';
@@ -18,13 +19,16 @@ class ImageScreen extends StatefulWidget {
       required this.imageKey,
       this.cacheKey,
       this.description,
-      this.user})
+      this.user,
+      this.postModel})
       : super(key: key);
+
   final String imageUrl;
   final Key imageKey;
   String? cacheKey;
   String? description;
   UserModel? user;
+  PostModel? postModel;
 
   @override
   State<ImageScreen> createState() => _ImageScreenState();
@@ -100,11 +104,6 @@ class _ImageScreenState extends State<ImageScreen> {
                           iconTheme:
                               IconThemeData(color: Get.theme.primaryColor),
                           elevation: 0,
-                          actions: [
-                            IconButton(
-                                onPressed: ReportDialog.show,
-                                icon: Icon(Icons.report))
-                          ],
                           backgroundColor: Colors.transparent,
                         ))),
               )),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/state_manager.dart';
 import 'package:knowme/controller/chat_controler.dart';
 import 'package:knowme/widgets/chat/chat_conversation_tile.dart';
-import 'package:get/instance_manager.dart';
 
 class MessagesTab extends StatefulWidget {
   const MessagesTab({Key? key}) : super(key: key);
@@ -11,7 +10,8 @@ class MessagesTab extends StatefulWidget {
   State<MessagesTab> createState() => _MessagesTabState();
 }
 
-class _MessagesTabState extends State<MessagesTab> with AutomaticKeepAliveClientMixin {
+class _MessagesTabState extends State<MessagesTab>
+    with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);

@@ -94,11 +94,32 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
         elevation: 0,
         actions: [
           if (isFriends)
-            TextButton.icon(
-                onPressed: () => sesssionController.openChat(widget.userModel),
-                icon: Text('Mensagem'),
-                label: Icon(Icons.message_outlined,
-                    color: router.Get.theme.primaryColor))
+            Obx(
+              () => Visibility(
+                visible: !sesssionController.blockUsers
+                    .contains(widget.userModel.id!),
+                child: TextButton.icon(
+                    onPressed: () =>
+                        sesssionController.openChat(widget.userModel),
+                    icon: Text('Mensagem'),
+                    label: Icon(Icons.message_outlined,
+                        color: router.Get.theme.primaryColor)),
+              ),
+            ),
+          Obx(
+            () => Visibility(
+              visible:
+                  !sesssionController.blockUsers.contains(widget.userModel.id!),
+              child: TextButton.icon(
+                  onPressed: () =>
+                      sesssionController.blockUser(widget.userModel.id!),
+                  icon: Text(
+                    'Bloquear',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  label: Icon(Icons.block, color: Colors.red)),
+            ),
+          ),
         ],
       ),
       body: Container(
@@ -144,6 +165,22 @@ class _UsersProfileScreenState extends State<UsersProfileScreen> {
                           SizedBox(
                             height: 20,
                           ),
+                          Obx(() => sesssionController.blockUsers
+                                  .contains(widget.userModel.id!)
+                              ? ListTile(
+                                  shape: RoundedRectangleBorder(
+                                      side: BorderSide(color: Colors.red)),
+                                  leading: Icon(
+                                    Icons.block,
+                                    color: Colors.red,
+                                  ),
+                                  trailing: TextButton(
+                                      onPressed: () => sesssionController
+                                          .unBlockUser(widget.userModel.id!),
+                                      child: Text('Desbloquear')),
+                                  title: Text('Esse usuario está bloqueado'),
+                                )
+                              : SizedBox.shrink())
                         ],
                       ),
                     )

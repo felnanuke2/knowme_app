@@ -39,6 +39,7 @@ class SesssionController extends GetxController {
   final friends = <String>[].obs;
   final quizesToAnswer = <EntryQuizModel>[].obs;
   final posts = <PostModel>[].obs;
+  final blockUsers = <String>[].obs;
   late ChatController chatController;
 
   bool isLoadingCurrentUser;
@@ -88,6 +89,7 @@ class SesssionController extends GetxController {
     }
     await PushNotificationsServices.init();
     print(await PushNotificationsServices.getToken());
+    getBlockedUsers();
   }
 
   _verifyIfNeedCompletProfile() {
@@ -245,5 +247,44 @@ class SesssionController extends GetxController {
   singOut() async {
     await userAuthRepository.singOut();
     Get.offAll(LoginScreen());
+  }
+
+  blockUser(String userUid) async {
+    try {
+      final result = await repository.blockUser(userUid);
+      blockUsers.add(result);
+      _initUserData();
+    } on RequestError catch (e) {
+      print(e.message);
+    }
+  }
+
+  getBlockedUsers() async {
+    try {
+      final result = await repository.getBlockedUsers();
+      blockUsers.clear();
+      blockUsers.addAll(result);
+    } on RequestError catch (e) {
+      print(e.message);
+    }
+  }
+
+  unBlockUser(String? id) async {
+    try {
+      final result = await repository.unblockUser(id!);
+      blockUsers.remove(result);
+      blockUsers.refresh();
+      _initUserData();
+    } on RequestError catch (e) {
+      print(e.message);
+    }
+  }
+
+  Future<void> sendReport(PostModel post, List<String> selectedMotivos) async {
+    try {
+      await repository.sendReport(int.parse(post.id), selectedMotivos);
+    } on RequestError catch (e) {
+      print(e.message);
+    }
   }
 }

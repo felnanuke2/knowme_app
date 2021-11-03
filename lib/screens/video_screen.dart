@@ -4,13 +4,14 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:knowme/widgets/report_dialog.dart';
 import 'package:video_player/video_player.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 import 'package:knowme/controller/main_screen/session_controller.dart';
+import 'package:knowme/models/post_model.dart';
 import 'package:knowme/models/user_model.dart';
 import 'package:knowme/screens/users_profile_screen.dart';
-import 'package:visibility_detector/visibility_detector.dart';
+import 'package:knowme/widgets/report_dialog.dart';
 
 // ignore: must_be_immutable
 class VideoScreen extends StatefulWidget {
@@ -20,6 +21,7 @@ class VideoScreen extends StatefulWidget {
   String? description;
   UserModel? userModel;
   VideoPlayerController? videoController;
+  PostModel? postModel;
 
   VideoScreen({
     Key? key,
@@ -29,6 +31,7 @@ class VideoScreen extends StatefulWidget {
     this.description,
     this.userModel,
     this.videoController,
+    this.postModel,
   }) : super(key: key);
 
   @override
@@ -60,9 +63,6 @@ class _VideoScreenState extends State<VideoScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: BackButton(),
-        actions: [
-          IconButton(onPressed: ReportDialog.show, icon: Icon(Icons.report))
-        ],
       ),
       endDrawer: widget.isPrivate
           ? null

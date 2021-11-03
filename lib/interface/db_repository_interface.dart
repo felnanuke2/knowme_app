@@ -51,6 +51,14 @@ abstract class DbRepositoryInterface {
 
   Future<void> deletImage(String imageUrl);
 
+  Future<String> blockUser(String userId);
+
+  Future<String> unblockUser(String userId);
+
+  Future<List<String>> getBlockedUsers();
+
+  Future<int> sendReport(int postId, List<String> reasons);
+
   Future<List<InteractionsModel>> getInteractionsSend(String currentYserId);
 
   Future<List<InteractionsModel>> getInteractionsReceived(String currentYserId);

@@ -5,6 +5,7 @@ import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:knowme/controller/chat_controler.dart';
+import 'package:knowme/controller/main_screen/session_controller.dart';
 import 'package:knowme/models/chat_room_model.dart';
 import 'package:knowme/models/message_model.dart';
 import 'package:knowme/models/user_model.dart';
@@ -32,6 +33,9 @@ class _ChatScreenState extends State<ChatScreen> {
   final showDropButton = false.obs;
   final sController = ScrollController();
   late ChatController _chatController;
+  final isBlocked = false.obs;
+  final sessionController = Get.find<SesssionController>();
+
   @override
   void initState() {
     Get.find<ChatController>().text.value = '';
@@ -91,11 +95,29 @@ class _ChatScreenState extends State<ChatScreen> {
                                       fontWeight: FontWeight.bold,
                                       fontSize: 15),
                                 ),
+                                Expanded(child: Container()),
+                                _buildPopUpOptions()
                               ],
                             ),
                           ],
                         ),
                       ),
+                      Obx(() =>
+                          sessionController.blockUsers.contains(otherUser.id!)
+                              ? ListTile(
+                                  shape: RoundedRectangleBorder(
+                                      side: BorderSide(color: Colors.red)),
+                                  leading: Icon(
+                                    Icons.block,
+                                    color: Colors.red,
+                                  ),
+                                  trailing: TextButton(
+                                      onPressed: () => sessionController
+                                          .unBlockUser(otherUser.id),
+                                      child: Text('Desbloquear')),
+                                  title: Text('Esse usuario está bloqueado'),
+                                )
+                              : SizedBox.shrink()),
                       Expanded(
                           child: widget.room.id == null
                               ? SizedBox.shrink()
@@ -253,5 +275,37 @@ class _ChatScreenState extends State<ChatScreen> {
       controller: controller,
       key: Key(itemChats.id.toString()),
     );
+  }
+
+  Widget _buildPopUpOptions() {
+    return Obx(() => !sessionController.blockUsers.contains(otherUser.id!)
+        ? PopupMenuButton(
+            onSelected: _onSelectOptions,
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                  value: 0,
+                  child: ListTile(
+                    leading: Icon(
+                      Icons.block,
+                      color: Colors.red,
+                    ),
+                    title: Text('Bloquear'),
+                  )),
+            ],
+          )
+        : SizedBox.shrink());
+  }
+
+  void _onSelectOptions(int value) {
+    switch (value) {
+      case 0:
+        _blockUser();
+        break;
+      default:
+    }
+  }
+
+  void _blockUser() async {
+    sessionController.blockUser(otherUser.id!);
   }
 }
