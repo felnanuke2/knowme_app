@@ -115,7 +115,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                       onPressed: () => sessionController
                                           .unBlockUser(otherUser.id),
                                       child: Text('Desbloquear')),
-                                  title: Text('Esse usuario está bloqueado'),
+                                  title: Text('Esse usuário está bloqueado'),
                                 )
                               : SizedBox.shrink()),
                       Expanded(
